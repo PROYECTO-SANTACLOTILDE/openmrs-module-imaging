@@ -1,0 +1,5 @@
+org\openmrs\module\imaging\web\controller\OrthancSettingsController.class
+org\openmrs\module\imaging\web\controller\StudiesController.class
+org\openmrs\module\imaging\fragment\controller\UsersFragmentController.class
+org\openmrs\module\imaging\web\controller\ImagingController.class
+org\openmrs\module\imaging\extension\html\AdminList.class

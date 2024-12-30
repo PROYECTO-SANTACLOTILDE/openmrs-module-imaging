@@ -1,0 +1,2 @@
+org\openmrs\module\imaging\api\ImagingServiceTest.class
+org\openmrs\module\imaging\api\dao\ImagingDaoTest.class

@@ -1,0 +1,12 @@
+org\openmrs\module\imaging\api\impl\ImagingServiceImpl.class
+org\openmrs\module\imaging\api\ImagingService.class
+org\openmrs\module\imaging\Item.class
+org\openmrs\module\imaging\api\dao\ImagingDao.class
+org\openmrs\module\imaging\ImagingConstants.class
+org\openmrs\module\imaging\ImagingActivator.class
+org\openmrs\module\imaging\OrthancService.class
+org\openmrs\module\imaging\api\study\DicomSeries.class
+org\openmrs\module\imaging\OrthancServiceImpl.class
+org\openmrs\module\imaging\ImagingConfig.class
+org\openmrs\module\imaging\api\study\DicomStudy.class
+org\openmrs\module\imaging\api\study\DicomInstance.class
