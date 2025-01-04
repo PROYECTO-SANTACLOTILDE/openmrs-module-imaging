@@ -12,6 +12,18 @@
         See http://www.liquibase.org/manual/home#available_database_refactorings
         for a list of supported elements and attributes
     -->
+
+    <changeSet id="20250104" author="weisadre">
+        <comment>Create the Configuration table for Orthanc Server</comment>
+        <createTable tableName="imaging_OrthancConfiguration">
+            <column autoIncrement="true" name="orthancId" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="orthancBaseUrl" type="varchar(255)" />
+            <column name="orthancUsername" type="varchar(255)" />
+            <column name="orthancPassword" type="varchar(255)" />
+        </createTable>
+    </changeSet>
  
  	<!-- Uncomment the changeset below if you want to make the Item class persistable, see also Item and ImagingDaoTest -->
  	<!--

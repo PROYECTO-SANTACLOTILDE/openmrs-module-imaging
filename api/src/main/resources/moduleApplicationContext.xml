@@ -25,16 +25,16 @@
 
     <context:component-scan base-package="org.openmrs.module.imaging" />
 
-    <!-- Wraps ImagingService methods in DB transactions and OpenMRS interceptors,
-    which set audit info like dateCreated, changedBy, etc.-->
-    <bean id="imaging.ImagingService"
-            class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+    <!-- Wraps OrthancConfigurationService methods in DB transactions and OpenMRS interceptors,
+which set audit info like dateCreated, changedBy, etc.-->
+    <bean id="imaging.OrthancConfigurationService"
+          class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
         <property name="transactionManager">
             <ref bean="transactionManager" />
         </property>
         <property name="target">
-            <bean class="org.openmrs.module.imaging.api.impl.ImagingServiceImpl">
-                <property name="dao" ref="imaging.ImagingDao" />
+            <bean class="org.openmrs.module.imaging.api.impl.OrthancConfigurationServiceImpl">
+                <property name="dao" ref="imaging.OrthancConfigurationDao" />
             </bean>
         </property>
         <property name="preInterceptors">
@@ -45,13 +45,13 @@
         </property>
     </bean>
 
-    <!-- Adds ImagingService to OpenMRS context so it can be accessed
-    calling Context.getService(ImagingService.class) -->
+    <!-- Adds OrthancConfigurationService to OpenMRS context so it can be accessed
+    calling Context.getService(OrthancConfigurationService.class) -->
     <bean parent="serviceContext">
         <property name="moduleService">
             <list>
-                <value>org.openmrs.module.imaging.api.ImagingService</value>
-                <ref bean="imaging.ImagingService" />
+                <value>org.openmrs.module.imaging.api.OrthancConfigurationService</value>
+                <ref bean="imaging.OrthancConfigurationService" />
             </list>
         </property>
     </bean>

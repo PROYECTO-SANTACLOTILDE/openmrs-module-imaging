@@ -23,21 +23,21 @@ import org.openmrs.module.web.extension.AdministrationSectionExt;
 public class AdminList extends AdministrationSectionExt {
 	
 	/**
-	 * @see org.openmrs.module.web.extension.AdministrationSectionExt#getMediaType()
+	 * @see AdministrationSectionExt#getMediaType()
 	 */
-	public Extension.MEDIA_TYPE getMediaType() {
-		return Extension.MEDIA_TYPE.html;
+	public MEDIA_TYPE getMediaType() {
+		return MEDIA_TYPE.html;
 	}
 	
 	/**
-	 * @see org.openmrs.module.web.extension.AdministrationSectionExt#getTitle()
+	 * @see AdministrationSectionExt#getTitle()
 	 */
 	public String getTitle() {
 		return "imaging.title";
 	}
 	
 	/**
-	 * @see org.openmrs.module.web.extension.AdministrationSectionExt#getLinks()
+	 * @see AdministrationSectionExt#getLinks()
 	 */
 	public Map<String, String> getLinks() {
 		
@@ -45,6 +45,7 @@ public class AdminList extends AdministrationSectionExt {
 		
 		map.put("module/imaging/imaging.form", "imaging.title");
 		map.put("imaging/imaging.page", "imaging.refapp.title");
+		map.put("imaging/imagingSettings.page", "Orthanc settings");
 		
 		return map;
 	}

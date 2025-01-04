@@ -13,7 +13,7 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Imaging</name>
-	<description>no description</description>
+	<description>connection to Orthanc</description>
 
 	<url>https://wiki.openmrs.org/x/FQ4z</url>
 

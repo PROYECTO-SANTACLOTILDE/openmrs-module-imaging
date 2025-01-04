@@ -1,5 +1,4 @@
-C:\Users\zhaow\Documents\Work_hmLab\Development\openmrs\imaging\omod\src\main\java\org\openmrs\module\imaging\web\controller\OrthancSettingsController.java
-C:\Users\zhaow\Documents\Work_hmLab\Development\openmrs\imaging\omod\src\main\java\org\openmrs\module\imaging\extension\html\AdminList.java
-C:\Users\zhaow\Documents\Work_hmLab\Development\openmrs\imaging\omod\src\main\java\org\openmrs\module\imaging\fragment\controller\UsersFragmentController.java
-C:\Users\zhaow\Documents\Work_hmLab\Development\openmrs\imaging\omod\src\main\java\org\openmrs\module\imaging\web\controller\ImagingController.java
-C:\Users\zhaow\Documents\Work_hmLab\Development\openmrs\imaging\omod\src\main\java\org\openmrs\module\imaging\web\controller\StudiesController.java
+/home/wei/openmrs/server/watched-projects/imaging/omod/src/main/java/org/openmrs/module/imaging/web/controller/ImagingController.java
+/home/wei/openmrs/server/watched-projects/imaging/omod/src/main/java/org/openmrs/module/imaging/page/controller/WebConstants.java
+/home/wei/openmrs/server/watched-projects/imaging/omod/src/main/java/org/openmrs/module/imaging/page/controller/ImagingSettingsPageController.java
+/home/wei/openmrs/server/watched-projects/imaging/omod/src/main/java/org/openmrs/module/imaging/extension/html/AdminList.java
