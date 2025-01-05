@@ -10,6 +10,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.Base64;
 
 @Controller
 public class ImagingSettingsPageController {
@@ -24,9 +33,7 @@ public class ImagingSettingsPageController {
 	@RequestMapping(value = "/module/imaging/storeConfiguration.form", method = RequestMethod.POST)
 	public String storeConfiguration(@RequestParam(value = "url") String url,
 	        @RequestParam(value = "username") String username, @RequestParam(value = "password") String password) {
-		
 		OrthancConfigurationService orthancConfigureService = Context.getService(OrthancConfigurationService.class);
-		
 		url = url.trim();
 		username = username.trim();
 		password = password.trim();
@@ -36,11 +43,48 @@ public class ImagingSettingsPageController {
 			oc.setOrthancUsername(username);
 			oc.setOrthancPassword(password);
 			orthancConfigureService.saveOrthancConfiguration(oc);
+			return "redirect:/imaging/imagingSettings.page";
 		} else {
-			log.error("saving orthanc configuration failed");
+			return "redirect:/imaging/imagingSettings.page?message=Saving orthanc configuration failed";
 		}
-		
+	}
+	
+	@RequestMapping(value = "/module/imaging/deleteConfiguration.form", method = RequestMethod.POST)
+	public String storeConfiguration(@RequestParam(value = "orthancId") int orthancId) {
+		OrthancConfigurationService orthancConfigureService = Context.getService(OrthancConfigurationService.class);
+		orthancConfigureService.removeOrthancConfiguration(orthancConfigureService.getOrthancConfiguration(orthancId));
 		return "redirect:/imaging/imagingSettings.page";
+	}
+	
+	@RequestMapping(value = "/module/imaging/checkConfiguration.form", method = RequestMethod.GET)
+	@ResponseBody
+	public void checkConfiguration(HttpServletResponse response, @RequestParam(value = "url") String url,
+	        @RequestParam(value = "username") String username, @RequestParam(value = "password") String password) {
+		log.error(url);
+		try {
+			String encoding = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+			try {
+				URL serverURL = new URL(url + "/system");
+				HttpURLConnection con = (HttpURLConnection) serverURL.openConnection();
+				con.setRequestMethod("GET");
+				con.setRequestProperty("Authorization", "Basic " + encoding);
+				int status = con.getResponseCode();
+				if (status == 200) {
+					response.getOutputStream().print("Check successful. The Orthanc server responded correctly.");
+				} else {
+					response.getOutputStream().print("Check failed. The server responded with error " + status);
+				}
+			}
+			catch (MalformedURLException e) {
+				response.getOutputStream().print("The URL is not well formed.");
+			}
+			catch (UnknownHostException e) {
+				response.getOutputStream().print("The server could not be reached.");
+			}
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	//	public void post(Model model, @RequestParam(value = "orthancBaseUrl") String orthancBaseUrl,

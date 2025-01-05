@@ -3,7 +3,6 @@ body {
 }
 
 .form-container {
-width: 50%;
 margin: 0 auto;
 padding: 20px;
 border: 1px solid #ccc;
@@ -89,8 +88,9 @@ padding: 8;
 }
 
 .btn-submit,
-.btn-close-popup {
-    padding: 12px 24px;
+.btn-close-popup,
+.btn-check {
+    padding: 10px 20px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -101,6 +101,11 @@ padding: 8;
     color: #fff;
 }
 
+.btn-check {
+    background-color: orange;
+    color: #fff;
+}
+
 .btn-close-popup {
     margin-top: 12px;
     background-color: #e74c3c;
@@ -108,11 +113,24 @@ padding: 8;
 }
 
 .btn-submit:hover,
-.btn-close-popup:hover {
+.btn-close-popup:hover,
+.btn-check:hover {
     background-color: #4caf50;
 }
 
 .overlay-container.show {
     display: flex;
     opacity: 1;
+}
+
+.table-btn-link {
+    border: none;
+    outline: none;
+    background: none;
+    cursor: pointer;
+    color: #0000EE;
+    padding: 0;
+    text-decoration: underline;
+    font-family: inherit;
+    font-size: inherit;
 }
