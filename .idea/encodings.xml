@@ -10,5 +10,11 @@
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/webapp" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web-1.9/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web-1.9/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web-1.9/src/main/webapp" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web-2.0/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web-2.0/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web-2.0/src/main/webapp" charset="UTF-8" />
   </component>
 </project>

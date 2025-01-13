@@ -25,8 +25,8 @@ public class AdminList extends AdministrationSectionExt {
 	/**
 	 * @see AdministrationSectionExt#getMediaType()
 	 */
-	public MEDIA_TYPE getMediaType() {
-		return MEDIA_TYPE.html;
+	public Extension.MEDIA_TYPE getMediaType() {
+		return Extension.MEDIA_TYPE.html;
 	}
 	
 	/**
@@ -40,13 +40,8 @@ public class AdminList extends AdministrationSectionExt {
 	 * @see AdministrationSectionExt#getLinks()
 	 */
 	public Map<String, String> getLinks() {
-		
 		Map<String, String> map = new HashMap<String, String>();
-		
-		map.put("module/imaging/imaging.form", "imaging.title");
-		map.put("imaging/imaging.page", "imaging.refapp.title");
 		map.put("imaging/imagingSettings.page", "Orthanc settings");
-		
 		return map;
 	}
 	

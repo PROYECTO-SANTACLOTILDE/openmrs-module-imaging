@@ -5,7 +5,7 @@
 
 <hibernate-mapping package="org.openmrs.module.imaging" auto-import="false">
     <class name="OrthancConfiguration"
-        table="${project.parent.artifactId}_OrthancConfiguration">
+        table="imaging_OrthancConfiguration">
         <id name="orthancId" type="int" column="orthancId" unsaved-value="0">
             <generator class="native" />
         </id>

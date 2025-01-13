@@ -1,0 +1,10 @@
+[
+  {
+    "id": "org.openmrs.module.imaging.patientDashboard.secondColumnFragments",
+    "extensionPointId": "patientDashboard.secondColumnFragments",
+    "extensionParams": {
+      "provider": "imaging",
+      "fragment": "studies"
+    }
+  }
+]

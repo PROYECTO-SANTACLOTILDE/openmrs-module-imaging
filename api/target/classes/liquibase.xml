@@ -13,7 +13,7 @@
         for a list of supported elements and attributes
     -->
 
-    <changeSet id="20250104" author="weisadre">
+    <changeSet id="20250109c" author="weisadre">
         <comment>Create the Configuration table for Orthanc Server</comment>
         <createTable tableName="imaging_OrthancConfiguration">
             <column autoIncrement="true" name="orthancId" type="int">
@@ -22,6 +22,26 @@
             <column name="orthancBaseUrl" type="varchar(255)" />
             <column name="orthancUsername" type="varchar(255)" />
             <column name="orthancPassword" type="varchar(255)" />
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20250111" author="weisadre">
+        <comment>Create the DicomStudy table for imaging</comment>
+        <createTable tableName="imaging_DicomStudy">
+            <column name="studyInstanceUID" type="java.lang.String">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="orthancPId" type="varchar(255)"/>
+            <column name="patientName" type="varchar(255)"/>
+            <column name="studyDate" type="datetime"/>
+            <column name="patient_id" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="orthancId" type="int">
+                <constraints nullable="true"/>
+            </column>
+            <column name="studyDescription" type="varchar(255)"/>
+            <column name="gender" type="varchar(50)"/>
         </createTable>
     </changeSet>
  

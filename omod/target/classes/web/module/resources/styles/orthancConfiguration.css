@@ -31,12 +31,13 @@ padding: 8;
 
 .btn-open-popup {
     padding: 12px 24px;
-    background-color: green;
+    background: green;
     color: #fff;
     border: none;
     border-radius: 8px;
     cursor: pointer;
 }
+
 
 .btn-open-popup:hover {
     background-color: #4caf50;
@@ -87,35 +88,38 @@ padding: 8;
     box-sizing: border-box;
 }
 
-.btn-submit,
-.btn-close-popup,
+.btn-submit {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: white;
+    background: green;
+    margin-right: 20px;
+}
+
 .btn-check {
     padding: 10px 20px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-}
-
-.btn-submit {
-    background-color: green;
-    color: #fff;
-}
-
-.btn-check {
-    background-color: orange;
-    color: #fff;
+    color: white;
+    background: orange;
+    margin-right: 20px;
 }
 
 .btn-close-popup {
-    margin-top: 12px;
-    background-color: #e74c3c;
-    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: white;
+    background: red;
 }
 
-.btn-submit:hover,
-.btn-close-popup:hover,
-.btn-check:hover {
-    background-color: #4caf50;
+.btn-submit hover{
+    color: black;
+    background: grey;
 }
 
 .overlay-container.show {

@@ -44,9 +44,10 @@ ${param["message"]?.getAt(0) ?: ""}
                 <td>${ui.format(orthancConfiguration.orthancBaseUrl)}</td>
                 <td>${ui.format(orthancConfiguration.orthancUsername)}</td>
                 <td>
-                <form onsubmit="return confirm('Do you really want to delete this configuration?');" action="/openmrs/module/imaging/deleteConfiguration.form?orthancId=${orthancConfiguration.orthancId}" method="post">
-                    <button class="table-btn-link" type="submit"><img class="icon" src="${ ui.resourceLink("imaging", "images/delete.png") }"/></button>
-                </form>
+                    <form onsubmit="return confirm('Do you really want to delete this configuration?');" action="/openmrs/module/imaging/deleteConfiguration.form?orthancId=${orthancConfiguration.orthancId}" method="post">
+                        <button class="table-btn-link" type="submit"><img class="icon" src="${ ui.resourceLink("imaging", "images/delete.png") }"/></button>
+                    </form>
+                </td>
             </tr>
         <% } %>
     </tbody>
@@ -63,10 +64,11 @@ ${param["message"]?.getAt(0) ?: ""}
 
             <label class="form-label" for="password">${ ui.message("imaging.app.password.label")}</label>
             <input class="form-input" type="password" placeholder="Orthanc password" id="password" name="password" required>
-
-            <button class="btn-check" type="button" onclick="checkConfiguration()">Check connection now</button>
-            <button class="btn-submit" type="submit">Save</button>
-            <button class="btn-close-popup" type="button" onclick="togglePopupAdd()">Cancel</button>
+            <div style="display: flex;">
+                <button class="btn-check" type="button" onclick="checkConfiguration()">Check connection</button>
+                <button class="btn-submit" type="submit">Save</button>
+                <button class="btn-close-popup" type="button" onclick="togglePopupAdd()">Cancel</button>
+            </div>
         </form>
 
     </div>
