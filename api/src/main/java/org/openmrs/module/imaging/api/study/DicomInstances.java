@@ -7,7 +7,7 @@ public class DicomInstances {
 	private int instanceNumber;
 	
 	private String instanceModality;
-
+	
 	// Getters and Setters
 	public String getSopInstanceUID() {
 		return sopInstanceUID;

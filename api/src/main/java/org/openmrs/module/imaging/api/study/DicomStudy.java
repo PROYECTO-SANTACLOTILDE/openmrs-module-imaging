@@ -6,24 +6,21 @@ import org.openmrs.module.imaging.OrthancConfiguration;
 import java.util.Date;
 
 public class DicomStudy {
-
+	
 	private String studyInstanceUID;
 	
-	private String orthancPId;
-
 	private Patient mrsPatient;
-
+	
 	private OrthancConfiguration orthancConfiguration;
-
+	
 	private String patientName;
 	
 	private Date studyDate;
 	
 	private String studyDescription;
-
+	
 	private String gender;
-
-
+	
 	// Getters and Setters
 	public String getStudyInstanceUID() {
 		return studyInstanceUID;
@@ -31,14 +28,6 @@ public class DicomStudy {
 	
 	public void setStudyInstanceUID(String studyInstanceUID) {
 		this.studyInstanceUID = studyInstanceUID;
-	}
-	
-	public String getPatientID() {
-		return orthancPId;
-	}
-	
-	public void setPatientID(String patientID) {
-		this.orthancPId = patientID;
 	}
 	
 	public String getPatientName() {
@@ -64,24 +53,28 @@ public class DicomStudy {
 	public void setStudyDescription(String studyDescription) {
 		this.studyDescription = studyDescription;
 	}
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-
-    public Patient getMrsPatient() {
-        return mrsPatient;
-    }
-
-    public void setMrsPatient(Patient mrsPatient) {
-        this.mrsPatient = mrsPatient;
-    }
-
+	
+	public String getGender() {
+		return gender;
+	}
+	
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+	
 	public OrthancConfiguration getOrthancConfiguration() {
 		return orthancConfiguration;
+	}
+	
+	public void setOrthancConfiguration(OrthancConfiguration orthancConfiguration) {
+		this.orthancConfiguration = orthancConfiguration;
+	}
+	
+	public Patient getMrsPatient() {
+		return mrsPatient;
+	}
+	
+	public void setMrsPatient(Patient mrsPatient) {
+		this.mrsPatient = mrsPatient;
 	}
 }

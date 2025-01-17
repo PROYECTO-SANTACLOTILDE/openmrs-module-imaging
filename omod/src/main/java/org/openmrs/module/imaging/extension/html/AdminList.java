@@ -9,11 +9,10 @@
  */
 package org.openmrs.module.imaging.extension.html;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.openmrs.module.Extension;
 import org.openmrs.module.web.extension.AdministrationSectionExt;
+import org.openmrs.module.Extension;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * This class defines the links that will appear on the administration page under the
@@ -40,8 +39,11 @@ public class AdminList extends AdministrationSectionExt {
 	 * @see AdministrationSectionExt#getLinks()
 	 */
 	public Map<String, String> getLinks() {
-		Map<String, String> map = new HashMap<String, String>();
+		
+		//		Map<String, String> map = new HashMap<String, String>();
+		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
 		map.put("imaging/imagingSettings.page", "Orthanc settings");
+		
 		return map;
 	}
 	

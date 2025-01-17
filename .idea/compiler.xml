@@ -12,5 +12,9 @@
         <module name="imaging-omod" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="imaging-web-1.9" target="1.8" />
+      <module name="imaging-web-2.0" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

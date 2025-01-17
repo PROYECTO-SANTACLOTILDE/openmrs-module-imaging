@@ -1,6 +1,5 @@
 org/openmrs/module/imaging/Studies.class
 org/openmrs/module/imaging/api/study/DicomSeries.class
-org/openmrs/module/imaging/Studies$STUDIESSTATUS.class
 org/openmrs/module/imaging/api/impl/DicomStudyServiceImpl.class
 org/openmrs/module/imaging/api/OrthancConfigurationService.class
 org/openmrs/module/imaging/api/DicomStudyService.class

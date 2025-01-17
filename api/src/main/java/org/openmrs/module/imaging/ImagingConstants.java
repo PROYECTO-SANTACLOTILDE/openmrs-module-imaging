@@ -28,5 +28,6 @@ public class ImagingConstants {
 	public static final String VIEW_STUDIES = "View studies";
 	
 	public static final String STUDIES_PAGE_INCLUDE_FRAGMENT_EXTENSION_POINT = "studiesList.includeFragments";
+	
 	public static final String SERIES_PAGE_INCLUDE_FRAGMENT_EXTENSION_POINT = "seriesList.includeFragments";
 }

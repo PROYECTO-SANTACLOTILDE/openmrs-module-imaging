@@ -10,10 +10,10 @@ import java.util.List;
 
 @Transactional
 public interface DicomStudyService extends OpenmrsService {
-
+	
 	Studies getAllStudiesByPatient(Patient pt);
-
+	
 	void setStudies(Patient pt, Studies retrievedStudies);
-
+	
 	void deleteStudy(DicomStudy dicomStudy);
 }
