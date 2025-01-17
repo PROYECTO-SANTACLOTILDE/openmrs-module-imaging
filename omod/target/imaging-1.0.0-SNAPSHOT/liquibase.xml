@@ -13,7 +13,12 @@
         for a list of supported elements and attributes
     -->
 
-    <changeSet id="20250104" author="weisadre">
+    <changeSet id="15" author="weisadre">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="imaging_OrthancConfiguration"/>
+            </not>
+        </preConditions>
         <comment>Create the Configuration table for Orthanc Server</comment>
         <createTable tableName="imaging_OrthancConfiguration">
             <column autoIncrement="true" name="orthancId" type="int">
@@ -24,6 +29,40 @@
             <column name="orthancPassword" type="varchar(255)" />
         </createTable>
     </changeSet>
+
+    <changeSet id="14" author="weisadre">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="imaging_DicomStudy"/>
+            </not>
+            <tableExists tableName="imaging_OrthancConfiguration"/>
+        </preConditions>
+        <comment>Create the DicomStudy table for imaging</comment>
+        <createTable tableName="imaging_DicomStudy">
+            <column name="studyInstanceUID" type="varchar(255)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="patientName" type="varchar(255)"/>
+            <column name="studyDate" type="datetime"/>
+            <column name="patient_id" type="int">
+                <constraints nullable="true"/>
+            </column>
+            <column name="orthancId" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="studyDescription" type="varchar(255)"/>
+            <column name="gender" type="varchar(50)"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="imaging_DicomStudy" baseColumnNames="patient_id"
+                                 constraintName="imaging_DicomStudy_patient_id_fk" referencedTableName="patient"
+                                 referencedColumnNames="patient_id"/>
+        <addForeignKeyConstraint baseTableName="imaging_DicomStudy" baseColumnNames="orthancId"
+                                 constraintName="imaging_DicomStudy_orthancId_fk"
+                                 referencedTableName="imaging_OrthancConfiguration"
+                                 referencedColumnNames="orthancId"/>
+    </changeSet>
+
+
  
  	<!-- Uncomment the changeset below if you want to make the Item class persistable, see also Item and ImagingDaoTest -->
  	<!--

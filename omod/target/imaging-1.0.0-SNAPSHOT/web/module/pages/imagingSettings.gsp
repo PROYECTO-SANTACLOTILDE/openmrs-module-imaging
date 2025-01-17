@@ -23,7 +23,7 @@ ${param["message"]?.getAt(0) ?: ""}
 <div>
     <button class="btn-open-popup" onclick="togglePopupAdd()">Add new configuration</button>
 </div>
-<table class="table table-sm">
+<table class="table table-sm table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl">
     <thead>
        <tr>
             <th>${ ui.message("imaging.app.orthancid.label")}</th>

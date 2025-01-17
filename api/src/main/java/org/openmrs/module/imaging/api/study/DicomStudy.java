@@ -1,13 +1,17 @@
 package org.openmrs.module.imaging.api.study;
 
+import org.openmrs.Patient;
+import org.openmrs.module.imaging.OrthancConfiguration;
+
 import java.util.Date;
-import java.util.List;
 
 public class DicomStudy {
 	
 	private String studyInstanceUID;
 	
-	private String patientID;
+	private Patient mrsPatient;
+	
+	private OrthancConfiguration orthancConfiguration;
 	
 	private String patientName;
 	
@@ -15,7 +19,7 @@ public class DicomStudy {
 	
 	private String studyDescription;
 	
-	private List<DicomSeries> seriesList;
+	private String gender;
 	
 	// Getters and Setters
 	public String getStudyInstanceUID() {
@@ -24,14 +28,6 @@ public class DicomStudy {
 	
 	public void setStudyInstanceUID(String studyInstanceUID) {
 		this.studyInstanceUID = studyInstanceUID;
-	}
-	
-	public String getPatientID() {
-		return patientID;
-	}
-	
-	public void setPatientID(String patientID) {
-		this.patientID = patientID;
 	}
 	
 	public String getPatientName() {
@@ -58,11 +54,27 @@ public class DicomStudy {
 		this.studyDescription = studyDescription;
 	}
 	
-	public List<DicomSeries> getSeriesList() {
-		return seriesList;
+	public String getGender() {
+		return gender;
 	}
 	
-	public void setSeriesList(List<DicomSeries> seriesList) {
-		this.seriesList = seriesList;
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+	
+	public OrthancConfiguration getOrthancConfiguration() {
+		return orthancConfiguration;
+	}
+	
+	public void setOrthancConfiguration(OrthancConfiguration orthancConfiguration) {
+		this.orthancConfiguration = orthancConfiguration;
+	}
+	
+	public Patient getMrsPatient() {
+		return mrsPatient;
+	}
+	
+	public void setMrsPatient(Patient mrsPatient) {
+		this.mrsPatient = mrsPatient;
 	}
 }

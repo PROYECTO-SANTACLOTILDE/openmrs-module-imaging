@@ -46,6 +46,7 @@
 
 	<mappingFiles>
 		OrthancConfiguration.hbm.xml
+		DicomStudy.hbm.xml
 	</mappingFiles>
 
 	<!-- AOP
