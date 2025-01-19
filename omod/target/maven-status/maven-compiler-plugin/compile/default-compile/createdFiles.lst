@@ -1,5 +1,6 @@
+org/openmrs/module/imaging/page/controller/SeriesPageController.class
 org/openmrs/module/imaging/page/controller/WebConstants.class
-org/openmrs/module/imaging/web/controller/ImagingController_nouse.class
 org/openmrs/module/imaging/page/controller/ImagingSettingsPageController.class
-org/openmrs/module/imaging/page/controller/StudiesPageController__nouse.class
+org/openmrs/module/imaging/page/controller/InstancesPageController.class
 org/openmrs/module/imaging/extension/html/AdminList.class
+org/openmrs/module/imaging/page/controller/StudiesPageController.class

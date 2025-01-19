@@ -35,7 +35,7 @@ ${param["message"]?.getAt(0) ?: ""}
     <tbody>
         <% if (orthancConfigurations.size() == 0) { %>
             <tr>
-                <td colspan="3">${ui.message("imaging.app.none")}</td>
+                <td colspan="6" class="configure_td">${ui.message("imaging.app.none")}</td>
             </tr>
         <% } %>
         <% orthancConfigurations.each { orthancConfiguration -> %>

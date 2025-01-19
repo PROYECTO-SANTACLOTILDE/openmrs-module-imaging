@@ -21,11 +21,11 @@ import java.net.UnknownHostException;
 import java.util.Base64;
 
 @Controller
-public class StudiesPageController__nouse {
+public class StudiesPageController {
 	
 	protected Log log = LogFactory.getLog(this.getClass());
 	
-	public void get(Model model, Patient patient) {
+	public void get(Model model, @RequestParam(value = "patientId") Patient patient) {
 		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
 		model.addAttribute("studies", dicomStudyService.getAllStudiesByPatient(patient));
 	}

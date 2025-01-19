@@ -10,7 +10,6 @@
         </ul>
         <form method="POST" action="studies.page">
             <input type="hidden" name="patientId" value="${patient.id}"/>
-            <input type="hidden" name="returnUrl" value="${ ui.encodeHtml(returnUrl)}"/>
             <input type="hidden" id="seriesInstanceUID" name="seriesInstanceUID" value=""/>
             <input type="hidden" name="action" value="deleteSeries"/>
             <input type="hidden" id="removeSeriesMessageTemplate" value="${ ui.message("imaging.deleteSeries.message") }"/>

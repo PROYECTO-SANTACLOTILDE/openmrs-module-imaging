@@ -1,13 +1,18 @@
 package org.openmrs.module.imaging.api.study;
 
+import org.openmrs.BaseOpenmrsData;
 import org.openmrs.Patient;
 import org.openmrs.module.imaging.OrthancConfiguration;
 
 import java.util.Date;
 
-public class DicomStudy {
+public class DicomStudy extends BaseOpenmrsData implements java.io.Serializable {
+	
+	public static final long serialVersionUID = 1;
 	
 	private String studyInstanceUID;
+	
+	private String orthancStudyUID;
 	
 	private Patient mrsPatient;
 	
@@ -20,6 +25,18 @@ public class DicomStudy {
 	private String studyDescription;
 	
 	private String gender;
+	
+	public DicomStudy(String studyInstanceUID, String orthancStudyUID, Patient patient, OrthancConfiguration config,
+	    String patientName, Date studyDate, String studyDescription, String gender) {
+		this.studyInstanceUID = studyInstanceUID;
+		this.orthancStudyUID = orthancStudyUID;
+		this.mrsPatient = patient;
+		this.orthancConfiguration = config;
+		this.patientName = patientName;
+		this.studyDate = studyDate;
+		this.studyDescription = studyDescription;
+		this.gender = gender;
+	}
 	
 	// Getters and Setters
 	public String getStudyInstanceUID() {
@@ -76,5 +93,23 @@ public class DicomStudy {
 	
 	public void setMrsPatient(Patient mrsPatient) {
 		this.mrsPatient = mrsPatient;
+	}
+	
+	@Override
+	public Integer getId() {
+		return 0;
+	}
+	
+	@Override
+	public void setId(Integer integer) {
+		
+	}
+	
+	public String getOrthancStudyUID() {
+		return orthancStudyUID;
+	}
+	
+	public void setOrthancStudyUID(String orthancStudyUID) {
+		this.orthancStudyUID = orthancStudyUID;
 	}
 }

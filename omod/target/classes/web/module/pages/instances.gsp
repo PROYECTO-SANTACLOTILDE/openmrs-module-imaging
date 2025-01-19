@@ -6,16 +6,12 @@
 <script type="text/javascript">
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "${ ui.escapeJs(ui.encodeHtmlContent(ui.format(patient.familyName))) }, ${ ui.escapeJs(ui.encodeHtmlContent(ui.format(patient.givenName))) }", link: '${ui.pageLink("coreapps", "clinicianfacing/patient", [patientId: patient.id])}'},
+        { label: "${ ui.escapeJs(ui.encodeHtmlContent(ui.format(patient.familyName))) },
+            ${ ui.escapeJs(ui.encodeHtmlContent(ui.format(patient.givenName))) }",
+            link: '${ui.pageLink("coreapps", "clinicianfacing/patient", [patientId: patient.id])}'},
         { label: "${ ui.message("imaging.instances") }" }
     ];
 </script>
-
-<% if(includeFragments) {
-    includeFragments.each{ %>
-        ${ ui.includeFragment(it.extensionParams.provider, it.extensionParams.fragment, [ patient: patient])}
-<%   }
-} %>
 
 ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
 ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
@@ -44,9 +40,10 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                 <td>${ui.format(instance.sopInstanceUID)}</td>
                 <td>${ui.format(instance.instanceNumber)}</td>
                 <td>${ui.format(instance.instanceModality)}</td>
-                <td>
-                    <form onsubmit="" action="/openmrs/module/imaging/previewInstance.form?sopInstanceUID=${instance.sopInstanceUID}" method="post">
-                        <button class="table-btn-link" type="submit"><img class="icon" src="${ ui.resourceLink("imaging", "images/preview.svg") }"/></button>
+                <td style="width:10px">
+                    <form class="preview-form" action="/openmrs/module/imaging/previewInstance.form?sopInstanceUID=${instance.sopInstanceUID}" method="post">
+                        <button class="table-btn-link" type="submit">
+                            <img class="icon" src="${ ui.resourceLink("imaging", "images/preview.png") }"/></button>
                     </form>
                 </td>
             </tr>

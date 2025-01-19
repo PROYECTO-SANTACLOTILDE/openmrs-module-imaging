@@ -1,22 +1,29 @@
 package org.openmrs.module.imaging.api.study;
 
-import java.util.List;
-
 public class DicomSeries {
 	
 	private String seriesInstanceUID;
 	
+	private String orthancSeriesUID;
+	
 	private int seriesNumber;
 	
 	private String modality;
+	
+	public DicomSeries(String seriesInstanceUID, String orthancSeriesUID, int seriesNumber, String modality) {
+		this.seriesInstanceUID = seriesInstanceUID;
+		this.orthancSeriesUID = orthancSeriesUID;
+		this.seriesNumber = seriesNumber;
+		this.modality = modality;
+	}
 	
 	// Getters and Setters
 	public String getSeriesInstanceUID() {
 		return seriesInstanceUID;
 	}
 	
-	public void setSeriesInstanceUID(String seriesInstanceUID) {
-		this.seriesInstanceUID = seriesInstanceUID;
+	public void setSeriesInstanceUID(String seriesOrthancUID) {
+		this.seriesInstanceUID = seriesOrthancUID;
 	}
 	
 	public int getSeriesNumber() {
@@ -33,5 +40,13 @@ public class DicomSeries {
 	
 	public void setModality(String modality) {
 		this.modality = modality;
+	}
+	
+	public String getOrthancSeriesUID() {
+		return orthancSeriesUID;
+	}
+	
+	public void setOrthancSeriesUID(String orthancSeriesUID) {
+		this.orthancSeriesUID = orthancSeriesUID;
 	}
 }

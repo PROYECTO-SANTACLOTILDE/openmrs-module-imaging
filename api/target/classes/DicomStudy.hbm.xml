@@ -7,6 +7,7 @@
     <class name="DicomStudy"  table="imaging_DicomStudy">
         <id name="studyInstanceUID" type="java.lang.String" column="studyInstanceUID"/>
         <discriminator column="studyInstanceUID" insert="false" />
+        <property name="orthancStudyUID" type="java.lang.String" column="orthancStudyUID" length="255"/>
         <property name="patientName" type="java.lang.String" column="patientName" length="255"/>
         <property name="studyDate" type="java.util.Date" column="studyDate" length="19"/>
         <many-to-one name="mrsPatient" column="patient_id" class="org.openmrs.Patient" not-null="false"/>

@@ -30,14 +30,17 @@ padding: 8;
 }
 
 .btn-open-popup {
-    padding: 12px 24px;
-    background: green;
+    background: #44528C;
     color: #fff;
     border: none;
     border-radius: 8px;
     cursor: pointer;
+    margin-bottom: 7px
 }
 
+.configure_td {
+    text-align: center;
+}
 
 .btn-open-popup:hover {
     background-color: #4caf50;
@@ -89,32 +92,29 @@ padding: 8;
 }
 
 .btn-submit {
-    padding: 10px 20px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     color: white;
-    background: green;
+    background: #008477;
     margin-right: 20px;
 }
 
 .btn-check {
-    padding: 10px 20px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     color: white;
-    background: orange;
+    background: blue;
     margin-right: 20px;
 }
 
 .btn-close-popup {
-    padding: 10px 20px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     color: white;
-    background: red;
+    background: #FF6E24;
 }
 
 .btn-submit hover{
