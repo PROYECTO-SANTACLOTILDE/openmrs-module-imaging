@@ -13,6 +13,7 @@
 
 ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
 ${ ui.includeFragment("imaging", "deleteStudyDialog") }
+${ ui.includeJavascript("imaging", "studies.js")}
 ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
 
 <h2>
@@ -44,9 +45,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
             <th>${ ui.message("imaging.app.patientName.label")}</th>
             <th>${ ui.message("imaging.app.studyDate.label")}</th>
             <th>${ ui.message("imaging.app.description.label")}</th>
-            <th>${ ui.message("imaging.app.openStoneView.label")}</th>
-            <th>${ ui.message("imaging.app.openOHIFView.label")}</th>
-            <th>${ ui.message("imaging.app.delete.label")}</th>
+	        <th>${ ui.message("coreapps.actions") }</th>
         </tr>
     </thead>
     <tbody>
@@ -63,20 +62,15 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                 <td>${ui.format(study.patientName)}</td>
                 <td>${ui.format(study.studyDate)}</td>
                 <td>${ui.format(study.studyDescription)}</td>
-                <td>
-                    <a href="http://localhost:8042/stone-webviewer/index.html?study=${ui.format(study.studyInstanceUID)}">
-                        <img class="stone-img" alt="Show image in stone viewer" src="${ ui.resourceLink("imaging", "images/stoneViewer.png")}"/></a>
-                </td>
-                <td>
-                    <a href="http://localhost:8042/ohif/viewer?StudyInstanceUIDs=${ui.format(study.studyInstanceUID)}">
-                        <img class="ohif-img" alt="Show image in OHIF viewer" src="${ ui.resourceLink("imaging", "images/stoneViewer.png")}"/></a>
-                </td>
                  <td>
-                    <form class="delete-form" onsubmit="return confirm('Do you really want to delete the study?');"
-                        action="/openmrs/module/imaging/deleteStudy.form?seriesInstanceUID=${ui.format(study.studyInstanceUID)}" method="post">
-                        <button class="table-btn-link" type="submit">
-                            <img class="icon" style="margin-left:12px;" src="${ ui.resourceLink("imaging", "images/delete.png") }"/></button>
-                    </form>
+                   <i class="icon-remove delete-action" style="margin-left:27px" title="${ ui.message("coreapps.delete") }"
+                    onclick="deleteStudy('${ui.encodeJavaScriptAttribute(ui.format(study))}', ${ study.studyInstanceUID})"></i>
+                    <div style="display: flex">
+                       <a href="http://localhost:8042/stone-webviewer/index.html?study=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openStoneView.label") }">
+                            <img class="stone-img" alt="Show image in stone viewer" src="${ ui.resourceLink("imaging", "images/stoneViewer.png")}"/></a>
+                       <a href="http://localhost:8042/ohif/viewer?StudyInstanceUIDs=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openOHIFView.label") }">
+                           <img class="ohif-img" alt="Show image in OHIF viewer" src="${ ui.resourceLink("imaging", "images/stoneViewer.png")}"/></a>
+                   </div>
                 </td>
             </tr>
         <% } %>

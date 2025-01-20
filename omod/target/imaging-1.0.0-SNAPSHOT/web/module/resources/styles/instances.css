@@ -8,9 +8,13 @@
     text-decoration: underline;
     font-family: inherit;
     font-size: inherit;
-    margin-left: 3px;
+    margin-left: 13px;
 }
 .preview-form{
     width: fit-content;
 }
+
+.instance-preview {
+    width: 20px;
+    margin-left: 15px;
 }

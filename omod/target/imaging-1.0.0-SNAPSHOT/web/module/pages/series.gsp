@@ -16,6 +16,7 @@
 
 ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
 ${ ui.includeFragment("imaging", "deleteSeriesDialog") }
+${ ui.includeJavascript("imaging", "series.js")}
 ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
 
 <h2>
@@ -28,8 +29,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
             <th>${ ui.message("imaging.app.seriesInstanceUID.label")}</th>
             <th>${ ui.message("imaging.app.seriesNumber.label")}</th>
             <th>${ ui.message("imaging.app.modality.label")}</th>
-            <th>${ ui.message("imaging.app.openStoneView.label")}</th>
-            <th>${ ui.message("imaging.app.delete.label")}</th>
+	        <th>${ ui.message("coreapps.actions") }</th>
         </tr>
     </thead>
     <tbody>
@@ -46,15 +46,11 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                 <td>${ui.format(series.seriesNumber)}</td>
                 <td>${ui.format(series.modality)}</td>
                  <td>
-                    <a href="http://localhost:8042/stone-webviewer/index.html?study=${ui.format(studyInstanceUID)}&series=${series.seriesInstanceUID}">
+                    <i class="icon-remove delete-action" style="margin-left:27px" title="${ ui.message("coreapps.delete") }"
+                                    onclick="deleteSeries('${ui.encodeJavaScriptAttribute(ui.format(series))}', ${ series.seriesInstanceUID})"></i>
+                    <a href="http://localhost:8042/stone-webviewer/index.html?study=${ui.format(studyInstanceUID)}&series=${series.seriesInstanceUID}" title="${ ui.message("imaging.app.openStoneView.label") }">
                         <img class="series-stone-img" src="${ ui.resourceLink("imaging", "images/stoneViewer.png") }"/></a>
                  </td>
-                 <td>
-                    <form onsubmit="return confirm('Do you really want to delete the series?');" action="/openmrs/module/imaging/deleteSeries.form?series?uuid=${series.seriesInstanceUID}" method="GET">
-                        <button class="table-btn-link" type="submit">
-                            <img class="icon" style="margin-left:12px;" src="${ ui.resourceLink("imaging", "images/delete.png") }"/></button>
-                    </form>
-                </td>
             </tr>
         <% } %>
     </tbody>

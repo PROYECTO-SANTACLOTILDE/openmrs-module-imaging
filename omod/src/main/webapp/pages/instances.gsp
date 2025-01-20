@@ -14,6 +14,8 @@
 </script>
 
 ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
+${ ui.includeFragment("imaging", "previewInstanceDialog") }
+${ ui.includeJavascript("imaging", "instances.js")}
 ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
 
 <h2>
@@ -26,7 +28,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
             <th>${ ui.message("imaging.app.sopInstanceUID.label")}</th>
             <th>${ ui.message("imaging.app.instanceNumber.label")}</th>
             <th>${ ui.message("imaging.app.modality.label")}</th>
-            <th>${ ui.message("imaging.app.instancePreview.label")}</th>
+	        <th>${ ui.message("coreapps.actions") }</th>
         </tr>
     </thead>
     <tbody>
@@ -40,11 +42,11 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                 <td>${ui.format(instance.sopInstanceUID)}</td>
                 <td>${ui.format(instance.instanceNumber)}</td>
                 <td>${ui.format(instance.instanceModality)}</td>
-                <td style="width:10px">
-                    <form class="preview-form" action="/openmrs/module/imaging/previewInstance.form?sopInstanceUID=${instance.sopInstanceUID}" method="post">
-                        <button class="table-btn-link" type="submit">
-                            <img class="icon" src="${ ui.resourceLink("imaging", "images/preview.png") }"/></button>
-                    </form>
+                <td>
+                    <i style="margin-left:15px" title="${ ui.message("imaging.app.instancePreview.label") }"
+                        onclick="instancePreview('${ui.encodeJavaScriptAttribute(ui.format(instance))}', ${ instance.sopInstanceUID})">
+                        <img class="instance-preview" src="${ ui.resourceLink("imaging", "images/preview.png") }"/>
+                    </i>
                 </td>
             </tr>
         <% } %>

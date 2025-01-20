@@ -13,3 +13,8 @@
 .preview-form{
     width: fit-content;
 }
+
+.instance-preview {
+    width: 20px;
+    margin-left: 15px;
+}
