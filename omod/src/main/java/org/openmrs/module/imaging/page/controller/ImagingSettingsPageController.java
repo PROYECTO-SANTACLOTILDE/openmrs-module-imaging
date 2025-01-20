@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.imaging.OrthancConfiguration;
+import org.openmrs.module.imaging.api.DicomStudyService;
 import org.openmrs.module.imaging.api.OrthancConfigurationService;
 import org.openmrs.ui.framework.Model;
 import org.springframework.stereotype.Controller;
@@ -50,9 +51,10 @@ public class ImagingSettingsPageController {
 	}
 	
 	@RequestMapping(value = "/module/imaging/deleteConfiguration.form", method = RequestMethod.POST)
-	public String storeConfiguration(@RequestParam(value = "orthancId") int orthancId) {
+	public String storeConfiguration(@RequestParam(value = "orthancConfigurationId") int orthancConfigurationId) {
 		OrthancConfigurationService orthancConfigureService = Context.getService(OrthancConfigurationService.class);
-		orthancConfigureService.removeOrthancConfiguration(orthancConfigureService.getOrthancConfiguration(orthancId));
+		orthancConfigureService.removeOrthancConfiguration(orthancConfigureService
+		        .getOrthancConfiguration(orthancConfigurationId));
 		return "redirect:/imaging/imagingSettings.page";
 	}
 	
@@ -60,15 +62,10 @@ public class ImagingSettingsPageController {
 	@ResponseBody
 	public void checkConfiguration(HttpServletResponse response, @RequestParam(value = "url") String url,
 	        @RequestParam(value = "username") String username, @RequestParam(value = "password") String password) {
-		log.error(url);
+		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
 		try {
-			String encoding = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
 			try {
-				URL serverURL = new URL(url + "/system");
-				HttpURLConnection con = (HttpURLConnection) serverURL.openConnection();
-				con.setRequestMethod("GET");
-				con.setRequestProperty("Authorization", "Basic " + encoding);
-				int status = con.getResponseCode();
+				int status = dicomStudyService.testOrthancConnection(url, username, password);
 				if (status == 200) {
 					response.getOutputStream().print("Check successful. The Orthanc server responded correctly.");
 				} else {

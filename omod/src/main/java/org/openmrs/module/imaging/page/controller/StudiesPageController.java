@@ -19,6 +19,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Base64;
+import java.util.List;
 
 @Controller
 public class StudiesPageController {
@@ -26,8 +27,19 @@ public class StudiesPageController {
 	protected Log log = LogFactory.getLog(this.getClass());
 	
 	public void get(Model model, @RequestParam(value = "patientId") Patient patient) {
-		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
-		model.addAttribute("studies", dicomStudyService.getAllStudiesByPatient(patient));
+		try {
+			DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
+			dicomStudyService.fetchStudies(); // remove this later
+			List<DicomStudy> studies = dicomStudyService.getStudies(patient);
+			if (studies.isEmpty()) {
+				dicomStudyService.fetchStudies();
+				studies = dicomStudyService.getStudies(patient);
+			}
+			model.addAttribute("studies", studies);
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	@RequestMapping(value = "/module/imaging/deleteStudy.form", method = RequestMethod.POST)

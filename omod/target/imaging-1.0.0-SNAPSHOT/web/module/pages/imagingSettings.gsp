@@ -26,7 +26,7 @@ ${param["message"]?.getAt(0) ?: ""}
 <table class="table table-sm table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl">
     <thead>
        <tr>
-            <th>${ ui.message("imaging.app.orthancid.label")}</th>
+            <th>${ ui.message("imaging.app.id.label")}</th>
             <th>${ ui.message("imaging.app.url.label")}</th>
             <th>${ ui.message("imaging.app.username.label")}</th>
             <th>${ ui.message("imaging.app.delete.label")}</th>
@@ -40,11 +40,11 @@ ${param["message"]?.getAt(0) ?: ""}
         <% } %>
         <% orthancConfigurations.each { orthancConfiguration -> %>
             <tr>
-                <td>${ui.format(orthancConfiguration.orthancId)}</td>
+                <td>${ui.format(orthancConfiguration.id)}</td>
                 <td>${ui.format(orthancConfiguration.orthancBaseUrl)}</td>
                 <td>${ui.format(orthancConfiguration.orthancUsername)}</td>
                 <td>
-                    <form onsubmit="return confirm('Do you really want to delete this configuration?');" action="/openmrs/module/imaging/deleteConfiguration.form?orthancId=${orthancConfiguration.orthancId}" method="post">
+                    <form onsubmit="return confirm('Do you really want to delete this configuration?');" action="/openmrs/module/imaging/deleteConfiguration.form?orthancConfigurationId=${orthancConfiguration.id}" method="post">
                         <button class="table-btn-link" type="submit"><img class="icon" src="${ ui.resourceLink("imaging", "images/delete.png") }"/></button>
                     </form>
                 </td>

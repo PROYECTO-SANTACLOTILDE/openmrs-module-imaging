@@ -26,13 +26,17 @@ public class SeriesPageController {
 	
 	protected Log log = LogFactory.getLog(this.getClass());
 	
-	public void get(Model model, @RequestParam(value = "studyInstanceUID") String studyInstanceUID) {
-		
+	public void get(HttpServletResponse response, Model model,
+	        @RequestParam(value = "studyInstanceUID") String studyInstanceUID) {
 		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
-		
-		List<DicomSeries> serieses = dicomStudyService.getSerieses(studyInstanceUID);
-		model.addAttribute("serieses", serieses);
-		model.addAttribute("studyInstanceUID", studyInstanceUID);
+		DicomStudy study = dicomStudyService.getDicomStudy(studyInstanceUID);
+		if (study == null) {
+			throw new RuntimeException("Invalid study instance UID");
+		} else {
+			List<DicomSeries> serieses = dicomStudyService.getSerieses(study);
+			model.addAttribute("serieses", serieses);
+			model.addAttribute("studyInstanceUID", studyInstanceUID);
+		}
 	}
 	
 	@RequestMapping(value = "/module/imaging/deleteSeries.form", method = RequestMethod.POST)

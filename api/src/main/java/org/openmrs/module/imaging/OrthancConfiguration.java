@@ -7,7 +7,7 @@ public class OrthancConfiguration extends BaseOpenmrsData implements Serializabl
 	
 	private static final long serialVersionUID = 1;
 	
-	private Integer orthancId;
+	private Integer id;
 	
 	private String orthancBaseUrl;
 	
@@ -24,21 +24,14 @@ public class OrthancConfiguration extends BaseOpenmrsData implements Serializabl
 		this.orthancPassword = orthancPassword;
 	}
 	
-	public void setOrthancId(Integer orthancId) {
-		this.orthancId = orthancId;
-	}
-	
-	public Integer getOrthancId() {
-		return orthancId;
+	@Override
+	public void setId(Integer id) {
+		this.id = id;
 	}
 	
 	@Override
-	public void setId(Integer id) {
-		setOrthancId(id);
-	}
-	
 	public Integer getId() {
-		return getOrthancId();
+		return id;
 	}
 	
 	public String getOrthancBaseUrl() {

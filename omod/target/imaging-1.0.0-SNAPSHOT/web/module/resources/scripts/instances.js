@@ -1,4 +1,4 @@
-var previewInstanceDialogy = null;
+//var previewInstanceDialogy = null;
 
 $(document).ready( function() {
     previewInstanceDialogy = emr.setupConfirmationDialog({

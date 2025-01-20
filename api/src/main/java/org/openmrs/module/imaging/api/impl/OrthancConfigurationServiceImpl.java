@@ -29,8 +29,8 @@ public class OrthancConfigurationServiceImpl extends BaseOpenmrsService implemen
 	}
 	
 	@Override
-	public OrthancConfiguration getOrthancConfiguration(Integer orthancId) {
-		return dao.getOrthancConfiguration(orthancId);
+	public OrthancConfiguration getOrthancConfiguration(int id) {
+		return dao.getOrthancConfiguration(id);
 	}
 	
 	@Override

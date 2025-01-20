@@ -1,4 +1,4 @@
-var removeStudyDialogy = null;
+//var removeStudyDialogy = null;
 
 $(document).ready( function() {
     deleteStudyDialog = emr.setupConfirmationDialog({

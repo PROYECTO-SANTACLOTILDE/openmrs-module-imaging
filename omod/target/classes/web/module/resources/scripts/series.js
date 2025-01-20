@@ -1,4 +1,4 @@
-var removeSeriesDialogy = null;
+//var removeSeriesDialogy = null;
 
 $(document).ready( function() {
     deleteSeriesDialog = emr.setupConfirmationDialog({

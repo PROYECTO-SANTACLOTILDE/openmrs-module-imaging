@@ -9,7 +9,10 @@ public class DicomSeries {
 	private int seriesNumber;
 	
 	private String modality;
-	
+
+	public DicomSeries () {
+	}
+
 	public DicomSeries(String seriesInstanceUID, String orthancSeriesUID, int seriesNumber, String modality) {
 		this.seriesInstanceUID = seriesInstanceUID;
 		this.orthancSeriesUID = orthancSeriesUID;

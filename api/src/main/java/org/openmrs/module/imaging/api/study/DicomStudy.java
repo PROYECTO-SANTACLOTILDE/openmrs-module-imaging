@@ -26,6 +26,9 @@ public class DicomStudy extends BaseOpenmrsData implements java.io.Serializable 
 	
 	private String gender;
 	
+	public DicomStudy() {
+	}
+	
 	public DicomStudy(String studyInstanceUID, String orthancStudyUID, Patient patient, OrthancConfiguration config,
 	    String patientName, Date studyDate, String studyDescription, String gender) {
 		this.studyInstanceUID = studyInstanceUID;

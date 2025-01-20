@@ -30,18 +30,6 @@
     margin-bottom: 7px;
 }
 
-.table-btn-link {
-    border: none;
-    outline: none;
-    background: none;
-    cursor: pointer;
-    color: #0000EE;
-    padding: 0;
-    text-decoration: underline;
-    font-family: inherit;
-    font-size: inherit;
-}
-
 .table td, .ohif-img, .stone-img {
     width: 20px;
     margin-left: 12px;

@@ -11,7 +11,7 @@
         <property name="patientName" type="java.lang.String" column="patientName" length="255"/>
         <property name="studyDate" type="java.util.Date" column="studyDate" length="19"/>
         <many-to-one name="mrsPatient" column="patient_id" class="org.openmrs.Patient" not-null="false"/>
-        <many-to-one name="orthancConfiguration" column="orthancId" class="org.openmrs.module.imaging.OrthancConfiguration" not-null="true"/>
+        <many-to-one name="orthancConfiguration" column="orthancConfigurationId" class="org.openmrs.module.imaging.OrthancConfiguration" not-null="true"/>
         <property name="studyDescription" type="java.lang.String" column="studyDescription" length="255"/>
         <property name="gender" type="java.lang.String" column="gender" length="100"/>
     </class>

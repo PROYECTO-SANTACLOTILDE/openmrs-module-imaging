@@ -13,7 +13,7 @@
         for a list of supported elements and attributes
     -->
 
-    <changeSet id="16" author="weisadre">
+    <changeSet id="19" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="imaging_OrthancConfiguration"/>
@@ -21,7 +21,7 @@
         </preConditions>
         <comment>Create the Configuration table for Orthanc Server</comment>
         <createTable tableName="imaging_OrthancConfiguration">
-            <column autoIncrement="true" name="orthancId" type="int">
+            <column autoIncrement="true" name="id" type="int">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="orthancBaseUrl" type="varchar(255)" />
@@ -30,7 +30,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="17" author="weisadre">
+    <changeSet id="18" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="imaging_DicomStudy"/>
@@ -48,7 +48,7 @@
             <column name="patient_id" type="int">
                 <constraints nullable="true"/>
             </column>
-            <column name="orthancId" type="int">
+            <column name="orthancConfigurationId" type="int">
                 <constraints nullable="false"/>
             </column>
             <column name="studyDescription" type="varchar(255)"/>
@@ -57,13 +57,11 @@
         <addForeignKeyConstraint baseTableName="imaging_DicomStudy" baseColumnNames="patient_id"
                                  constraintName="imaging_DicomStudy_patient_id_fk" referencedTableName="patient"
                                  referencedColumnNames="patient_id"/>
-        <addForeignKeyConstraint baseTableName="imaging_DicomStudy" baseColumnNames="orthancId"
-                                 constraintName="imaging_DicomStudy_orthancId_fk"
+        <addForeignKeyConstraint baseTableName="imaging_DicomStudy" baseColumnNames="orthancConfigurationId"
+                                 constraintName="imaging_DicomStudy_orthancConfigurationId_fk"
                                  referencedTableName="imaging_OrthancConfiguration"
-                                 referencedColumnNames="orthancId"/>
+                                 referencedColumnNames="id"/>
     </changeSet>
-
-
 
     <!-- Uncomment the changeset below if you want to make the Item class persistable, see also Item and ImagingDaoTest -->
     <!--

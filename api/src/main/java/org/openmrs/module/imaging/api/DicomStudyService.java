@@ -8,18 +8,25 @@ import org.openmrs.module.imaging.api.study.DicomSeries;
 import org.openmrs.module.imaging.api.study.DicomStudy;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 
 @Transactional
 public interface DicomStudyService extends OpenmrsService {
 	
-	List<DicomStudy> getAllStudiesByPatient(Patient pt);
+	List<DicomStudy> getStudies(Patient pt);
+	
+	DicomStudy getDicomStudy(String studyInstanceUID);
+	
+	int testOrthancConnection(String url, String username, String password) throws IOException;
+	
+	void fetchStudies() throws IOException;
 	
 	void setStudies(Patient pt, Studies retrievedStudies);
 	
 	void deleteStudy(DicomStudy dicomStudy);
 	
-	List<DicomSeries> getSerieses(String studyInstanceUID);
+	List<DicomSeries> getSerieses(DicomStudy study);
 	
 	List<DicomInstance> getInstances(String sopInstanceUID);
 	

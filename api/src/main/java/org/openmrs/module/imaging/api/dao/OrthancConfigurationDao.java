@@ -31,9 +31,9 @@ public class OrthancConfigurationDao {
 		return getSession().createCriteria(OrthancConfiguration.class).list();
 	}
 	
-	public OrthancConfiguration getOrthancConfiguration(Integer orthancId) {
-		return (OrthancConfiguration) getSession().createCriteria(OrthancConfiguration.class)
-		        .add(Restrictions.eq("orthancId", orthancId)).uniqueResult();
+	public OrthancConfiguration getOrthancConfiguration(int id) {
+		return (OrthancConfiguration) getSession().createCriteria(OrthancConfiguration.class).add(Restrictions.eq("id", id))
+		        .uniqueResult();
 	}
 	
 	public OrthancConfiguration saveOrthancConfiguration(OrthancConfiguration orthancConfiguration) {

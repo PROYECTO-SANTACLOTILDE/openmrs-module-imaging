@@ -9,6 +9,9 @@ public class DicomInstance {
 	private int instanceNumber;
 	
 	private String instanceModality;
+
+	public DicomInstance() {
+	}
 	
 	public DicomInstance(String sopInstanceUID, String orthancInstanceUID, int instanceNumber, String instanceModality) {
 		this.sopInstanceUID = sopInstanceUID;

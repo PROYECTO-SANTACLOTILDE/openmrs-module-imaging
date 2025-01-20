@@ -6,10 +6,10 @@
 <hibernate-mapping package="org.openmrs.module.imaging" auto-import="false">
     <class name="OrthancConfiguration"
         table="imaging_OrthancConfiguration">
-        <id name="orthancId" type="int" column="orthancId" unsaved-value="0">
+        <id name="id" type="int" column="id" unsaved-value="0">
             <generator class="native" />
         </id>
-        <discriminator column="orthancId" insert="false" />
+        <discriminator column="id" insert="false" />
         <property name="orthancBaseUrl" type="java.lang.String" column="orthancBaseUrl" length="255" unique="true" />
         <property name="orthancUsername" type="java.lang.String" column="orthancUsername" length="255" unique="true" />
         <property name="orthancPassword" type="java.lang.String" column="orthancPassword" length="255" unique="true" />

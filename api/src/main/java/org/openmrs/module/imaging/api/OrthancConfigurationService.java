@@ -13,7 +13,7 @@ public interface OrthancConfigurationService extends OpenmrsService {
 	List<OrthancConfiguration> getAllOrthancConfigurations();
 	
 	@Transactional(readOnly = true)
-	OrthancConfiguration getOrthancConfiguration(Integer orthancId);
+	OrthancConfiguration getOrthancConfiguration(int id);
 	
 	OrthancConfiguration saveOrthancConfiguration(OrthancConfiguration orthancConfiguration);
 	

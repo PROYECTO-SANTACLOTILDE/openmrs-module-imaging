@@ -12,7 +12,6 @@
 </script>
 
 ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
-${ ui.includeFragment("imaging", "deleteStudyDialog") }
 ${ ui.includeJavascript("imaging", "studies.js")}
 ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
 
