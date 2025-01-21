@@ -1,0 +1,9 @@
+
+# Maven target directory
+api/target/*
+omod/target/*
+
+## IntelliJ IDEA
+.idea/
+
+openmrs-runtime.properties

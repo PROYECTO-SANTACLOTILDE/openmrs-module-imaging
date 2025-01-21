@@ -1,5 +1,6 @@
 package org.openmrs.module.imaging.api.impl;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -110,6 +112,16 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 				        + con.getResponseCode() + " " + con.getResponseMessage());
 			}
 		}
+	}
+	
+	@Override
+	public int uploadFile(OrthancConfiguration config, InputStream is) throws IOException {
+		HttpURLConnection con = getOrthancConnection("POST", config.getOrthancBaseUrl(), "/instances",
+		    config.getOrthancUsername(), config.getOrthancPassword());
+		con.setRequestProperty("Content-Type", "application/dicom");
+		con.setDoOutput(true);
+		IOUtils.copy(is, con.getOutputStream());
+		return con.getResponseCode();
 	}
 	
 	@Override

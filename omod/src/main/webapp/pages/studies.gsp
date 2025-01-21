@@ -19,9 +19,14 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
     ${ ui.message("imaging.studies") }
 </h2>
 
+<div style="color:red;">
+${param["message"]?.getAt(0) ?: ""}
+</div>
+
 <script>
-    function toggleUploadStudy() {
-        console.log("Function upload study!")
+    function togglePopupUpload() {
+        const overlay = document.getElementById('popupOverlayUpload');
+        overlay.classList.toggle('show');
     }
     function toggleFullSynchronizeStudies() {
         console.log("Function full synchronization studies!")
@@ -31,13 +36,18 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
     }
 </script>
 
-<div class="form-container">
-    <button class="btn-open-popup-upload" onclick="toggleUploadStudy()">Upload Study</button>
-    <button class="btn-open-popup-sync" onclick="toggleFullSynchronizeStudies()">Synchronize Studies</button>
-    <button class="btn-open-popup-newStudies" onclick="toggleGetNewStudies()">Get new Studies</button>
+
+<div>
+    <% if (orthancConfigurations.size() == 0) { %>
+        No Orthanc server configured
+    <% } else { %>
+        <button class="btn-open-popup-upload" onclick="togglePopupUpload()">Upload Study</button>
+        <button class="btn-open-popup-sync" onclick="toggleFullSynchronizeStudies()">Synchronize Studies</button>
+        <button class="btn-open-popup-newStudies" onclick="toggleGetNewStudies()">Get new Studies</button>
+     <% } %>
 </div>
 
-<table id="studies" class="studies" width="100%" border="1" cellspacing="0" cellpadding="2">
+<table class="table table-sm table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl">
     <thead>
         <tr>
             <th>${ ui.message("imaging.app.studyInstanceUid.label")}</th>
@@ -75,9 +85,27 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
         <% } %>
     </tbody>
 </table>
+<div id="popupOverlayUpload" class="overlay-container">
+    <div class="popup-box">
+        <h2 style="color: green;">Upload study</h2>
+        <form class="form-container" enctype='multipart/form-data' method='POST' action='/openmrs/module/imaging/uploadStudy.form?patientId=${patient.id}'>
+            <label class="form-label" for="server">Select Orthanc server</label>
+            <select id="orthancConfigurationId" name="orthancConfigurationId">
+                <% orthancConfigurations.each { config -> %>
+                    <option value="${config.id}">${ui.format(config.orthancBaseUrl)}</option>
+                <% } %>
+            </select>
 
-<br/>
+            <label class="form-label" for="files">Select files to upload</label>
+            <input class="form-input" type='file' name='files' multiple>
 
+            <div style="display: flex;">
+                <button class="btn-submit" type="submit">Upload</button>
+                <button class="btn-close-popup" type="button" onclick="togglePopupUpload()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 
 

@@ -70,6 +70,5 @@ ${param["message"]?.getAt(0) ?: ""}
                 <button class="btn-close-popup" type="button" onclick="togglePopupAdd()">Cancel</button>
             </div>
         </form>
-
     </div>
 </div>
