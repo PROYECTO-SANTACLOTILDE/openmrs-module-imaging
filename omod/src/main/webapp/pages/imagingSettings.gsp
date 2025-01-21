@@ -29,7 +29,7 @@ ${param["message"]?.getAt(0) ?: ""}
             <th>${ ui.message("imaging.app.id.label")}</th>
             <th>${ ui.message("imaging.app.url.label")}</th>
             <th>${ ui.message("imaging.app.username.label")}</th>
-            <th>${ ui.message("imaging.app.delete.label")}</th>
+	        <th>${ ui.message("coreapps.actions") }</th>
         </tr>
     </thead>
     <tbody>

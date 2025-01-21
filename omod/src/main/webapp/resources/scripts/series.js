@@ -1,4 +1,4 @@
-//var removeSeriesDialogy = null;
+var deleteSeriesDialog = null;
 
 $(document).ready( function() {
     deleteSeriesDialog = emr.setupConfirmationDialog({
@@ -11,12 +11,13 @@ $(document).ready( function() {
     });
 });
 
-function showRemoveSeriesDialog() {
+function showDeleteSeriesDialog() {
     deleteSeriesDialog.show();
 }
 
-function deleteStudy(series, id) {
+function deleteSeries(series, id) {
     jq("#seriesInstanceUID").val(id);
     jq("#deleteSeriesMessage").text(jq("#deleteSeriesMessageTemplate").val().replace("{0}", series));
-    showRemoveSeriesDialog(series, id);
+    showDeleteSeriesDialog(series, id);
+
 }

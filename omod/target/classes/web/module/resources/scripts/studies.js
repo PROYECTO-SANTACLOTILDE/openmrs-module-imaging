@@ -1,4 +1,4 @@
-//var removeStudyDialogy = null;
+var deleteStudyDialog = null;
 
 $(document).ready( function() {
     deleteStudyDialog = emr.setupConfirmationDialog({
@@ -11,12 +11,12 @@ $(document).ready( function() {
     });
 });
 
-function showRemoveStudyDialog() {
+function showDeleteStudyDialog() {
     deleteStudyDialog.show();
 }
 
 function deleteStudy(study, id) {
     jq("#studyInstanceUID").val(id);
     jq("#deleteStudyMessage").text(jq("#deleteStudyMessageTemplate").val().replace("{0}", study));
-    showRemoveStudyDialog(study, id);
+    showDeleteStudyDialog(study, id);
 }

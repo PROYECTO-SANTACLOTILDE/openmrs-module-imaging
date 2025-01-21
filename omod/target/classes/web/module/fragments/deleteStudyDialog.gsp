@@ -5,14 +5,14 @@
     <div class="dialog-content">
         <ul>
             <li class="info">
-                <span id="removeStudyMessage">${ ui.message("imaging.deleteStudy.message") }</span>
+                <span id="deleteStudyMessage">${ ui.message("imaging.deleteStudy.message") }</span>
             </li>
         </ul>
         <form method="POST" action="studies.page">
             <input type="hidden" name="patientId" value="${patient.id}"/>
             <input type="hidden" id="studyInstanceUID" name="studyInstanceUID" value=""/>
             <input type="hidden" name="action" value="deleteStudy"/>
-            <input type="hidden" id="removeStudyMessageTemplate" value="${ ui.message("imaging.deleteStudy.message") }"/>
+            <input type="hidden" id="deleteStudyMessageTemplate" value="${ ui.message("imaging.deleteStudy.message") }"/>
             <button class="confirm right" type="submit">${ ui.message("general.yes") }</button>
             <button class="cancel">${ ui.message("general.no") }</button>
         </form>

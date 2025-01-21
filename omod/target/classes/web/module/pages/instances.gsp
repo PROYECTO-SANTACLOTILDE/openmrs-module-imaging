@@ -27,7 +27,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
         <tr>
             <th>${ ui.message("imaging.app.sopInstanceUID.label")}</th>
             <th>${ ui.message("imaging.app.instanceNumber.label")}</th>
-            <th>${ ui.message("imaging.app.modality.label")}</th>
+            <th>${ ui.message("imaging.app.imagePositionPatient.label")}</th>
 	        <th>${ ui.message("coreapps.actions") }</th>
         </tr>
     </thead>
@@ -41,7 +41,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
             <tr>
                 <td>${ui.format(instance.sopInstanceUID)}</td>
                 <td>${ui.format(instance.instanceNumber)}</td>
-                <td>${ui.format(instance.instanceModality)}</td>
+                <td>${ui.format(instance.imagePositionPatient)}</td>
                 <td>
                     <i style="margin-left:15px" title="${ ui.message("imaging.app.instancePreview.label") }"
                         onclick="instancePreview('${ui.encodeJavaScriptAttribute(ui.format(instance))}', ${ instance.sopInstanceUID})">

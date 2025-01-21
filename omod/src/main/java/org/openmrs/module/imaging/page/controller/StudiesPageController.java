@@ -29,7 +29,7 @@ public class StudiesPageController {
 	public void get(Model model, @RequestParam(value = "patientId") Patient patient) {
 		try {
 			DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
-			dicomStudyService.fetchStudies(); // remove this later
+			dicomStudyService.fetchStudies(); // Wei: remove this later
 			List<DicomStudy> studies = dicomStudyService.getStudies(patient);
 			if (studies.isEmpty()) {
 				dicomStudyService.fetchStudies();

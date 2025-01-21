@@ -6,18 +6,18 @@ public class DicomInstance {
 	
 	private String orthancInstanceUID;
 	
-	private int instanceNumber;
+	private String instanceNumber;
 	
-	private String instanceModality;
-
+	private String imagePositionPatient;
+	
 	public DicomInstance() {
 	}
 	
-	public DicomInstance(String sopInstanceUID, String orthancInstanceUID, int instanceNumber, String instanceModality) {
+	public DicomInstance(String sopInstanceUID, String orthancInstanceUID, String instanceNumber, String imagePositionPatient) {
 		this.sopInstanceUID = sopInstanceUID;
 		this.orthancInstanceUID = orthancInstanceUID;
 		this.instanceNumber = instanceNumber;
-		this.instanceModality = instanceModality;
+		this.imagePositionPatient = imagePositionPatient;
 	}
 	
 	// Getters and Setters
@@ -29,20 +29,12 @@ public class DicomInstance {
 		this.sopInstanceUID = sopInstanceUID;
 	}
 	
-	public int getInstanceNumber() {
+	public String getInstanceNumber() {
 		return instanceNumber;
 	}
 	
-	public void setInstanceNumber(int instanceNumber) {
+	public void setInstanceNumber(String instanceNumber) {
 		this.instanceNumber = instanceNumber;
-	}
-	
-	public String getInstanceModality() {
-		return instanceModality;
-	}
-	
-	public void setInstanceModality(String instanceModality) {
-		this.instanceModality = instanceModality;
 	}
 	
 	public String getOrthancInstanceUID() {
@@ -51,5 +43,13 @@ public class DicomInstance {
 	
 	public void setOrthancInstanceUID(String orthancInstanceUID) {
 		this.orthancInstanceUID = orthancInstanceUID;
+	}
+	
+	public String getImagePositionPatient() {
+		return imagePositionPatient;
+	}
+	
+	public void setImagePositionPatient(String imagePositionPatient) {
+		this.imagePositionPatient = imagePositionPatient;
 	}
 }

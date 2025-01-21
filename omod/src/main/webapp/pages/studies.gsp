@@ -42,7 +42,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
         <tr>
             <th>${ ui.message("imaging.app.studyInstanceUid.label")}</th>
             <th>${ ui.message("imaging.app.patientName.label")}</th>
-            <th>${ ui.message("imaging.app.studyDate.label")}</th>
+            <th>${ ui.message("imaging.app.date.label")}</th>
             <th>${ ui.message("imaging.app.description.label")}</th>
 	        <th>${ ui.message("coreapps.actions") }</th>
         </tr>
@@ -63,7 +63,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                 <td>${ui.format(study.studyDescription)}</td>
                  <td>
                    <i class="icon-remove delete-action" style="margin-left:27px" title="${ ui.message("coreapps.delete") }"
-                    onclick="deleteStudy('${ui.encodeJavaScriptAttribute(ui.format(study))}', ${ study.studyInstanceUID})"></i>
+                        onclick="deleteStudy('${ui.encodeJavaScriptAttribute(ui.format(study))}', ${ study.studyInstanceUID})"></i>
                     <div style="display: flex">
                        <a href="http://localhost:8042/stone-webviewer/index.html?study=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openStoneView.label") }">
                             <img class="stone-img" alt="Show image in stone viewer" src="${ ui.resourceLink("imaging", "images/stoneViewer.png")}"/></a>

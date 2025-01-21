@@ -1,23 +1,32 @@
 package org.openmrs.module.imaging.api.study;
 
+import java.util.Date;
+
 public class DicomSeries {
 	
 	private String seriesInstanceUID;
 	
 	private String orthancSeriesUID;
 	
-	private int seriesNumber;
+	private String seriesDescription;
+	
+	private String seriesNumber;
+	
+	private Date seriesDate;
 	
 	private String modality;
-
-	public DicomSeries () {
+	
+	public DicomSeries() {
 	}
-
-	public DicomSeries(String seriesInstanceUID, String orthancSeriesUID, int seriesNumber, String modality) {
+	
+	public DicomSeries(String seriesInstanceUID, String orthancSeriesUID, String seriesDescription, String seriesNumber,
+	    String modality, Date seriesDate) {
 		this.seriesInstanceUID = seriesInstanceUID;
+		this.seriesDescription = seriesDescription;
 		this.orthancSeriesUID = orthancSeriesUID;
 		this.seriesNumber = seriesNumber;
 		this.modality = modality;
+		this.seriesDate = seriesDate;
 	}
 	
 	// Getters and Setters
@@ -29,11 +38,11 @@ public class DicomSeries {
 		this.seriesInstanceUID = seriesOrthancUID;
 	}
 	
-	public int getSeriesNumber() {
+	public String getSeriesNumber() {
 		return seriesNumber;
 	}
 	
-	public void setSeriesNumber(int seriesNumber) {
+	public void setSeriesNumber(String seriesNumber) {
 		this.seriesNumber = seriesNumber;
 	}
 	
@@ -51,5 +60,21 @@ public class DicomSeries {
 	
 	public void setOrthancSeriesUID(String orthancSeriesUID) {
 		this.orthancSeriesUID = orthancSeriesUID;
+	}
+	
+	public String getSeriesDescription() {
+		return seriesDescription;
+	}
+	
+	public void setSeriesDescription(String seriesDescription) {
+		this.seriesDescription = seriesDescription;
+	}
+	
+	public Date getSeriesDate() {
+		return seriesDate;
+	}
+	
+	public void setSeriesDate(Date seriesDate) {
+		this.seriesDate = seriesDate;
 	}
 }

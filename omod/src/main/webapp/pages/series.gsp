@@ -28,6 +28,8 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
         <tr>
             <th>${ ui.message("imaging.app.seriesInstanceUID.label")}</th>
             <th>${ ui.message("imaging.app.seriesNumber.label")}</th>
+            <th>${ ui.message("imaging.app.description.label")}</th>
+            <th>${ ui.message("imaging.app.date.label")}</th>
             <th>${ ui.message("imaging.app.modality.label")}</th>
 	        <th>${ ui.message("coreapps.actions") }</th>
         </tr>
@@ -44,10 +46,12 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                     <a href="${ui.pageLink("imaging", "instances", [patientId: patient.id, seriesInstanceUID: series.seriesInstanceUID])}">${ui.format(series.seriesInstanceUID)}</a>
                 </td>
                 <td>${ui.format(series.seriesNumber)}</td>
+                <td>${ui.format(series.seriesDescription)}</td>
+                <td>${ui.format(series.seriesDate)}</td>
                 <td>${ui.format(series.modality)}</td>
                  <td>
-                    <i class="icon-remove delete-action" style="margin-left:27px" title="${ ui.message("coreapps.delete") }"
-                                    onclick="deleteSeries('${ui.encodeJavaScriptAttribute(ui.format(series))}', ${ series.seriesInstanceUID})"></i>
+                    <i class="icon-remove delete-action" title="${ ui.message("coreapps.delete") }"
+                        onclick="deleteSeries('${ui.encodeJavaScriptAttribute(ui.format(series))}', ${ series.seriesInstanceUID})"></i>
                     <a href="http://localhost:8042/stone-webviewer/index.html?study=${ui.format(studyInstanceUID)}&series=${series.seriesInstanceUID}" title="${ ui.message("imaging.app.openStoneView.label") }">
                         <img class="series-stone-img" src="${ ui.resourceLink("imaging", "images/stoneViewer.png") }"/></a>
                  </td>

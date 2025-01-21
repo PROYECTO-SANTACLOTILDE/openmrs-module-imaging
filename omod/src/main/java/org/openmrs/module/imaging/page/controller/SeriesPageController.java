@@ -27,15 +27,18 @@ public class SeriesPageController {
 	protected Log log = LogFactory.getLog(this.getClass());
 	
 	public void get(HttpServletResponse response, Model model,
-	        @RequestParam(value = "studyInstanceUID") String studyInstanceUID) {
-		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
-		DicomStudy study = dicomStudyService.getDicomStudy(studyInstanceUID);
-		if (study == null) {
-			throw new RuntimeException("Invalid study instance UID");
-		} else {
-			List<DicomSeries> serieses = dicomStudyService.getSerieses(study);
-			model.addAttribute("serieses", serieses);
+	        @RequestParam(value = "studyInstanceUID") String studyInstanceUID) throws IOException {
+		try {
+			DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
+			List<DicomSeries> seriesList = dicomStudyService.fetchSeries(studyInstanceUID); // Wei: remove later
+			if (seriesList.isEmpty()) {
+				seriesList = dicomStudyService.fetchSeries(studyInstanceUID);
+			}
+			model.addAttribute("serieses", seriesList);
 			model.addAttribute("studyInstanceUID", studyInstanceUID);
+		}
+		catch (IOException e) {
+			throw new RuntimeException();
 		}
 	}
 	

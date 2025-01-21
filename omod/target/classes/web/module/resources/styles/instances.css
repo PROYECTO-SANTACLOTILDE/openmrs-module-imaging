@@ -1,16 +1,4 @@
-.table-btn-link {
-    border: none;
-    outline: none;
-    background: none;
-    cursor: pointer;
-    color: #0000EE;
-    padding: 0;
-    text-decoration: underline;
-    font-family: inherit;
-    font-size: inherit;
-    margin-left: 13px;
-}
-.preview-form{
+.preview-form {
     width: fit-content;
 }
 
