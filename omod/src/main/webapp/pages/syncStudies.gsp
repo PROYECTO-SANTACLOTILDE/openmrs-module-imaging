@@ -6,6 +6,14 @@
 <script type="text/javascript">
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
+        { label: "${ ui.escapeJs(ui.encodeHtmlContent(ui.format(patient.familyName))) }, ${ ui.escapeJs(ui.encodeHtmlContent(ui.format(patient.givenName))) }", link: '${ui.pageLink("coreapps", "clinicianfacing/patient", [patientId: patient.id])}'},
+        { label: "${ ui.message("imaging.studies") }" }
+    ];
+</script>
+
+<script type="text/javascript">
+    var breadcrumbs = [
+        { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
         { label: "${ ui.escapeJs(ui.encodeHtmlContent(ui.format(patient.familyName))) },
             ${ ui.escapeJs(ui.encodeHtmlContent(ui.format(patient.givenName))) }",
             link: '${ui.pageLink("coreapps", "clinicianfacing/patient", [patientId: patient.id])}'},
@@ -24,47 +32,49 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
 ${param["message"]?.getAt(0) ?: ""}
 </div>
 
-<table class="table table-sm table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl">
-    <thead>
-        <tr>
-            <th></th>
-            <th>${ ui.message("imaging.app.studyInstanceUid.label")}</th>
-            <th>${ ui.message("imaging.app.patientName.label")}</th>
-            <th>${ ui.message("imaging.app.date.label")}</th>
-            <th>${ ui.message("imaging.app.description.label")}</th>
-            <th>${ ui.message("imaging.app.server.label")}</th>
-	        <th>${ ui.message("coreapps.actions") }</th>
-        </tr>
-    </thead>
-    <tbody>
-        <% if (studies.size() == 0) { %>
+<div id="table-scroll">
+    <table class="table table-sm table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl">
+        <thead>
             <tr>
-                <td colspan="6" align="center">${ui.message("imaging.studies.none")}</td>
+                <th></th>
+                <th>${ ui.message("imaging.app.studyInstanceUid.label")}</th>
+                <th>${ ui.message("imaging.app.patientName.label")}</th>
+                <th>${ ui.message("imaging.app.date.label")}</th>
+                <th>${ ui.message("imaging.app.description.label")}</th>
+                <th>${ ui.message("imaging.app.server.label")}</th>
+                <th>${ ui.message("coreapps.actions") }</th>
             </tr>
-        <% } %>
-        <% studies.each { study -> %>
-            <tr>
-                <td>
-                <form method='POST' action='/openmrs/module/imaging/assignStudy.form?patientId=${patient.id}&studyInstanceUID=${study.studyInstanceUID}'>
-                    <input type="checkbox" name="isChecked"
-                                ${study.mrsPatient!=null && study.mrsPatient.id+""==param["patientId"].getAt(0) ? "checked" : ""}
-                                onChange="this.form.submit()">
-                </form>
-                </td>
-                <td class="uid-td">${ui.format(study.studyInstanceUID)}</td>
-                <td>${ui.format(study.patientName)}</td>
-                <td>${ui.format(study.studyDate)}</td>
-                <td>${ui.format(study.studyDescription)}</td>
-                <td>${ui.format(study.orthancConfiguration.orthancBaseUrl)}</td>
-                 <td>
-                    <a href="http://localhost:8042/stone-webviewer/index.html?study=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openStoneView.label") }">
-                        <img class="stone-img" alt="Show image in stone viewer" src="${ ui.resourceLink("imaging", "images/stoneViewer.png")}"/></a>
-                </td>
-            </tr>
-        <% } %>
-    </tbody>
-</table>
-
+        </thead>
+        <tbody>
+            <% if (studies.size() == 0) { %>
+                <tr>
+                    <td colspan="6" align="center">${ui.message("imaging.studies.none")}</td>
+                </tr>
+            <% } %>
+            <% studies.each { study -> %>
+                <tr>
+                    <td>
+                    <form method='POST' action='/openmrs/module/imaging/assignStudy.form?patientId=${patient.id}&studyInstanceUID=${study.studyInstanceUID}'>
+                        <input type="checkbox" name="isChecked"
+                                    ${study.mrsPatient!=null && study.mrsPatient.id+""==param["patientId"].getAt(0) ? "checked" : ""}
+                                    onChange="this.form.submit()">
+                    </form>
+                    </td>
+                    <td class="uid-td">${ui.format(study.studyInstanceUID)}</td>
+                    <td>${ui.format(study.patientName)}</td>
+                    <td>${ui.format(study.studyDate)}</td>
+                    <td>${ui.format(study.studyDescription)}</td>
+                    <td>${ui.format(study.orthancConfiguration.orthancBaseUrl)}</td>
+                     <td>
+                        <a href="http://localhost:8042/stone-webviewer/index.html?study=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openStoneView.label") }">
+                            <img class="stone-img" alt="Show image in stone viewer" src="${ ui.resourceLink("imaging", "images/stoneViewer.png")}"/></a>
+                    </td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>
+<br/>
 
 
 

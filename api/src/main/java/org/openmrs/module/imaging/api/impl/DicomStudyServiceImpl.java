@@ -56,7 +56,6 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 	}
 	
 	private void sendOrthancQuery(HttpURLConnection con, String query) throws IOException {
-		log.error("++++++++++++ studient instance uid: " + query);
 		con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
 		con.setRequestProperty( "charset", "utf-8");
 		con.setDoOutput(true);

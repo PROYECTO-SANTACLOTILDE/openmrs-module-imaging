@@ -3,7 +3,6 @@
     ui.includeCss("imaging", "studies.css")
     ui.includeCss("imaging", "general.css")
 %>
-
 <script type="text/javascript">
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
@@ -13,7 +12,6 @@
 </script>
 
 ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
-${ ui.includeJavascript("imaging", "studies.js")}
 ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
 
 <h2>
@@ -29,13 +27,12 @@ ${param["message"]?.getAt(0) ?: ""}
         const overlay = document.getElementById('popupOverlayUpload');
         overlay.classList.toggle('show');
     }
+
     function toggleSynchronizeStudies() {
         const overlay = document.getElementById('popupOverlaySynchronization');
         overlay.classList.toggle('show');
     }
-
 </script>
-
 
 <div>
     <% if (orthancConfigurations.size() == 0) { %>
@@ -46,46 +43,48 @@ ${param["message"]?.getAt(0) ?: ""}
      <% } %>
 </div>
 
-<table class="table table-sm table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl">
-    <thead>
-        <tr>
-            <th>${ ui.message("imaging.app.studyInstanceUid.label")}</th>
-            <th>${ ui.message("imaging.app.patientName.label")}</th>
-            <th>${ ui.message("imaging.app.date.label")}</th>
-            <th>${ ui.message("imaging.app.description.label")}</th>
-            <th>${ ui.message("imaging.app.server.label")}</th>
-	        <th>${ ui.message("coreapps.actions") }</th>
-        </tr>
-    </thead>
-    <tbody>
-        <% if (studies.size() == 0) { %>
+<div id="table-scroll">
+    <table class="table table-sm table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl sortable">
+        <thead>
             <tr>
-                <td colspan="6" align="center">${ui.message("imaging.studies.none")}</td>
+                <th>${ ui.message("imaging.app.studyInstanceUid.label")}</th>
+                <th>${ ui.message("imaging.app.patientName.label")}</th>
+                <th>${ ui.message("imaging.app.date.label")}</th>
+                <th>${ ui.message("imaging.app.description.label")}</th>
+                <th>${ ui.message("imaging.app.server.label")}</th>
+                <th>${ ui.message("coreapps.actions") }</th>
             </tr>
-        <% } %>
-        <% studies.each { study -> %>
-            <tr>
-                <td class="uid-td">
-                    <a href="${ui.pageLink("imaging", "series", [patientId: patient.id, studyInstanceUID: study.studyInstanceUID])}">${ui.format(study.studyInstanceUID)}</a>
-                </td>
-                <td>${ui.format(study.patientName)}</td>
-                <td>${ui.format(study.studyDate)}</td>
-                <td>${ui.format(study.studyDescription)}</td>
-                <td>${ui.format(study.orthancConfiguration.orthancBaseUrl)}</td>
-                 <td>
-                   <i class="icon-remove delete-action" style="margin-left:27px" title="${ ui.message("coreapps.delete") }"
-                        onclick="deleteStudy('${ui.encodeJavaScriptAttribute(ui.format(study))}', ${ study.studyInstanceUID})"></i>
-                    <div style="display: flex">
-                       <a href="http://localhost:8042/stone-webviewer/index.html?study=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openStoneView.label") }">
-                            <img class="stone-img" alt="Show image in stone viewer" src="${ ui.resourceLink("imaging", "images/stoneViewer.png")}"/></a>
-                       <a href="http://localhost:8042/ohif/viewer?StudyInstanceUIDs=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openOHIFView.label") }">
-                           <img class="ohif-img" alt="Show image in OHIF viewer" src="${ ui.resourceLink("imaging", "images/stoneViewer.png")}"/></a>
-                   </div>
-                </td>
-            </tr>
-        <% } %>
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            <% if (studies.size() == 0) { %>
+                <tr>
+                    <td colspan="6" align="center">${ui.message("imaging.studies.none")}</td>
+                </tr>
+            <% } %>
+            <% studies.each { study -> %>
+                <tr>
+                    <td class="uid-td">
+                        <a href="${ui.pageLink("imaging", "series", [patientId: patient.id, studyInstanceUID: study.studyInstanceUID])}">${ui.format(study.studyInstanceUID)}</a>
+                    </td>
+                    <td>${ui.format(study.patientName)}</td>
+                    <td>${ui.format(study.studyDate)}</td>
+                    <td>${ui.format(study.studyDescription)}</td>
+                    <td>${ui.format(study.orthancConfiguration.orthancBaseUrl)}</td>
+                     <td>
+                       <i class="icon-remove delete-action" style="margin-left:27px" title="${ ui.message("coreapps.delete") }"
+                            onclick="deleteStudy('${ui.encodeJavaScriptAttribute(ui.format(study))}', ${ study.studyInstanceUID})"></i>
+                        <div style="display: flex">
+                           <a href="http://localhost:8042/stone-webviewer/index.html?study=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openStoneView.label") }">
+                                <img class="stone-img" alt="Show image in stone viewer" src="${ ui.resourceLink("imaging", "images/stoneViewer.png")}"/></a>
+                           <a href="http://localhost:8042/ohif/viewer?StudyInstanceUIDs=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openOHIFView.label") }">
+                               <img class="ohif-img" alt="Show image in OHIF viewer" src="${ ui.resourceLink("imaging", "images/stoneViewer.png")}"/></a>
+                       </div>
+                    </td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>
 <div id="popupOverlayUpload" class="overlay-container">
     <div class="popup-box">
         <h2 style="color: green;">Upload study</h2>

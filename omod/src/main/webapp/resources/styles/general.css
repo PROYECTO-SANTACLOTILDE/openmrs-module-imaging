@@ -121,3 +121,9 @@ body {
     word-break: break-all;
     width: fit-content;
 }
+
+#table-scroll {
+  height:39em;
+  overflow:auto;
+  margin-top:20px;
+}

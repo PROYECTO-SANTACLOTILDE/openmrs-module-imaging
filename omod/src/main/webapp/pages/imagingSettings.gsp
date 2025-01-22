@@ -24,35 +24,37 @@ ${param["message"]?.getAt(0) ?: ""}
 <div>
     <button class="btn-open-popup" onclick="togglePopupAdd()">Add new configuration</button>
 </div>
-<table class="table table-sm table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl">
-    <thead>
-       <tr>
-            <th>${ ui.message("imaging.app.id.label")}</th>
-            <th>${ ui.message("imaging.app.url.label")}</th>
-            <th>${ ui.message("imaging.app.username.label")}</th>
-	        <th>${ ui.message("coreapps.actions") }</th>
-        </tr>
-    </thead>
-    <tbody>
-        <% if (orthancConfigurations.size() == 0) { %>
-            <tr>
-                <td colspan="6" class="configure_td">${ui.message("imaging.app.none")}</td>
+<div id="table-scroll">
+    <table class="table table-sm table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl">
+        <thead>
+           <tr>
+                <th>${ ui.message("imaging.app.id.label")}</th>
+                <th>${ ui.message("imaging.app.url.label")}</th>
+                <th>${ ui.message("imaging.app.username.label")}</th>
+                <th>${ ui.message("coreapps.actions") }</th>
             </tr>
-        <% } %>
-        <% orthancConfigurations.each { orthancConfiguration -> %>
-            <tr>
-                <td>${ui.format(orthancConfiguration.id)}</td>
-                <td>${ui.format(orthancConfiguration.orthancBaseUrl)}</td>
-                <td>${ui.format(orthancConfiguration.orthancUsername)}</td>
-                <td>
-                    <form onsubmit="return confirm('Do you really want to delete this configuration?');" action="/openmrs/module/imaging/deleteConfiguration.form?orthancConfigurationId=${orthancConfiguration.id}" method="post">
-                        <button class="table-btn-link" type="submit"><img class="icon" src="${ ui.resourceLink("imaging", "images/delete.png") }"/></button>
-                    </form>
-                </td>
-            </tr>
-        <% } %>
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            <% if (orthancConfigurations.size() == 0) { %>
+                <tr>
+                    <td colspan="6" class="configure_td">${ui.message("imaging.app.none")}</td>
+                </tr>
+            <% } %>
+            <% orthancConfigurations.each { orthancConfiguration -> %>
+                <tr>
+                    <td>${ui.format(orthancConfiguration.id)}</td>
+                    <td>${ui.format(orthancConfiguration.orthancBaseUrl)}</td>
+                    <td>${ui.format(orthancConfiguration.orthancUsername)}</td>
+                    <td>
+                        <form onsubmit="return confirm('Do you really want to delete this configuration?');" action="/openmrs/module/imaging/deleteConfiguration.form?orthancConfigurationId=${orthancConfiguration.id}" method="post">
+                            <button class="table-btn-link" type="submit"><img class="icon" src="${ ui.resourceLink("imaging", "images/delete.png") }"/></button>
+                        </form>
+                    </td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>
 <div id="popupOverlayAdd" class="overlay-container">
     <div class="popup-box">
         <h2 style="color: green;">Add Orthanc configuration</h2>
