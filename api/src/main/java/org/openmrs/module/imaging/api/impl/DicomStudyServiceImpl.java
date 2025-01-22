@@ -77,40 +77,49 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 	
 	@Override
 	public void fetchStudies() throws IOException {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
 		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
 		List<OrthancConfiguration> configs = orthancConfigurationService.getAllOrthancConfigurations();
 		for (OrthancConfiguration config : configs) {
-			log.info("Fetching studies from orthanc server " + config.getOrthancBaseUrl());
-			HttpURLConnection con = getOrthancConnection("POST", config.getOrthancBaseUrl(), "/tools/find",
-			    config.getOrthancUsername(), config.getOrthancPassword());
-			sendOrthancQuery(con, "{" + "\"Level\": \"Studies\"," + " \"Expand\": true," + " \"Query\": {}" + " }");
-			int status = con.getResponseCode();
-			if (status == 200) {
-				JsonNode studiesData = new ObjectMapper().readTree(con.getInputStream());
-				for (JsonNode studyData : studiesData) {
-					log.info("Parsing study data received from orthanc server");
-					String studyInstanceUID = studyData.path("MainDicomTags").path("StudyInstanceUID").getTextValue();
-					String orthancStudyUID = studyData.path("ID").getTextValue();
-					String patientName = studyData.path("PatientMainDicomTags").path("PatientName").getTextValue();
-					Date studyDate;
-					try {
-						studyDate = dateFormat.parse(studyData.path("MainDicomTags").path("StudyDate").getTextValue());
-					}
-					catch (ParseException e) {
-						studyDate = null;
-					}
-					String studyDescription = studyData.path("MainDicomTags").path("StudyDescription").getTextValue();
-					String gender = studyData.path("PatientMainDicomTags").path("Gender").getTextValue();
-					
-					DicomStudy study = new DicomStudy(studyInstanceUID, orthancStudyUID, null, config, patientName,
-					        studyDate, studyDescription, gender);
+			fetchStudies(config);
+		}
+	}
+	
+	@Override
+	public void fetchStudies(OrthancConfiguration config) throws IOException {
+		log.info("Fetching studies from orthanc server " + config.getOrthancBaseUrl());
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
+		HttpURLConnection con = getOrthancConnection("POST", config.getOrthancBaseUrl(), "/tools/find",
+		    config.getOrthancUsername(), config.getOrthancPassword());
+		sendOrthancQuery(con, "{" + "\"Level\": \"Studies\"," + " \"Expand\": true," + " \"Query\": {}" + " }");
+		int status = con.getResponseCode();
+		if (status == 200) {
+			JsonNode studiesData = new ObjectMapper().readTree(con.getInputStream());
+			for (JsonNode studyData : studiesData) {
+				log.info("Parsing study data received from orthanc server");
+				String studyInstanceUID = studyData.path("MainDicomTags").path("StudyInstanceUID").getTextValue();
+				String orthancStudyUID = studyData.path("ID").getTextValue();
+				String patientName = studyData.path("PatientMainDicomTags").path("PatientName").getTextValue();
+				Date studyDate;
+				try {
+					studyDate = dateFormat.parse(studyData.path("MainDicomTags").path("StudyDate").getTextValue());
+				}
+				catch (ParseException e) {
+					studyDate = null;
+				}
+				String studyDescription = studyData.path("MainDicomTags").path("StudyDescription").getTextValue();
+				String gender = studyData.path("PatientMainDicomTags").path("Gender").getTextValue();
+				
+				DicomStudy study = new DicomStudy(studyInstanceUID, orthancStudyUID, null, config, patientName, studyDate,
+				        studyDescription, gender);
+				
+				// only save if the study does not already exist
+				if (getDicomStudy(studyInstanceUID) == null) {
 					dao.saveDicomStudy(study);
 				}
-			} else {
-				throw new IOException("Request to Orthanc server " + config.getOrthancBaseUrl() + " failed with error "
-				        + con.getResponseCode() + " " + con.getResponseMessage());
 			}
+		} else {
+			throw new IOException("Request to Orthanc server " + config.getOrthancBaseUrl() + " failed with error "
+			        + con.getResponseCode() + " " + con.getResponseMessage());
 		}
 	}
 	
@@ -130,12 +139,19 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 	}
 	
 	@Override
+	public List<DicomStudy> getAllStudies() {
+		return dao.getAllDicomStudies();
+	}
+	
+	@Override
 	public DicomStudy getDicomStudy(String studyInstanceUID) {
 		return dao.getDicomStudy(studyInstanceUID);
 	}
 	
 	@Override
-	public void setStudies(Patient pt, Studies retrievedStudies) {
+	public void setPatient(DicomStudy study, Patient patient) {
+		study.setMrsPatient(patient);
+		dao.saveDicomStudy(study);
 	}
 	
 	@Override
@@ -158,7 +174,6 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 			if (status == 200) {
 				JsonNode seriesesData = new ObjectMapper().readTree(con.getInputStream());
 				for (JsonNode seriesData : seriesesData) {
-					log.info("Parsing series data received from orthanc server");
 					String seriesInstanceUID = seriesData.path("MainDicomTags").path("SeriesInstanceUID").getTextValue();
 					String orthancSeriesUID = seriesData.path("ID").getTextValue();
 					String seriesDescription = seriesData.path("MainDicomTags").path("SeriesDescription").getTextValue();
@@ -195,7 +210,6 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 			if (status == 200) {
 				JsonNode instancesData = new ObjectMapper().readTree(con.getInputStream());
 				for (JsonNode instanceData : instancesData) {
-					log.info("Parsing instances data received from orthanc server");
 					String sopInstanceUID = instanceData.path("MainDicomTags").path("SOPInstanceUID").getTextValue();
 					String orthancInstanceUID = instanceData.path("ID").getTextValue();
 					String instanceNumber = instanceData.path("MainDicomTags").path("InstanceNumber").getTextValue();
@@ -203,7 +217,7 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 					DicomInstance instance = new DicomInstance(sopInstanceUID, orthancInstanceUID, instanceNumber, imagePositionPatient);
 					instanceList.add(instance);
 				}
-			}else {
+			} else {
 				throw new IOException("Request to Orthanc server " + config.getOrthancBaseUrl() + " failed with error "
 						+ con.getResponseCode() + " " + con.getResponseMessage());
 			}

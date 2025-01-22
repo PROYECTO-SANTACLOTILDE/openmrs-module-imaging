@@ -1,6 +1,7 @@
 <%
     ui.decorateWith("appui", "standardEmrPage",  [ title: ui.message("imaging.app.instances.title") ])
     ui.includeCss("imaging", "instances.css")
+    ui.includeCss("imaging", "general.css")
 %>
 
 <script type="text/javascript">
@@ -14,7 +15,6 @@
 </script>
 
 ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
-${ ui.includeFragment("imaging", "previewInstanceDialog") }
 ${ ui.includeJavascript("imaging", "instances.js")}
 ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
 
@@ -39,7 +39,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
         <% } %>
         <% instances.each { instance -> %>
             <tr>
-                <td>${ui.format(instance.sopInstanceUID)}</td>
+                <td class="uid-td">${ui.format(instance.sopInstanceUID)}</td>
                 <td>${ui.format(instance.instanceNumber)}</td>
                 <td>${ui.format(instance.imagePositionPatient)}</td>
                 <td>

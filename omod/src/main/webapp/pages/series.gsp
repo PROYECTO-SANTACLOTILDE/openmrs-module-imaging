@@ -1,6 +1,7 @@
 <%
     ui.decorateWith("appui", "standardEmrPage",  [ title: ui.message("imaging.app.studySeries.title") ])
     ui.includeCss("imaging", "series.css")
+    ui.includeCss("imaging", "general.css")
 %>
 
 <script type="text/javascript">
@@ -42,7 +43,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
         <% } %>
         <% serieses.each { series -> %>
             <tr>
-                <td>
+                <td class="uid-td">
                     <a href="${ui.pageLink("imaging", "instances", [patientId: patient.id, seriesInstanceUID: series.seriesInstanceUID])}">${ui.format(series.seriesInstanceUID)}</a>
                 </td>
                 <td>${ui.format(series.seriesNumber)}</td>

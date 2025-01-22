@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class ImagingSettingsPageController {
 	}
 	
 	@RequestMapping(value = "/module/imaging/storeConfiguration.form", method = RequestMethod.POST)
-	public String storeConfiguration(@RequestParam(value = "url") String url,
+	public String storeConfiguration(RedirectAttributes redirectAttributes, @RequestParam(value = "url") String url,
 	        @RequestParam(value = "username") String username, @RequestParam(value = "password") String password) {
 		OrthancConfigurationService orthancConfigureService = Context.getService(OrthancConfigurationService.class);
 		url = url.trim();
@@ -43,7 +44,8 @@ public class ImagingSettingsPageController {
 			orthancConfigureService.saveOrthancConfiguration(oc);
 			return "redirect:/imaging/imagingSettings.page";
 		} else {
-			return "redirect:/imaging/imagingSettings.page?message=Saving orthanc configuration failed";
+			redirectAttributes.addAttribute("message", "Saving orthanc configuration failed");
+			return "redirect:/imaging/imagingSettings.page";
 		}
 	}
 	

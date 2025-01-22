@@ -1,9 +1,29 @@
-
-# Maven target directory
-api/target/*
-omod/target/*
-
-## IntelliJ IDEA
+### IntelliJ Idea ###
+*.iml
+*.ipr
+*.iws
 .idea/
+
+# Java Package Files #
+*.jar
+*.war
+*.ear
+
+### Java ###
+*.class
+
+### Maven ###
+api/target/
+api/target/*
+omod/target/
+omod/target/*
+#############
+
+### Linux ###
+!.gitignore
+!.gitattributes
+!.travis.yml
+*~
+#############
 
 openmrs-runtime.properties

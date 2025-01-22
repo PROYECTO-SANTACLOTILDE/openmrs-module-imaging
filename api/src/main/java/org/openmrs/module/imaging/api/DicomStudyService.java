@@ -18,15 +18,19 @@ public interface DicomStudyService extends OpenmrsService {
 	
 	List<DicomStudy> getStudies(Patient pt);
 	
+	List<DicomStudy> getAllStudies();
+	
 	DicomStudy getDicomStudy(String studyInstanceUID);
 	
 	int testOrthancConnection(String url, String username, String password) throws IOException;
 	
 	void fetchStudies() throws IOException;
 	
+	void fetchStudies(OrthancConfiguration orthancConfiguration) throws IOException;
+	
 	int uploadFile(OrthancConfiguration config, InputStream is) throws IOException;
 	
-	void setStudies(Patient pt, Studies retrievedStudies);
+	void setPatient(DicomStudy study, Patient patient);
 	
 	void deleteStudy(DicomStudy dicomStudy);
 	

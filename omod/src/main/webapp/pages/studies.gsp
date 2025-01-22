@@ -1,6 +1,7 @@
 <%
     ui.decorateWith("appui", "standardEmrPage",  [ title: ui.message("imaging.app.imageStudies.title") ])
     ui.includeCss("imaging", "studies.css")
+    ui.includeCss("imaging", "general.css")
 %>
 
 <script type="text/javascript">
@@ -28,12 +29,11 @@ ${param["message"]?.getAt(0) ?: ""}
         const overlay = document.getElementById('popupOverlayUpload');
         overlay.classList.toggle('show');
     }
-    function toggleFullSynchronizeStudies() {
-        console.log("Function full synchronization studies!")
+    function toggleSynchronizeStudies() {
+        const overlay = document.getElementById('popupOverlaySynchronization');
+        overlay.classList.toggle('show');
     }
-    function toggleGetNewStudies() {
-        console.log("Function get new studies!")
-    }
+
 </script>
 
 
@@ -42,8 +42,7 @@ ${param["message"]?.getAt(0) ?: ""}
         No Orthanc server configured
     <% } else { %>
         <button class="btn-open-popup-upload" onclick="togglePopupUpload()">Upload Study</button>
-        <button class="btn-open-popup-sync" onclick="toggleFullSynchronizeStudies()">Synchronize Studies</button>
-        <button class="btn-open-popup-newStudies" onclick="toggleGetNewStudies()">Get new Studies</button>
+        <button class="btn-open-popup-sync" onclick="toggleSynchronizeStudies()">Get latest studies</button>
      <% } %>
 </div>
 
@@ -54,6 +53,7 @@ ${param["message"]?.getAt(0) ?: ""}
             <th>${ ui.message("imaging.app.patientName.label")}</th>
             <th>${ ui.message("imaging.app.date.label")}</th>
             <th>${ ui.message("imaging.app.description.label")}</th>
+            <th>${ ui.message("imaging.app.server.label")}</th>
 	        <th>${ ui.message("coreapps.actions") }</th>
         </tr>
     </thead>
@@ -65,12 +65,13 @@ ${param["message"]?.getAt(0) ?: ""}
         <% } %>
         <% studies.each { study -> %>
             <tr>
-                <td style="width:50px;">
+                <td class="uid-td">
                     <a href="${ui.pageLink("imaging", "series", [patientId: patient.id, studyInstanceUID: study.studyInstanceUID])}">${ui.format(study.studyInstanceUID)}</a>
                 </td>
                 <td>${ui.format(study.patientName)}</td>
                 <td>${ui.format(study.studyDate)}</td>
                 <td>${ui.format(study.studyDescription)}</td>
+                <td>${ui.format(study.orthancConfiguration.orthancBaseUrl)}</td>
                  <td>
                    <i class="icon-remove delete-action" style="margin-left:27px" title="${ ui.message("coreapps.delete") }"
                         onclick="deleteStudy('${ui.encodeJavaScriptAttribute(ui.format(study))}', ${ study.studyInstanceUID})"></i>
@@ -90,7 +91,7 @@ ${param["message"]?.getAt(0) ?: ""}
         <h2 style="color: green;">Upload study</h2>
         <form class="form-container" enctype='multipart/form-data' method='POST' action='/openmrs/module/imaging/uploadStudy.form?patientId=${patient.id}'>
             <label class="form-label" for="server">Select Orthanc server</label>
-            <select id="orthancConfigurationId" name="orthancConfigurationId">
+            <select class="select-config" id="orthancConfigurationId" name="orthancConfigurationId">
                 <% orthancConfigurations.each { config -> %>
                     <option value="${config.id}">${ui.format(config.orthancBaseUrl)}</option>
                 <% } %>
@@ -99,9 +100,28 @@ ${param["message"]?.getAt(0) ?: ""}
             <label class="form-label" for="files">Select files to upload</label>
             <input class="form-input" type='file' name='files' multiple>
 
-            <div style="display: flex;">
+            <div class="popup-box-btn">
                 <button class="btn-submit" type="submit">Upload</button>
                 <button class="btn-close-popup" type="button" onclick="togglePopupUpload()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="popupOverlaySynchronization" class="overlay-container">
+    <div class="popup-box">
+        <h2 style="color: green;">Fetch studies from providers</h2>
+        <form class="form-container" method='POST' action='/openmrs/module/imaging/syncStudies.form?patientId=${patient.id}'>
+            <label class="form-label" for="server">Select Orthanc server</label>
+            <select class="select-config" id="orthancConfigurationId" name="orthancConfigurationId">
+                <option value="-1">All servers</option>
+                <% orthancConfigurations.each { config -> %>
+                    <option value="${config.id}">${ui.format(config.orthancBaseUrl)}</option>
+                <% } %>
+            </select>
+            <div class="popup-box-btn">
+                <button class="btn-submit" type="submit">Start</button>
+                <button class="btn-close-popup" type="button" onclick="toggleSynchronizeStudies()">Cancel</button>
             </div>
         </form>
     </div>

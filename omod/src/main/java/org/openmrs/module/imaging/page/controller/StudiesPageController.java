@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -30,26 +31,16 @@ public class StudiesPageController {
 	protected Log log = LogFactory.getLog(this.getClass());
 	
 	public void get(Model model, @RequestParam(value = "patientId") Patient patient) {
-		try {
-			DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
-			dicomStudyService.fetchStudies(); // Wei: remove this later
-			List<DicomStudy> studies = dicomStudyService.getStudies(patient);
-			if (studies.isEmpty()) {
-				dicomStudyService.fetchStudies();
-				studies = dicomStudyService.getStudies(patient);
-			}
-			model.addAttribute("studies", studies);
-			
-			OrthancConfigurationService orthancConfigureService = Context.getService(OrthancConfigurationService.class);
-			model.addAttribute("orthancConfigurations", orthancConfigureService.getAllOrthancConfigurations());
-		}
-		catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
+		List<DicomStudy> studies = dicomStudyService.getStudies(patient);
+		model.addAttribute("studies", studies);
+		
+		OrthancConfigurationService orthancConfigureService = Context.getService(OrthancConfigurationService.class);
+		model.addAttribute("orthancConfigurations", orthancConfigureService.getAllOrthancConfigurations());
 	}
 	
 	@RequestMapping(value = "/module/imaging/uploadStudy.form", method = RequestMethod.POST)
-	public String uploadStudy(HttpServletResponse response,
+	public String uploadStudy(RedirectAttributes redirectAttributes, HttpServletResponse response,
 	        @RequestParam(value = "orthancConfigurationId") int orthancConfigurationId,
 	        @RequestParam("files") MultipartFile[] files, @RequestParam(value = "patientId") Patient patient) {
 		log.info("Uploading " + files.length + " files");
@@ -81,7 +72,35 @@ public class StudiesPageController {
 		} else {
 			message = "Some files could not be uploaded. " + numUploaded + " of " + numFiles + " files uploaded.";
 		}
-		return "redirect:/imaging/studies.page?patientId=" + patient.getId() + "&message=" + message;
+		
+		redirectAttributes.addAttribute("patientId", patient.getId());
+		redirectAttributes.addAttribute("message", message);
+		return "redirect:/imaging/studies.page";
+	}
+	
+	@RequestMapping(value = "/module/imaging/syncStudies.form", method = RequestMethod.POST)
+	public String syncStudy(RedirectAttributes redirectAttributes,
+	        @RequestParam(value = "orthancConfigurationId") int orthancConfigurationId,
+	        @RequestParam(value = "patientId") Patient patient) {
+		String message;
+		try {
+			DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
+			OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
+			
+			if (orthancConfigurationId == -1) {
+				dicomStudyService.fetchStudies();
+			} else {
+				dicomStudyService.fetchStudies(orthancConfigurationService.getOrthancConfiguration(orthancConfigurationId));
+			}
+			message = "Studies successfully fetched";
+		}
+		catch (IOException e) {
+			message = "Not all studies could be successfully downloaded";
+		}
+		
+		redirectAttributes.addAttribute("patientId", patient.getId());
+		redirectAttributes.addAttribute("message", message);
+		return "redirect:/imaging/syncStudies.page";
 	}
 	
 	@RequestMapping(value = "/module/imaging/deleteStudy.form", method = RequestMethod.POST)

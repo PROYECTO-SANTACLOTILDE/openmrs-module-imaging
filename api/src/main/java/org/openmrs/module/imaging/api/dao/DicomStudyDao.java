@@ -41,7 +41,7 @@ public class DicomStudyDao {
 	@SuppressWarnings("unchecked")
 	public List<DicomStudy> getAllDicomStudiesByPatient(Patient patient) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(DicomStudy.class);
-		return criteria.add(Restrictions.eq("patientName", patient.getGivenName())).list();
+		return criteria.add(Restrictions.eq("mrsPatient", patient)).list();
 	}
 	
 	public DicomStudy getDicomStudy(String studyInstanceUID) {

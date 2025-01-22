@@ -1,5 +1,6 @@
 <% ui.decorateWith("appui", "standardEmrPage", [ title: ui.message("imaging.app.orthancconfiguration.title") ])
    ui.includeCss("imaging", "orthancConfiguration.css");
+   ui.includeCss("imaging", "general.css");
 %>
 
 <h2>${ ui.message("imaging.app.orthancconfiguration.heading")}</h2>
