@@ -7,9 +7,10 @@
 <script type="text/javascript">
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "${ ui.escapeJs(ui.encodeHtmlContent(ui.format(patient.familyName))) },
-            ${ ui.escapeJs(ui.encodeHtmlContent(ui.format(patient.givenName))) }",
+        { label: "${ ui.escapeJs(ui.encodeHtmlContent(ui.format(patient.familyName))) }, ${ ui.escapeJs(ui.encodeHtmlContent(ui.format(patient.givenName))) }",
             link: '${ui.pageLink("coreapps", "clinicianfacing/patient", [patientId: patient.id])}'},
+        { label: "${ ui.message("imaging.studies") }",
+            link: '${ui.pageLink("imaging", "studies", [patientId: patient.id])}'},
         { label: "${ ui.message("imaging.series") }" }
     ];
 </script>
@@ -17,13 +18,14 @@
 
 ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
 ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
+<% ui.includeJavascript("imaging", "sortable.min.js") %>
 
 <h2>
     ${ ui.message("imaging.series") }
 </h2>
 
 <div id="table-scroll">
-    <table id="series" class="series" width="100%" border="1" cellspacing="0" cellpadding="2">
+    <table id="series" class="table table-sm table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl" data-sortable>
         <thead>
             <tr>
                 <th>${ ui.message("imaging.app.seriesInstanceUID.label")}</th>
@@ -43,7 +45,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
             <% serieses.each { series -> %>
                 <tr>
                     <td class="uid-td">
-                        <a href="${ui.pageLink("imaging", "instances", [patientId: patient.id, seriesInstanceUID: series.seriesInstanceUID])}">${ui.format(series.seriesInstanceUID)}</a>
+                        <a href="${ui.pageLink("imaging", "instances", [patientId: patient.id, seriesInstanceUID: series.seriesInstanceUID, studyInstanceUID: studyInstanceUID])}">${ui.format(series.seriesInstanceUID)}</a>
                     </td>
                     <td>${ui.format(series.seriesNumber)}</td>
                     <td>${ui.format(series.seriesDescription)}</td>

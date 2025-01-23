@@ -1,8 +1,12 @@
 package org.openmrs.module.imaging.api.study;
 
+import org.openmrs.BaseOpenmrsData;
+
 import java.util.Date;
 
-public class DicomSeries {
+public class DicomSeries extends BaseOpenmrsData implements java.io.Serializable {
+	
+	private static final long serialVersionUID = 1;
 	
 	private String seriesInstanceUID;
 	
@@ -76,5 +80,15 @@ public class DicomSeries {
 	
 	public void setSeriesDate(Date seriesDate) {
 		this.seriesDate = seriesDate;
+	}
+	
+	@Override
+	public Integer getId() {
+		return 0;
+	}
+	
+	@Override
+	public void setId(Integer integer) {
+		
 	}
 }

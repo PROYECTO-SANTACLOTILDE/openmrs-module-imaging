@@ -1,6 +1,10 @@
 package org.openmrs.module.imaging.api.study;
 
-public class DicomInstance {
+import org.openmrs.BaseOpenmrsData;
+
+public class DicomInstance extends BaseOpenmrsData implements java.io.Serializable {
+	
+	private static final long serialVersionUID = 1;
 	
 	private String sopInstanceUID;
 	
@@ -51,5 +55,14 @@ public class DicomInstance {
 	
 	public void setImagePositionPatient(String imagePositionPatient) {
 		this.imagePositionPatient = imagePositionPatient;
+	}
+	
+	@Override
+	public Integer getId() {
+		return 0;
+	}
+	
+	@Override
+	public void setId(Integer integer) {
 	}
 }

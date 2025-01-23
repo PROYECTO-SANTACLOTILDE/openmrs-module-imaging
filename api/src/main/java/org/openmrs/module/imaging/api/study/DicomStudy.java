@@ -8,7 +8,7 @@ import java.util.Date;
 
 public class DicomStudy extends BaseOpenmrsData implements java.io.Serializable {
 	
-	public static final long serialVersionUID = 1;
+	private static final long serialVersionUID = 1;
 	
 	private String studyInstanceUID;
 	

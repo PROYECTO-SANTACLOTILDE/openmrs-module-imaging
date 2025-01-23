@@ -3,6 +3,8 @@
    ui.includeCss("imaging", "general.css");
 %>
 
+<% ui.includeJavascript("imaging", "sortable.min.js") %>
+
 <h2>${ ui.message("imaging.app.orthancconfiguration.heading")}</h2>
 <br/>
 <script>
@@ -25,7 +27,7 @@ ${param["message"]?.getAt(0) ?: ""}
     <button class="btn-open-popup" onclick="togglePopupAdd()">Add new configuration</button>
 </div>
 <div id="table-scroll">
-    <table class="table table-sm table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl">
+    <table id="imaging-settings" class="table table-sm table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl" data-sortable>
         <thead>
            <tr>
                 <th>${ ui.message("imaging.app.id.label")}</th>

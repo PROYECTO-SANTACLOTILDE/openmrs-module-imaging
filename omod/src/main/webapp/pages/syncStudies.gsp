@@ -6,20 +6,14 @@
 <script type="text/javascript">
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "${ ui.escapeJs(ui.encodeHtmlContent(ui.format(patient.familyName))) }, ${ ui.escapeJs(ui.encodeHtmlContent(ui.format(patient.givenName))) }", link: '${ui.pageLink("coreapps", "clinicianfacing/patient", [patientId: patient.id])}'},
-        { label: "${ ui.message("imaging.studies") }" }
-    ];
-</script>
-
-<script type="text/javascript">
-    var breadcrumbs = [
-        { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
         { label: "${ ui.escapeJs(ui.encodeHtmlContent(ui.format(patient.familyName))) },
             ${ ui.escapeJs(ui.encodeHtmlContent(ui.format(patient.givenName))) }",
             link: '${ui.pageLink("coreapps", "clinicianfacing/patient", [patientId: patient.id])}'},
         { label: "${ ui.message("imaging.studies.all") }" }
     ];
 </script>
+
+<% ui.includeJavascript("imaging", "sortable.min.js") %>
 
 ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
 ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
@@ -33,10 +27,11 @@ ${param["message"]?.getAt(0) ?: ""}
 </div>
 
 <div id="table-scroll">
-    <table class="table table-sm table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl">
+    <table id="sync-studies" class="table table-sm table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl" data-sortable>
         <thead>
             <tr>
                 <th></th>
+                <th>Match</th>
                 <th>${ ui.message("imaging.app.studyInstanceUid.label")}</th>
                 <th>${ ui.message("imaging.app.patientName.label")}</th>
                 <th>${ ui.message("imaging.app.date.label")}</th>
@@ -60,6 +55,7 @@ ${param["message"]?.getAt(0) ?: ""}
                                     onChange="this.form.submit()">
                     </form>
                     </td>
+                    <td>${match[study.studyInstanceUID]}%</td>
                     <td class="uid-td">${ui.format(study.studyInstanceUID)}</td>
                     <td>${ui.format(study.patientName)}</td>
                     <td>${ui.format(study.studyDate)}</td>

@@ -1,5 +1,6 @@
 package org.openmrs.module.imaging.page.controller;
 
+import me.xdrop.fuzzywuzzy.FuzzySearch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Controller
@@ -25,6 +27,15 @@ public class SyncStudiesPageController {
 		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
 		List<DicomStudy> allStudies = dicomStudyService.getAllStudies();
 		model.addAttribute("studies", allStudies);
+		
+		HashMap<String, Integer> match = new HashMap<String, Integer>();
+		for (DicomStudy study : allStudies) {
+			// https://github.com/xdrop/fuzzywuzzy?tab=readme-ov-file
+			int score = FuzzySearch.tokenSetRatio(patient.getGivenName() + " " + patient.getFamilyName(),
+			    study.getPatientName());
+			match.put(study.getStudyInstanceUID(), score);
+		}
+		model.addAttribute("match", match);
 	}
 	
 	@RequestMapping(value = "/module/imaging/assignStudy.form", method = RequestMethod.POST)
