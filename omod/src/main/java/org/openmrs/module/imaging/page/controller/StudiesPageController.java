@@ -104,31 +104,15 @@ public class StudiesPageController {
 	}
 	
 	@RequestMapping(value = "/module/imaging/deleteStudy.form", method = RequestMethod.POST)
-	public void deleteStudy(HttpServletResponse response, @RequestParam(value = "dicomStudy") DicomStudy dicomStudy,
-	        @RequestParam(value = "username") String username, @RequestParam(value = "password") String password) {
-		try {
-			String encoding = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
-			try {
-				String url = dicomStudy.getOrthancConfiguration().getOrthancBaseUrl();
-				URL serverURL = new URL(url + "/studies/" + dicomStudy.getStudyInstanceUID());
-				HttpURLConnection con = (HttpURLConnection) serverURL.openConnection();
-				con.setRequestMethod("GET");
-				con.setRequestProperty("Authorization", "Basic " + encoding);
-				con.setRequestProperty("Content-Type", "application/json");
-				// Check response code
-				int responseCode = con.getResponseCode();
-				System.out.println("Response Code: " + responseCode);
-				
-			}
-			catch (MalformedURLException e) {
-				response.getOutputStream().print("The URL is not well formed.");
-			}
-			catch (UnknownHostException e) {
-				response.getOutputStream().print("The server could not be reached.");
-			}
-		}
-		catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+	public String deleteStudy(RedirectAttributes redirectAttributes,
+	        @RequestParam(value = "studyInstanceUID") String studyInstanceUID,
+	        @RequestParam(value = "patientId") Patient patient) {
+		
+		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
+		DicomStudy deleteStudy = dicomStudyService.getDicomStudy(studyInstanceUID);
+		dicomStudyService.deleteStudy(deleteStudy);
+		redirectAttributes.addAttribute("patientId", patient.getId());
+		return "redirect:/imaging/studies.page";
+		
 	}
 }

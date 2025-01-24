@@ -1,8 +1,7 @@
 <%
     ui.decorateWith("appui", "standardEmrPage",  [ title: ui.message("imaging.app.instances.title") ])
-    ui.includeCss("imaging", "instances.css")
     ui.includeCss("imaging", "general.css")
-
+    ui.includeCss("imaging", "instances.css")
 %>
 
 <script type="text/javascript">

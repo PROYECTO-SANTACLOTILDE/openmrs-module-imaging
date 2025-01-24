@@ -1,6 +1,6 @@
 <% ui.decorateWith("appui", "standardEmrPage", [ title: ui.message("imaging.app.orthancconfiguration.title") ])
-   ui.includeCss("imaging", "orthancConfiguration.css");
    ui.includeCss("imaging", "general.css");
+   ui.includeCss("imaging", "orthancConfiguration.css");
 %>
 
 <% ui.includeJavascript("imaging", "sortable.min.js") %>

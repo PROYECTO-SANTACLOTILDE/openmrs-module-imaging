@@ -17,12 +17,11 @@ import org.openmrs.module.imaging.api.study.DicomSeries;
 import org.openmrs.module.imaging.api.study.DicomStudy;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.management.RuntimeErrorException;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -154,7 +153,24 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 	
 	@Override
 	public void deleteStudy(DicomStudy dicomStudy) {
-		dao.removeDicomStudy(dicomStudy);
+		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
+		OrthancConfiguration config = orthancConfigurationService.getOrthancConfiguration(dicomStudy
+		        .getOrthancConfiguration().getId());
+		try {
+			HttpURLConnection con = getOrthancConnection("DELETE", config.getOrthancBaseUrl(),
+			    "/studies/" + dicomStudy.getOrthancStudyUID(), config.getOrthancUsername(), config.getOrthancPassword());
+			int responseCode = con.getResponseCode();
+			System.out.println("Response Code: " + responseCode);
+			if (responseCode == 200) {
+				dao.removeDicomStudy(dicomStudy);
+			} else {
+				throw new RuntimeException("Failed to delete DICOM study. Response Code: " + responseCode + ", Study UID: "
+				        + dicomStudy.getOrthancStudyUID());
+			}
+		}
+		catch (IOException e) {
+			throw new RuntimeException("Error while communicating with Orthanc server.", e);
+		}
 	}
 	
 	@Override

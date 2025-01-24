@@ -1,7 +1,7 @@
 <%
     ui.decorateWith("appui", "standardEmrPage",  [ title: ui.message("imaging.app.imageStudies.title") ])
-    ui.includeCss("imaging", "studies.css")
     ui.includeCss("imaging", "general.css")
+    ui.includeCss("imaging", "studies.css")
 %>
 <script type="text/javascript">
     var breadcrumbs = [
@@ -33,6 +33,14 @@ ${param["message"]?.getAt(0) ?: ""}
     function toggleSynchronizeStudies() {
         const overlay = document.getElementById('popupOverlaySynchronization');
         overlay.classList.toggle('show');
+    }
+
+    function togglePopupDeleteStudy(studyInstanceUID, patient) {
+        const overlay = document.getElementById('popupOverlayDeleteStudy');
+        overlay.classList.toggle('show');
+        document.deleteStudyForm.action = "/openmrs/module/imaging/deleteStudy.form?studyInstanceUID="
+                                             + studyInstanceUID
+                                             + "&patientId=" + patient;
     }
 </script>
 
@@ -73,8 +81,7 @@ ${param["message"]?.getAt(0) ?: ""}
                     <td>${ui.format(study.studyDescription)}</td>
                     <td>${ui.format(study.orthancConfiguration.orthancBaseUrl)}</td>
                      <td>
-                       <i class="icon-remove delete-action" style="margin-left:27px" title="${ ui.message("coreapps.delete") }"
-                            onclick="deleteStudy('${ui.encodeJavaScriptAttribute(ui.format(study))}', ${ study.studyInstanceUID})"></i>
+                        <a class="delete-study" onclick="togglePopupDeleteStudy('${ui.format(study.studyInstanceUID)}', '${patient.id}')"><i class="icon-remove delete-action"></i></a>
                         <div style="display: flex">
                            <a href="http://localhost:8042/stone-webviewer/index.html?study=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openStoneView.label") }">
                                 <img class="stone-img" alt="Show image in stone viewer" src="${ ui.resourceLink("imaging", "images/stoneViewer.png")}"/></a>
@@ -97,10 +104,8 @@ ${param["message"]?.getAt(0) ?: ""}
                     <option value="${config.id}">${ui.format(config.orthancBaseUrl)}</option>
                 <% } %>
             </select>
-
             <label class="form-label" for="files">Select files to upload</label>
             <input class="form-input" type='file' name='files' multiple>
-
             <div class="popup-box-btn">
                 <button class="btn-submit" type="submit">Upload</button>
                 <button class="btn-close-popup" type="button" onclick="togglePopupUpload()">Cancel</button>
@@ -123,6 +128,19 @@ ${param["message"]?.getAt(0) ?: ""}
             <div class="popup-box-btn">
                 <button class="btn-submit" type="submit">Start</button>
                 <button class="btn-close-popup" type="button" onclick="toggleSynchronizeStudies()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="popupOverlayDeleteStudy" class="overlay-container">
+    <div class="popup-box" style="width: 50%">
+        <h2>Delete study</h2>
+        <form name="deleteStudyForm" class="form-container" method='POST'>
+            <h3 id="deleteStudyMessage">${ ui.message("imaging.deleteStudy.message") }</h3>
+            <div class="popup-box-btn">
+                <button class="btn-submit" type="submit">${ ui.message("general.yes") }</button>
+                <button class="btn-close-popup" type="button" onclick="togglePopupDeleteStudy()">Cancel</button>
             </div>
         </form>
     </div>

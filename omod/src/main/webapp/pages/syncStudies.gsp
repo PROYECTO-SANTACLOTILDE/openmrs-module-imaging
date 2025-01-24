@@ -6,10 +6,10 @@
 <script type="text/javascript">
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "${ ui.escapeJs(ui.encodeHtmlContent(ui.format(patient.familyName))) },
-            ${ ui.escapeJs(ui.encodeHtmlContent(ui.format(patient.givenName))) }",
+        { label: "${ ui.escapeJs(ui.encodeHtmlContent(ui.format(patient.familyName))) }, ${ ui.escapeJs(ui.encodeHtmlContent(ui.format(patient.givenName))) }",
             link: '${ui.pageLink("coreapps", "clinicianfacing/patient", [patientId: patient.id])}'},
-        { label: "${ ui.message("imaging.studies.all") }" }
+        { label: "${ ui.message("imaging.studies") }", link: '${ui.pageLink("imaging", "studies", [patientId: patient.id])}'},
+        { label: "${ ui.message("imaging.study.synchronization") }" }
     ];
 </script>
 
