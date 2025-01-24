@@ -25,10 +25,8 @@
     margin-bottom: 7px
 }
 .popup-box-btn {
-    display: flex;
-    margin-top: 20px;
+    display: block
 }
-
 .select-config {
     margin-bottom: 30px;
 }

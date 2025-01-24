@@ -2,3 +2,7 @@
     width: 20px;
     margin-left: 12px;
 }
+
+.popup-box-btn {
+    display: block
+}

@@ -78,7 +78,7 @@ ${param["message"]?.getAt(0) ?: ""}
                     </td>
                     <td>${ui.format(study.patientName)}</td>
                     <td>${ui.format(study.studyDate)}</td>
-                    <td>${ui.format(study.studyDescription)}</td>
+                    <td class="description-td">${ui.format(study.studyDescription)}</td>
                     <td>${ui.format(study.orthancConfiguration.orthancBaseUrl)}</td>
                      <td>
                         <a class="delete-study" onclick="togglePopupDeleteStudy('${ui.format(study.studyInstanceUID)}', '${patient.id}')"><i class="icon-remove delete-action"></i></a>

@@ -113,6 +113,5 @@ public class StudiesPageController {
 		dicomStudyService.deleteStudy(deleteStudy);
 		redirectAttributes.addAttribute("patientId", patient.getId());
 		return "redirect:/imaging/studies.page";
-		
 	}
 }

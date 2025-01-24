@@ -24,6 +24,17 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
     ${ ui.message("imaging.series") }
 </h2>
 
+<script>
+    function togglePopupDeleteSeries(orthancSeriesUID, studyInstanceUID, patient) {
+        const overlay = document.getElementById('popupOverlayDeleteSeries');
+        overlay.classList.toggle('show');
+        document.deleteSeriesForm.action = "/openmrs/module/imaging/deleteSeries.form?orthancSeriesUID="
+                                             + orthancSeriesUID
+                                             + "&studyInstanceUID=" + studyInstanceUID
+                                             + "&patientId=" + patient;
+    }
+</script>
+
 <div id="table-scroll">
     <table id="series" class="table table-sm table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl" data-sortable>
         <thead>
@@ -52,9 +63,11 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                     <td>${ui.format(series.seriesDate)}</td>
                     <td>${ui.format(series.modality)}</td>
                      <td>
-                        <i class="icon-remove delete-action" title="${ ui.message("coreapps.delete") }"
-                            onclick="deleteSeries('${ui.encodeJavaScriptAttribute(ui.format(series))}', ${ series.seriesInstanceUID})"></i>
-                        <a href="http://localhost:8042/stone-webviewer/index.html?study=${ui.format(studyInstanceUID)}&series=${series.seriesInstanceUID}" title="${ ui.message("imaging.app.openStoneView.label") }">
+                        <a class="delete-series" onclick="togglePopupDeleteSeries('${ui.format(series.orthancSeriesUID)}', '${studyInstanceUID}', '${patient.id}')">
+                           <i class="icon-remove" delete-action></i>
+                        </a>
+                        <a href="http://localhost:8042/stone-webviewer/index.html?study=${ui.format(studyInstanceUID)}&series=${series.seriesInstanceUID}"
+                            title="${ ui.message("imaging.app.openStoneView.label") }">
                             <img class="series-stone-img" src="${ ui.resourceLink("imaging", "images/stoneViewer.png") }"/></a>
                      </td>
                 </tr>
@@ -63,3 +76,16 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
     </table>
 </div>
 <br/>
+
+<div id="popupOverlayDeleteSeries" class="overlay-container">
+    <div class="popup-box" style="width: 50%">
+        <h2>Delete Series</h2>
+        <form name="deleteSeriesForm" class="form-container" method='POST'>
+            <h3 id="deleteSeriesMessage">${ ui.message("imaging.deleteSeries.message") }</h3>
+            <div class="popup-box-btn">
+                <button class="btn-submit" type="submit">${ ui.message("general.yes") }</button>
+                <button class="btn-close-popup" type="button" onclick="togglePopupDeleteSeries()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
