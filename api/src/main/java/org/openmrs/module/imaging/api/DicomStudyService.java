@@ -41,7 +41,9 @@ public interface DicomStudyService extends OpenmrsService {
 	List<DicomInstance> fetchInstances(String sopInstanceUID) throws IOException;
 	
 	public class PreviewResult {
+		
 		public byte[] data;
+		
 		public String contentType;
 	}
 	

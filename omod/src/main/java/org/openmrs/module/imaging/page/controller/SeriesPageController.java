@@ -16,11 +16,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.UnknownHostException;
-import java.util.Base64;
 import java.util.List;
 
 @Controller
@@ -28,11 +23,10 @@ public class SeriesPageController {
 	
 	protected Log log = LogFactory.getLog(this.getClass());
 	
-	public void get(HttpServletResponse response, Model model,
-	        @RequestParam(value = "studyInstanceUID") String studyInstanceUID) throws IOException {
+	public void get(Model model, @RequestParam(value = "studyInstanceUID") String studyInstanceUID) throws IOException {
 		try {
 			DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
-			List<DicomSeries> seriesList = dicomStudyService.fetchSeries(studyInstanceUID); // Wei: remove later
+			List<DicomSeries> seriesList = dicomStudyService.fetchSeries(studyInstanceUID);
 			if (seriesList.isEmpty()) {
 				seriesList = dicomStudyService.fetchSeries(studyInstanceUID);
 			}
