@@ -134,6 +134,10 @@ body {
   margin-top:20px;
 }
 
+.table {
+    display: inline-table;
+}
+
 thead th {
     position: sticky;
     top: 0;
@@ -144,6 +148,7 @@ thead th {
 table[data-sortable] {
   border-collapse: collapse;
   border-spacing: 0;
+  display: inline-table;
 }
 table[data-sortable] th {
   vertical-align: top !important;

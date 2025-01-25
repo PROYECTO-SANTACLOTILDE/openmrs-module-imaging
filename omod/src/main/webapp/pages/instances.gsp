@@ -12,7 +12,7 @@
         { label: "${ ui.message("imaging.studies") }",
             link: '${ui.pageLink("imaging", "studies", [patientId: patient.id])}'},
         { label: "${ ui.message("imaging.series") }",
-            link: '${ui.pageLink("imaging", "series", [patientId: patient.id, studyInstanceUID: param["studyInstanceUID"]])}'},
+            link: '${ui.pageLink("imaging", "series", [patientId: patient.id, studyInstanceUID: param["studyInstanceUID"].getAt(0)])}'},
         { label: "${ ui.message("imaging.instances") }" }
     ];
 </script>
@@ -25,6 +25,45 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
 <h2>
     ${ ui.message("imaging.instances") }
 </h2>
+
+<script>
+    function togglePopupPreview(orthancInstanceUID, studyInstanceUID) {
+        const overlay = document.getElementById('popupOverlayPreview');
+        overlay.classList.toggle('show');
+
+        if(orthancInstanceUID) {
+            const container = document.getElementById("preview-container");
+            if(container.lastChild) container.removeChild(container.lastChild);
+            container.appendChild(document.createTextNode("Loading preview"))
+
+            const url = '/openmrs/module/imaging/previewInstance.form?orthancInstanceUID='+orthancInstanceUID+'&studyInstanceUID='+studyInstanceUID
+            fetch(url, { method: 'GET'})
+                .then((response) => {
+                    if(response.ok)
+                        return response.blob()
+                    else
+                        return Promise.reject(response)
+                })
+                .then((blob) => {
+                    const imageUrl = URL.createObjectURL(blob);
+                    const imageElement = document.createElement("img");
+                    imageElement.src = imageUrl;
+                    container.removeChild(container.lastChild);
+                    container.appendChild(imageElement);
+                })
+                .catch((response) => {
+                    container.removeChild(container.lastChild);
+                    return response.text()
+                })
+                .then((error) => {
+                    if(error) container.appendChild(document.createTextNode(error));
+                })
+                .catch((error) => {
+                    container.appendChild(document.createTextNode("Preview failed with status code "+response.status));
+                })
+          }
+    }
+</script>
 
 <div id="table-scroll">
     <table id="instances" class="table table-sm table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl" data-sortable>
@@ -48,10 +87,10 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                     <td>${ui.format(instance.instanceNumber)}</td>
                     <td>${ui.format(instance.imagePositionPatient)}</td>
                     <td>
-                        <i style="margin-left:15px" title="${ ui.message("imaging.app.instancePreview.label") }"
-                            onclick="instancePreview('${ui.encodeJavaScriptAttribute(ui.format(instance))}', ${ instance.sopInstanceUID})">
+                        <a style="margin-left:15px" title="${ ui.message("imaging.app.instancePreview.label") }"
+                            onclick="togglePopupPreview('${ui.format(instance.orthancInstanceUID)}', '${param['studyInstanceUID'].getAt(0)}' )">
                             <img class="instance-preview" src="${ ui.resourceLink("imaging", "images/preview.png") }"/>
-                        </i>
+                        </a>
                     </td>
                 </tr>
             <% } %>
@@ -59,3 +98,14 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
     </table>
 </div>
 <br/>
+
+<div id="popupOverlayPreview" class="overlay-container">
+    <div class="popup-box" style="width: 50%">
+        <h2>Instance Preview</h2>
+        <div id="preview-container"></div>
+        <div class="popup-box-btn">
+            <button class="btn-close-popup" style="margin-top: 20px;" type="button" onclick="togglePopupPreview()">Close</button>
+        </div>
+    </div>
+</div>
+

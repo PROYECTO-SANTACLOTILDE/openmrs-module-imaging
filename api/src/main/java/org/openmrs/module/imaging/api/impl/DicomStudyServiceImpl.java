@@ -17,9 +17,7 @@ import org.openmrs.module.imaging.api.study.DicomSeries;
 import org.openmrs.module.imaging.api.study.DicomStudy;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
@@ -88,7 +86,7 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		    config.getOrthancUsername(), config.getOrthancPassword());
 		sendOrthancQuery(con, "{" + "\"Level\": \"Studies\"," + " \"Expand\": true," + " \"Query\": {}" + " }");
 		int status = con.getResponseCode();
-		if (status == 200) {
+		if (status == HttpURLConnection.HTTP_OK) {
 			JsonNode studiesData = new ObjectMapper().readTree(con.getInputStream());
 			for (JsonNode studyData : studiesData) {
 				log.info("Parsing study data received from orthanc server");
@@ -159,7 +157,7 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 			HttpURLConnection con = getOrthancConnection("DELETE", config.getOrthancBaseUrl(),
 			    "/studies/" + dicomStudy.getOrthancStudyUID(), config.getOrthancUsername(), config.getOrthancPassword());
 			int responseCode = con.getResponseCode();
-			if (responseCode == 200) {
+			if (responseCode == HttpURLConnection.HTTP_OK) {
 				dao.removeDicomStudy(dicomStudy);
 			} else {
 				throw new RuntimeException("Failed to delete DICOM study. Response Code: " + responseCode + ", Study UID: "
@@ -200,7 +198,7 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 					config.getOrthancUsername(), config.getOrthancPassword());
 			sendOrthancQuery(con, "{" + "\"Level\": \"Series\"," + " \"Expand\": true," + " \"Query\": {\"StudyInstanceUID\":\"" + studyInstanceUID + "\"}" + " }");
 			int status = con.getResponseCode();
-			if (status == 200) {
+			if (status == HttpURLConnection.HTTP_OK) {
 				JsonNode seriesesData = new ObjectMapper().readTree(con.getInputStream());
 				for (JsonNode seriesData : seriesesData) {
 					String seriesInstanceUID = seriesData.path("MainDicomTags").path("SeriesInstanceUID").getTextValue();
@@ -236,7 +234,7 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 					config.getOrthancUsername(), config.getOrthancPassword());
 			sendOrthancQuery(con, "{" + "\"Level\": \"Instance\"," + " \"Expand\": true," + " \"Query\": {\"SeriesInstanceUID\":\"" + seriesInstanceUID + "\"}" + " }");
 			int status = con.getResponseCode();
-			if (status == 200) {
+			if (status == HttpURLConnection.HTTP_OK) {
 				JsonNode instancesData = new ObjectMapper().readTree(con.getInputStream());
 				for (JsonNode instanceData : instancesData) {
 					String sopInstanceUID = instanceData.path("MainDicomTags").path("SOPInstanceUID").getTextValue();
@@ -252,5 +250,34 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 			}
 		}
 		return instanceList;
+	}
+	
+	@Override
+	public PreviewResult fetchInstancePreview(String orthancInstanceUID, DicomStudy study) throws IOException {
+		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
+		OrthancConfiguration config = orthancConfigurationService.getOrthancConfiguration(study.getOrthancConfiguration()
+		        .getId());
+		
+		HttpURLConnection con = getOrthancConnection("GET", config.getOrthancBaseUrl(), "/instances/" + orthancInstanceUID
+		        + "/preview", config.getOrthancUsername(), config.getOrthancPassword());
+		int responseCode = con.getResponseCode();
+		if (responseCode == HttpURLConnection.HTTP_OK) {
+			// read image
+			InputStream inputStream = con.getInputStream();
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			byte[] buffer = new byte[1024];
+			int bytesRead;
+			while ((bytesRead = inputStream.read(buffer)) != -1) {
+				outputStream.write(buffer, 0, bytesRead);
+			}
+			
+			PreviewResult result = new PreviewResult();
+			result.data = outputStream.toByteArray();
+			result.contentType = con.getContentType();
+			return result;
+		} else {
+			throw new IOException("Request to Orthanc server " + config.getOrthancBaseUrl() + " failed with error "
+			        + con.getResponseCode() + " " + con.getResponseMessage());
+		}
 	}
 }
