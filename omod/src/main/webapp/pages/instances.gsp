@@ -48,6 +48,8 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                     const imageUrl = URL.createObjectURL(blob);
                     const imageElement = document.createElement("img");
                     imageElement.src = imageUrl;
+                    imageElement.width = 340;
+                    imageElement.height = 300;
                     container.removeChild(container.lastChild);
                     container.appendChild(imageElement);
                 })

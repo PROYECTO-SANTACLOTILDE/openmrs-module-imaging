@@ -17,12 +17,16 @@ import org.openmrs.module.imaging.api.study.DicomSeries;
 import org.openmrs.module.imaging.api.study.DicomStudy;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 
 @Transactional
 public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomStudyService {

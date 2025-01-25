@@ -6,3 +6,8 @@
     width: 20px;
     margin-left: 15px;
 }
+
+.preview-container, .instanceImage {
+    width: 340px;
+    height: 300px
+}

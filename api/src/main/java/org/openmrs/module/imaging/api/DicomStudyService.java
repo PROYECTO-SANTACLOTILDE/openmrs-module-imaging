@@ -8,6 +8,7 @@ import org.openmrs.module.imaging.api.study.DicomSeries;
 import org.openmrs.module.imaging.api.study.DicomStudy;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -40,9 +41,7 @@ public interface DicomStudyService extends OpenmrsService {
 	List<DicomInstance> fetchInstances(String sopInstanceUID) throws IOException;
 	
 	public class PreviewResult {
-		
 		public byte[] data;
-		
 		public String contentType;
 	}
 	
