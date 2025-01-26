@@ -28,8 +28,8 @@ public class ImagingSettingsPageController {
 	public void get(Model model) {
 		OrthancConfigurationService orthancConfigureService = Context.getService(OrthancConfigurationService.class);
 		model.addAttribute("orthancConfigurations", orthancConfigureService.getAllOrthancConfigurations());
-		model.addAttribute("privilegeManagerOrthancServer",
-		    Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_ORTHANC_CONFIGURATION));
+		model.addAttribute("privilegeManagerOrthancConfiguration",
+		    Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_Manager_ORTHANC_CONFIGURATION));
 	}
 	
 	@RequestMapping(value = "/module/imaging/storeConfiguration.form", method = RequestMethod.POST)
@@ -53,10 +53,17 @@ public class ImagingSettingsPageController {
 	}
 	
 	@RequestMapping(value = "/module/imaging/deleteConfiguration.form", method = RequestMethod.POST)
-	public String storeConfiguration(@RequestParam(value = "orthancConfigurationId") int orthancConfigurationId) {
+	public String deleteConfiguration(RedirectAttributes redirectAttributes, @RequestParam(value = "id") int id) {
 		OrthancConfigurationService orthancConfigureService = Context.getService(OrthancConfigurationService.class);
-		orthancConfigureService.removeOrthancConfiguration(orthancConfigureService
-		        .getOrthancConfiguration(orthancConfigurationId));
+		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
+		OrthancConfiguration config = orthancConfigureService.getOrthancConfiguration(id);
+		boolean hasStudy = dicomStudyService.hasStudy(config);
+		if (hasStudy) {
+			redirectAttributes.addAttribute("message",
+			    "The configuration can not be deleted because there is at least one study referring to it");
+		} else {
+			orthancConfigureService.removeOrthancConfiguration(orthancConfigureService.getOrthancConfiguration(id));
+		}
 		return "redirect:/imaging/imagingSettings.page";
 	}
 	

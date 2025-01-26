@@ -7,11 +7,17 @@ import java.util.Date;
 public class DicomSeries extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 1;
+	
 	private String seriesInstanceUID;
+	
 	private String orthancSeriesUID;
+	
 	private String seriesDescription;
+	
 	private String seriesNumber;
+	
 	private Date seriesDate;
+	
 	private String modality;
 	
 	public DicomSeries() {

@@ -102,7 +102,7 @@ ${param["message"]?.getAt(0) ?: ""}
 </div>
 <div id="popupOverlayUpload" class="overlay-container">
     <div class="popup-box">
-        <h2 style="color: green;">Upload study</h2>
+        <h2 style="color: #009384;">Upload study</h2>
         <form class="form-container" enctype='multipart/form-data' method='POST' action='/openmrs/module/imaging/uploadStudy.form?patientId=${patient.id}'>
             <label class="form-label" for="server">Select Orthanc server</label>
             <select class="select-config" id="orthancConfigurationId" name="orthancConfigurationId">
@@ -122,7 +122,7 @@ ${param["message"]?.getAt(0) ?: ""}
 
 <div id="popupOverlaySynchronization" class="overlay-container">
     <div class="popup-box">
-        <h2 style="color: green;">Fetch studies from providers</h2>
+        <h2 style="color: #009384;">Fetch studies from providers</h2>
         <form class="form-container" method='POST' action='/openmrs/module/imaging/syncStudies.form?patientId=${patient.id}'>
             <label class="form-label" for="server">Select Orthanc server</label>
             <select class="select-config" id="orthancConfigurationId" name="orthancConfigurationId">
@@ -140,7 +140,7 @@ ${param["message"]?.getAt(0) ?: ""}
 </div>
 
 <div id="popupOverlayDeleteStudy" class="overlay-container">
-    <div class="popup-box" style="width: 50%">
+    <div class="popup-box">
         <h2>Delete study</h2>
         <form name="deleteStudyForm" class="form-container" method='POST'>
             <h3 id="deleteStudyMessage">${ ui.message("imaging.deleteStudy.message") }</h3>

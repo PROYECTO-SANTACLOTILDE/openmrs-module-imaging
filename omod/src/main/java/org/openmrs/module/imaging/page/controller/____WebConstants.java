@@ -1,11 +1,11 @@
 package org.openmrs.module.imaging.page.controller;
 
-public class WebConstants {
+public class ____WebConstants {
 	
 	/**
 	 * Private constructor to prevent accidental instantiation of this utility class
 	 */
-	private WebConstants() {
+	private ____WebConstants() {
 	}
 	
 	public static final String INIT_REQ_UNIQUE_ID = "__INIT_REQ_UNIQUE_ID__";

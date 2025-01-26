@@ -26,6 +26,8 @@ public interface DicomStudyService extends OpenmrsService {
 	
 	void fetchStudies() throws IOException;
 	
+	boolean hasStudy(OrthancConfiguration orthancConfiguration);
+	
 	void fetchStudies(OrthancConfiguration orthancConfiguration) throws IOException;
 	
 	int uploadFile(OrthancConfiguration config, InputStream is) throws IOException;

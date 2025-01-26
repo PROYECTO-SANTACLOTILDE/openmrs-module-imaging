@@ -83,6 +83,11 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 	}
 	
 	@Override
+	public boolean hasStudy(OrthancConfiguration orthancConfiguration) {
+		return dao.hasStudy(orthancConfiguration);
+	}
+	
+	@Override
 	public void fetchStudies(OrthancConfiguration config) throws IOException {
 		log.info("Fetching studies from orthanc server " + config.getOrthancBaseUrl());
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);

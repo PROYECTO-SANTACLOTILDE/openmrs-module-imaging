@@ -5,7 +5,7 @@
 
 <% ui.includeJavascript("imaging", "sortable.min.js") %>
 
-<h2>${ ui.message("imaging.app.orthancconfiguration.heading")}</h2>
+<h2><img class="orthanc-icon" src="${ ui.resourceLink("imaging", "images/orthanc.png") }"/> ${ ui.message("imaging.app.orthancconfiguration.heading")}</h2>
 <br/>
 <script>
     function togglePopupAdd() {
@@ -19,12 +19,19 @@
         .then((response)=> response.text())
         .then((text)=>window.alert(text))
     }
+
+    function togglePopupDeleteOrthancConfiguration(id) {
+        const overlay = document.getElementById('popupOverlayDeleteOrthancConfiguration');
+        overlay.classList.toggle('show');
+        document.deleteOrthancConfigurationForm.action = "/openmrs/module/imaging/deleteConfiguration.form?id="+id;
+    }
+
 </script>
 <div style="color:red;">
 ${param["message"]?.getAt(0) ?: ""}
 </div>
 <div>
-    <% if (privilegeManagerOrthancServer) { %>
+    <% if (privilegeManagerOrthancConfiguration) { %>
         <button class="btn-open-popup" onclick="togglePopupAdd()">Add new configuration</button>
     <% } %>
 </div>
@@ -50,9 +57,11 @@ ${param["message"]?.getAt(0) ?: ""}
                     <td>${ui.format(orthancConfiguration.orthancBaseUrl)}</td>
                     <td>${ui.format(orthancConfiguration.orthancUsername)}</td>
                     <td>
-                        <form onsubmit="return confirm('Do you really want to delete this configuration?');" action="/openmrs/module/imaging/deleteConfiguration.form?orthancConfigurationId=${orthancConfiguration.id}" method="post">
-                            <button class="table-btn-link" type="submit"><img class="icon" src="${ ui.resourceLink("imaging", "images/delete.png") }"/></button>
-                        </form>
+                        <a class="delete-configuration"
+                            <% if (privilegeManagerOrthancConfiguration) { %>
+                                onclick="togglePopupDeleteOrthancConfiguration('${orthancConfiguration.id}')"><i class="icon-remove delete-action"></i>
+                            <% } %>
+                        </a>
                     </td>
                 </tr>
             <% } %>
@@ -61,7 +70,7 @@ ${param["message"]?.getAt(0) ?: ""}
 </div>
 <div id="popupOverlayAdd" class="overlay-container">
     <div class="popup-box">
-        <h2 style="color: green;">Add Orthanc configuration</h2>
+        <h2 style="color: #009384;">Add Orthanc configuration</h2>
         <form class="form-container" action="/openmrs/module/imaging/storeConfiguration.form" method="post">
             <label class="form-label" for="url">${ ui.message("imaging.app.url.label")}</label>
             <input class="form-input" type="text" placeholder="Orthanc URL" id="url" name="url" required>
@@ -75,6 +84,19 @@ ${param["message"]?.getAt(0) ?: ""}
                 <button class="btn-check" type="button" onclick="checkConfiguration()">Check connection</button>
                 <button class="btn-submit" type="submit">Save</button>
                 <button class="btn-close-popup" type="button" onclick="togglePopupAdd()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="popupOverlayDeleteOrthancConfiguration" class="overlay-container">
+    <div class="popup-box">
+        <h2>Delete Orthanc Configuration</h2>
+        <form name="deleteOrthancConfigurationForm" class="form-container" method='POST'>
+            <h3 id="deleteOrthancConfigurationMessage">${ ui.message("imaging.deleteOrthancConfiguration.message") }</h3>
+            <div class="popup-box-btn">
+                <button class="btn-submit" type="submit">${ ui.message("general.yes") }</button>
+                <button class="btn-close-popup" type="button" onclick="togglePopupDeleteOrthancConfiguration()">Cancel</button>
             </div>
         </form>
     </div>

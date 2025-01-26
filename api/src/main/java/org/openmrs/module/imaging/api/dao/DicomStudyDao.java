@@ -5,6 +5,7 @@ import org.hibernate.criterion.Restrictions;
 import org.openmrs.Patient;
 import org.openmrs.api.db.hibernate.DbSession;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
+import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.module.imaging.api.study.DicomStudy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,5 +53,10 @@ public class DicomStudyDao {
 	
 	public void removeDicomStudy(DicomStudy dicomStudy) {
 		getSession().delete(dicomStudy);
+	}
+	
+	public boolean hasStudy(OrthancConfiguration orthancConfiguration) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(DicomStudy.class);
+		return !criteria.add(Restrictions.eq("orthancConfiguration", orthancConfiguration)).list().isEmpty();
 	}
 }

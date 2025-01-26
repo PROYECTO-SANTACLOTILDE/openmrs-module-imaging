@@ -102,7 +102,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
 <br/>
 
 <div id="popupOverlayPreview" class="overlay-container">
-    <div class="popup-box" style="width: 50%">
+    <div class="popup-box">
         <h2>Instance Preview</h2>
         <div id="preview-container"></div>
         <div class="popup-box-btn">
