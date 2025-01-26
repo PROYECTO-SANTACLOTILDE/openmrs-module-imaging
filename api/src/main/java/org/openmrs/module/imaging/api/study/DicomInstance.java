@@ -5,13 +5,9 @@ import org.openmrs.BaseOpenmrsData;
 public class DicomInstance extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 1;
-	
 	private String sopInstanceUID;
-	
 	private String orthancInstanceUID;
-	
 	private String instanceNumber;
-	
 	private String imagePositionPatient;
 	
 	public DicomInstance() {
