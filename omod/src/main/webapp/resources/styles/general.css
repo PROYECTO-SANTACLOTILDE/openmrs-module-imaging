@@ -113,9 +113,8 @@ body {
     background: grey;
 }
 
-.table td, .ohif-img, .stone-img {
+.table td, .stone-img {
     width: 20px;
-    margin-left: 12px;
 }
 
 .table td, .ohif-img {

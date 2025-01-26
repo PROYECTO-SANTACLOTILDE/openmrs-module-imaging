@@ -24,7 +24,9 @@
 ${param["message"]?.getAt(0) ?: ""}
 </div>
 <div>
-    <button class="btn-open-popup" onclick="togglePopupAdd()">Add new configuration</button>
+    <% if (privilegeManagerOrthancServer) { %>
+        <button class="btn-open-popup" onclick="togglePopupAdd()">Add new configuration</button>
+    <% } %>
 </div>
 <div id="table-scroll">
     <table id="imaging-settings" class="table table-sm table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl" data-sortable>

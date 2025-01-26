@@ -5,6 +5,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.imaging.ImagingConstants;
 import org.openmrs.module.imaging.api.DicomStudyService;
 import org.openmrs.module.imaging.api.study.DicomStudy;
 import org.openmrs.ui.framework.Model;
@@ -36,6 +37,8 @@ public class SyncStudiesPageController {
 			match.put(study.getStudyInstanceUID(), score);
 		}
 		model.addAttribute("match", match);
+		model.addAttribute("privilegeModifyImageData",
+		    Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_Modify_IMAGE_DATA));
 	}
 	
 	@RequestMapping(value = "/module/imaging/assignStudy.form", method = RequestMethod.POST)

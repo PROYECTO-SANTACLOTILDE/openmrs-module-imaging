@@ -4,6 +4,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.imaging.ImagingConstants;
 import org.openmrs.module.imaging.api.DicomStudyService;
 import org.openmrs.module.imaging.api.study.DicomSeries;
 import org.openmrs.module.imaging.api.study.DicomStudy;
@@ -32,6 +33,8 @@ public class SeriesPageController {
 			}
 			model.addAttribute("serieses", seriesList);
 			model.addAttribute("studyInstanceUID", studyInstanceUID);
+			model.addAttribute("privilegeModifyImageData",
+			    Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_Modify_IMAGE_DATA));
 		}
 		catch (IOException e) {
 			throw new RuntimeException();

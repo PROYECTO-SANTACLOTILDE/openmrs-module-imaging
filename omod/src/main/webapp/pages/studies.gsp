@@ -48,7 +48,9 @@ ${param["message"]?.getAt(0) ?: ""}
     <% if (orthancConfigurations.size() == 0) { %>
         No Orthanc server configured
     <% } else { %>
-        <button class="btn-open-popup-upload" onclick="togglePopupUpload()">Upload Study</button>
+        <% if (privilegeModifyImageData) { %>
+            <button class="btn-open-popup-upload" onclick="togglePopupUpload()">Upload Study</button>
+        <% } %>
         <button class="btn-open-popup-sync" onclick="toggleSynchronizeStudies()">Get latest studies</button>
      <% } %>
 </div>
@@ -81,7 +83,11 @@ ${param["message"]?.getAt(0) ?: ""}
                     <td class="description-td">${ui.format(study.studyDescription)}</td>
                     <td>${ui.format(study.orthancConfiguration.orthancBaseUrl)}</td>
                      <td>
-                        <a class="delete-study" onclick="togglePopupDeleteStudy('${ui.format(study.studyInstanceUID)}', '${patient.id}')"><i class="icon-remove delete-action"></i></a>
+                        <a class="delete-study"
+                            <% if (privilegeModifyImageData) { %>
+                                 onclick="togglePopupDeleteStudy('${ui.format(study.studyInstanceUID)}', '${patient.id}')"><i class="icon-remove delete-action"></i>
+                            <% } %>
+                        </a>
                         <div style="display: flex">
                            <a href="http://localhost:8042/stone-webviewer/index.html?study=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openStoneView.label") }">
                                 <img class="stone-img" alt="Show image in stone viewer" src="${ ui.resourceLink("imaging", "images/stoneViewer.png")}"/></a>

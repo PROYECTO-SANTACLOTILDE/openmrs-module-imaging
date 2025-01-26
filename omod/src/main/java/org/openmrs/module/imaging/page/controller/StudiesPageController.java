@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.imaging.ImagingConstants;
 import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.module.imaging.api.DicomStudyService;
 import org.openmrs.module.imaging.api.OrthancConfigurationService;
@@ -32,6 +33,8 @@ public class StudiesPageController {
 		
 		OrthancConfigurationService orthancConfigureService = Context.getService(OrthancConfigurationService.class);
 		model.addAttribute("orthancConfigurations", orthancConfigureService.getAllOrthancConfigurations());
+		model.addAttribute("privilegeModifyImageData",
+		    Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_Modify_IMAGE_DATA));
 	}
 	
 	@RequestMapping(value = "/module/imaging/uploadStudy.form", method = RequestMethod.POST)

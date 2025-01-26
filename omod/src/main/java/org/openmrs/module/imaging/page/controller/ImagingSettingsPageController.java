@@ -3,6 +3,7 @@ package org.openmrs.module.imaging.page.controller;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.imaging.ImagingConstants;
 import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.module.imaging.api.DicomStudyService;
 import org.openmrs.module.imaging.api.OrthancConfigurationService;
@@ -27,6 +28,8 @@ public class ImagingSettingsPageController {
 	public void get(Model model) {
 		OrthancConfigurationService orthancConfigureService = Context.getService(OrthancConfigurationService.class);
 		model.addAttribute("orthancConfigurations", orthancConfigureService.getAllOrthancConfigurations());
+		model.addAttribute("privilegeManagerOrthancServer",
+		    Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_ORTHANC_CONFIGURATION));
 	}
 	
 	@RequestMapping(value = "/module/imaging/storeConfiguration.form", method = RequestMethod.POST)
