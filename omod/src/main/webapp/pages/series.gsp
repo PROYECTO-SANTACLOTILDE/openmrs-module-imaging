@@ -80,7 +80,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
 <br/>
 
 <div id="popupOverlayDeleteSeries" class="overlay-container">
-    <div class="popup-box">
+    <div class="popup-box" style="width: 65%>
         <h2>Delete Series</h2>
         <form name="deleteSeriesForm" class="form-container" method='POST'>
             <h3 id="deleteSeriesMessage">${ ui.message("imaging.deleteSeries.message") }</h3>

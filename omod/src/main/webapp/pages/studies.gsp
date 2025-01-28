@@ -140,7 +140,7 @@ ${param["message"]?.getAt(0) ?: ""}
 </div>
 
 <div id="popupOverlayDeleteStudy" class="overlay-container">
-    <div class="popup-box">
+    <div class="popup-box" style="width: 65%>
         <h2>Delete study</h2>
         <form name="deleteStudyForm" class="form-container" method='POST'>
             <h3 id="deleteStudyMessage">${ ui.message("imaging.deleteStudy.message") }</h3>

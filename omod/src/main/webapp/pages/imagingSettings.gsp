@@ -90,7 +90,7 @@ ${param["message"]?.getAt(0) ?: ""}
 </div>
 
 <div id="popupOverlayDeleteOrthancConfiguration" class="overlay-container">
-    <div class="popup-box">
+    <div class="popup-box" style="width: 65%>
         <h2>Delete Orthanc Configuration</h2>
         <form name="deleteOrthancConfigurationForm" class="form-container" method='POST'>
             <h3 id="deleteOrthancConfigurationMessage">${ ui.message("imaging.deleteOrthancConfiguration.message") }</h3>

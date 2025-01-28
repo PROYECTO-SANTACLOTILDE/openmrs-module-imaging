@@ -93,7 +93,7 @@ public class StudiesPageController {
 			message = "Studies successfully fetched";
 		}
 		catch (IOException e) {
-			message = "Not all studies could be successfully downloaded";
+			message = "Not all studies could be downloaded successfully. The server might be unavailable or stopped";
 		}
 		
 		redirectAttributes.addAttribute("patientId", patient.getId());

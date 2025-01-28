@@ -55,9 +55,9 @@ ${param["message"]?.getAt(0) ?: ""}
                                 onChange="this.form.submit()"
                                 <% if (privilegeModifyImageData) { %>
                                     enabled
-                                <% } %>
+                                <% } else  { %>
                                     disabled
-                                >
+                                <% } %>
                     </form>
                     </td>
                     <td>${match[study.studyInstanceUID]}%</td>
