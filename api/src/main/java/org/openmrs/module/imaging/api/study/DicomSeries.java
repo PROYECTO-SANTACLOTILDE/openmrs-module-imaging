@@ -2,8 +2,6 @@ package org.openmrs.module.imaging.api.study;
 
 import org.openmrs.BaseOpenmrsData;
 
-import java.util.Date;
-
 public class DicomSeries extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 1;
@@ -16,7 +14,9 @@ public class DicomSeries extends BaseOpenmrsData implements java.io.Serializable
 	
 	private String seriesNumber;
 	
-	private Date seriesDate;
+	private String seriesDate;
+	
+	private String seriesTime;
 	
 	private String modality;
 	
@@ -24,13 +24,14 @@ public class DicomSeries extends BaseOpenmrsData implements java.io.Serializable
 	}
 	
 	public DicomSeries(String seriesInstanceUID, String orthancSeriesUID, String seriesDescription, String seriesNumber,
-	    String modality, Date seriesDate) {
+	    String modality, String seriesDate, String seriesTime) {
 		this.seriesInstanceUID = seriesInstanceUID;
 		this.seriesDescription = seriesDescription;
 		this.orthancSeriesUID = orthancSeriesUID;
 		this.seriesNumber = seriesNumber;
 		this.modality = modality;
 		this.seriesDate = seriesDate;
+		this.seriesTime = seriesTime;
 	}
 	
 	// Getters and Setters
@@ -74,11 +75,11 @@ public class DicomSeries extends BaseOpenmrsData implements java.io.Serializable
 		this.seriesDescription = seriesDescription;
 	}
 	
-	public Date getSeriesDate() {
+	public String getSeriesDate() {
 		return seriesDate;
 	}
 	
-	public void setSeriesDate(Date seriesDate) {
+	public void setSeriesDate(String seriesDate) {
 		this.seriesDate = seriesDate;
 	}
 	
@@ -90,5 +91,13 @@ public class DicomSeries extends BaseOpenmrsData implements java.io.Serializable
 	@Override
 	public void setId(Integer integer) {
 		
+	}
+	
+	public String getSeriesTime() {
+		return seriesTime;
+	}
+	
+	public void setSeriesTime(String seriesTime) {
+		this.seriesTime = seriesTime;
 	}
 }

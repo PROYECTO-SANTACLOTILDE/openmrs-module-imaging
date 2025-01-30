@@ -11,7 +11,7 @@
 	<packaging>jar</packaging>
 	<name>Imaging API</name>
 	<description>API project for Imaging</description>
-    <build>
+<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

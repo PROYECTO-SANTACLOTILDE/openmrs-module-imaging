@@ -83,11 +83,11 @@ ${param["message"]?.getAt(0) ?: ""}
                     <td class="description-td">${ui.format(study.studyDescription)}</td>
                     <td>${ui.format(study.orthancConfiguration.orthancBaseUrl)}</td>
                      <td>
-                        <a class="delete-study"
-                            <% if (privilegeModifyImageData) { %>
-                                 onclick="togglePopupDeleteStudy('${ui.format(study.studyInstanceUID)}', '${patient.id}')"><i class="icon-remove delete-action"></i>
-                            <% } %>
-                        </a>
+                        <% if (privilegeModifyImageData) { %>
+                            <a class="delete-study"
+                                onclick="togglePopupDeleteStudy('${ui.format(study.studyInstanceUID)}', '${patient.id}')"><i class="icon-remove delete-action"></i>
+                            </a>
+                        <% } %>
                         <div style="display: flex">
                            <a href="http://localhost:8042/stone-webviewer/index.html?study=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openStoneView.label") }">
                                 <img class="stone-img" alt="Show image in stone viewer" src="${ ui.resourceLink("imaging", "images/stoneViewer.png")}"/></a>
@@ -140,7 +140,7 @@ ${param["message"]?.getAt(0) ?: ""}
 </div>
 
 <div id="popupOverlayDeleteStudy" class="overlay-container">
-    <div class="popup-box" style="width: 65%>
+    <div class="popup-box" style="width: 65%;">
         <h2>Delete study</h2>
         <form name="deleteStudyForm" class="form-container" method='POST'>
             <h3 id="deleteStudyMessage">${ ui.message("imaging.deleteStudy.message") }</h3>

@@ -90,7 +90,7 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 	@Override
 	public void fetchStudies(OrthancConfiguration config) throws IOException {
 		log.info("Fetching studies from orthanc server " + config.getOrthancBaseUrl());
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
+		//		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
 		HttpURLConnection con = getOrthancConnection("POST", config.getOrthancBaseUrl(), "/tools/find",
 		    config.getOrthancUsername(), config.getOrthancPassword());
 		sendOrthancQuery(con, "{" + "\"Level\": \"Studies\"," + " \"Expand\": true," + " \"Query\": {}" + " }");
@@ -102,18 +102,31 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 				String studyInstanceUID = studyData.path("MainDicomTags").path("StudyInstanceUID").getTextValue();
 				String orthancStudyUID = studyData.path("ID").getTextValue();
 				String patientName = studyData.path("PatientMainDicomTags").path("PatientName").getTextValue();
-				Date studyDate;
-				try {
-					studyDate = dateFormat.parse(studyData.path("MainDicomTags").path("StudyDate").getTextValue());
-				}
-				catch (ParseException e) {
-					studyDate = null;
-				}
-				String studyDescription = studyData.path("MainDicomTags").path("StudyDescription").getTextValue();
-				String gender = studyData.path("PatientMainDicomTags").path("Gender").getTextValue();
-				
+				String studyDate = Optional.ofNullable(studyData.path("MainDicomTags").path("StudyDate").getTextValue())
+				        .orElse("");
+				String studyTime = Optional.ofNullable(studyData.path("MainDicomTags").path("StudyTime").getTextValue())
+				        .orElse("");
+				//				Date studyDate;
+				//				try {
+				//					JsonNode studyDateNode = studyData.path("MainDicomTags").path("StudyDate");
+				//					JsonNode studyTimeNode = studyData.path("MainDicomTags").path("StudyTime");
+				//					if (!studyDateNode.isMissingNode() && studyTimeNode.isMissingNode()) {
+				//						studyDate = dateFormat.parse(studyData.path("MainDicomTags").path("StudyDate").getTextValue());
+				//					} else if (studyDateNode.isMissingNode() && !studyTimeNode.isMissingNode()) {
+				//						studyDate = dateFormat.parse(studyData.path("MainDicomTags").path("StudyTime").getTextValue());
+				//					} else {
+				//						studyDate = null;
+				//					}
+				//				}
+				//				catch (ParseException e) {
+				//					studyDate = null;
+				//				}
+				String studyDescription = Optional.ofNullable(
+				    studyData.path("MainDicomTags").path("StudyDescription").getTextValue()).orElse("");
+				String gender = Optional.ofNullable(studyData.path("PatientMainDicomTags").path("Gender").getTextValue())
+				        .orElse("");
 				DicomStudy study = new DicomStudy(studyInstanceUID, orthancStudyUID, null, config, patientName, studyDate,
-				        studyDescription, gender);
+				        studyTime, studyDescription, gender);
 				
 				// only save if the study does not already exist
 				if (getDicomStudy(studyInstanceUID) == null) {
@@ -166,7 +179,7 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 			HttpURLConnection con = getOrthancConnection("DELETE", config.getOrthancBaseUrl(),
 			    "/studies/" + dicomStudy.getOrthancStudyUID(), config.getOrthancUsername(), config.getOrthancPassword());
 			int responseCode = con.getResponseCode();
-			if (responseCode == HttpURLConnection.HTTP_OK) {
+			if (responseCode == HttpURLConnection.HTTP_OK || responseCode == 404) {
 				dao.removeDicomStudy(dicomStudy);
 			} else {
 				throw new RuntimeException("Failed to delete DICOM study. Response Code: " + responseCode + ", Study UID: "
@@ -197,7 +210,7 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 	
 	@Override
 	public List<DicomSeries> fetchSeries(String studyInstanceUID) throws IOException {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
+//		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
 		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
 		List<OrthancConfiguration> configs = orthancConfigurationService.getAllOrthancConfigurations();
 		List<DicomSeries> seriesList = new ArrayList<>();
@@ -212,16 +225,26 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 				for (JsonNode seriesData : seriesesData) {
 					String seriesInstanceUID = seriesData.path("MainDicomTags").path("SeriesInstanceUID").getTextValue();
 					String orthancSeriesUID = seriesData.path("ID").getTextValue();
-					String seriesDescription = seriesData.path("MainDicomTags").path("SeriesDescription").getTextValue();
+					String seriesDescription = Optional.ofNullable(seriesData.path("MainDicomTags").path("SeriesDescription").getTextValue()).orElse("");
 					String seriesNumber = seriesData.path("MainDicomTags").path("SeriesNumber").getTextValue();
 					String modality = seriesData.path("MainDicomTags").path("Modality").getTextValue();
-					Date seriesDate;
-					try {
-						seriesDate = dateFormat.parse(seriesData.path("MainDicomTags").path("SeriesDate").getTextValue());
-					} catch (ParseException e) {
-						seriesDate = null;
-					}
-					DicomSeries series = new DicomSeries(seriesInstanceUID, orthancSeriesUID, seriesDescription, seriesNumber, modality, seriesDate);
+					String seriesDate = Optional.ofNullable(seriesData.path("MainDicomTags").path("SeriesDate").getTextValue()).orElse("");
+					String seriesTime = Optional.ofNullable(seriesData.path("MainDicomTags").path("SeriesTime").getTextValue()).orElse("");
+//					Date seriesDate;
+//					try {
+//						JsonNode seriesDateNode = seriesData.path("MainDicomTags").path("SeriesDate");
+//						JsonNode seriesTimeNode = seriesData.path("MainDicomTags").path("SeriesTime");
+//						if (!seriesDateNode.isMissingNode() || seriesTimeNode.isMissingNode()) {
+//							seriesDate = dateFormat.parse(seriesData.path("MainDicomTags").path("SeriesDate").getTextValue());
+//						} else if (seriesDateNode.isMissingNode() || !seriesDateNode.isMissingNode()){
+//							seriesDate = dateFormat.parse(seriesData.path("MainDicomTags").path("SeriesTime").getTextValue());
+//						} else {
+//							seriesDate = null;
+//						}
+//					} catch (ParseException e) {
+//						seriesDate = null;
+//					}
+					DicomSeries series = new DicomSeries(seriesInstanceUID, orthancSeriesUID, seriesDescription, seriesNumber, modality, seriesDate, seriesTime);
 					seriesList.add(series);
 				}
 			} else {
@@ -249,7 +272,7 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 					String sopInstanceUID = instanceData.path("MainDicomTags").path("SOPInstanceUID").getTextValue();
 					String orthancInstanceUID = instanceData.path("ID").getTextValue();
 					String instanceNumber = instanceData.path("MainDicomTags").path("InstanceNumber").getTextValue();
-					String imagePositionPatient = instanceData.path("MainDicomTags").path("ImagePositionPatient").getTextValue();
+					String imagePositionPatient = Optional.ofNullable(instanceData.path("MainDicomTags").path("ImagePositionPatient").getTextValue()).orElse("");
 					DicomInstance instance = new DicomInstance(sopInstanceUID, orthancInstanceUID, instanceNumber, imagePositionPatient);
 					instanceList.add(instance);
 				}

@@ -11,6 +11,7 @@ package org.openmrs.module.imaging;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.BaseModuleActivator;
 
 /**
@@ -24,7 +25,7 @@ public class ImagingActivator extends BaseModuleActivator {
 	 * @see #started()
 	 */
 	public void started() {
-		log.info("Started Imaging");
+		log.error("Started Imaging");
 	}
 	
 	/**

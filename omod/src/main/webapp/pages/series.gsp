@@ -63,11 +63,11 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                     <td>${ui.format(series.seriesDate)}</td>
                     <td>${ui.format(series.modality)}</td>
                      <td>
-                        <a class="delete-series"
-                           <% if (privilegeModifyImageData) { %>
+                         <% if (privilegeModifyImageData) { %>
+                            <a class="delete-series"
                                 onclick="togglePopupDeleteSeries('${ui.format(series.orthancSeriesUID)}', '${studyInstanceUID}', '${patient.id}')"><i class="icon-remove" delete-action></i>
-                           <% } %>
-                        </a>
+                            </a>
+                        <% } %>
                         <a href="http://localhost:8042/stone-webviewer/index.html?study=${ui.format(studyInstanceUID)}&series=${series.seriesInstanceUID}"
                             title="${ ui.message("imaging.app.openStoneView.label") }">
                             <img class="series-stone-img" src="${ ui.resourceLink("imaging", "images/stoneViewer.png") }"/></a>
@@ -80,7 +80,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
 <br/>
 
 <div id="popupOverlayDeleteSeries" class="overlay-container">
-    <div class="popup-box" style="width: 65%>
+    <div class="popup-box" style="width: 65%;">
         <h2>Delete Series</h2>
         <form name="deleteSeriesForm" class="form-container" method='POST'>
             <h3 id="deleteSeriesMessage">${ ui.message("imaging.deleteSeries.message") }</h3>

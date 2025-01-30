@@ -49,6 +49,23 @@
 		DicomStudy.hbm.xml
 	</mappingFiles>
 
+	<privilege>
+		<name>Task: Manager Orthanc Configuration</name>
+		<description>Able to add, delete configuration</description>
+	</privilege>
+
+	<privilege>
+		<name>Task: Modify Image Data</name>
+		<description>Able to add, delete image data</description>
+	</privilege>
+
+	<!-- Required Global Properties -->
+	<globalProperty>
+		<property>imaging.maxUploadImageDataSize</property>
+		<defaultValue>200000000</defaultValue>
+		<description>Set maximum size for upload of image study data</description>
+	</globalProperty>
+
 	<!-- AOP
 	<advice>
 		<point>org.openmrs.api.FormService</point>

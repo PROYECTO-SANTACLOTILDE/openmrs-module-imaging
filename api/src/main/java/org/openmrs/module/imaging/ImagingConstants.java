@@ -1,7 +1,5 @@
 package org.openmrs.module.imaging;
 
-import java.util.UUID;
-
 public class ImagingConstants {
 	
 	public static final String MODULE_ID = "imaging";
@@ -10,4 +8,5 @@ public class ImagingConstants {
 	
 	public static final String PRIVILEGE_Manager_ORTHANC_CONFIGURATION = "Task: Manager Orthanc Configuration";
 	
+	public static final String GP_MAX_UPLOAD_IMAGEDATA_SIZE = "imaging.maxUploadImageDataSize";
 }

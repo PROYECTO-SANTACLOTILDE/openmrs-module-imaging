@@ -114,11 +114,11 @@ body {
 }
 
 .table td, .stone-img {
-    width: 20px;
+    width: 28px;
 }
 
 .table td, .ohif-img {
-    width: 22px;
+    width: 28px;
     margin-left: 12px;
 }
 

@@ -30,11 +30,11 @@
 <div style="color:red;">
 ${param["message"]?.getAt(0) ?: ""}
 </div>
-<div>
-    <% if (privilegeManagerOrthancConfiguration) { %>
-        <button class="btn-open-popup" onclick="togglePopupAdd()">Add new configuration</button>
-    <% } %>
-</div>
+ <% if (privilegeManagerOrthancConfiguration) { %>
+    <div>
+            <button class="btn-open-popup" onclick="togglePopupAdd()">Add new configuration</button>
+    </div>
+<% } %>
 <div id="table-scroll">
     <table id="imaging-settings" class="table table-sm table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl" data-sortable>
         <thead>
@@ -57,11 +57,11 @@ ${param["message"]?.getAt(0) ?: ""}
                     <td>${ui.format(orthancConfiguration.orthancBaseUrl)}</td>
                     <td>${ui.format(orthancConfiguration.orthancUsername)}</td>
                     <td>
-                        <a class="delete-configuration"
-                            <% if (privilegeManagerOrthancConfiguration) { %>
-                                onclick="togglePopupDeleteOrthancConfiguration('${orthancConfiguration.id}')"><i class="icon-remove delete-action"></i>
-                            <% } %>
-                        </a>
+                       <% if (privilegeManagerOrthancConfiguration) { %>
+                            <a class="delete-configuration"
+                               onclick="togglePopupDeleteOrthancConfiguration('${orthancConfiguration.id}')"><i class="icon-remove delete-action"></i>
+                            </a>
+                       <% } %>
                     </td>
                 </tr>
             <% } %>
@@ -90,7 +90,7 @@ ${param["message"]?.getAt(0) ?: ""}
 </div>
 
 <div id="popupOverlayDeleteOrthancConfiguration" class="overlay-container">
-    <div class="popup-box" style="width: 65%>
+    <div class="popup-box" style="width: 65%;">
         <h2>Delete Orthanc Configuration</h2>
         <form name="deleteOrthancConfigurationForm" class="form-container" method='POST'>
             <h3 id="deleteOrthancConfigurationMessage">${ ui.message("imaging.deleteOrthancConfiguration.message") }</h3>

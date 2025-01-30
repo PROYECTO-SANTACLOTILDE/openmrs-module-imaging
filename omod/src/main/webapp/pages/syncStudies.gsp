@@ -52,12 +52,7 @@ ${param["message"]?.getAt(0) ?: ""}
                     <form method='POST' action='/openmrs/module/imaging/assignStudy.form?patientId=${patient.id}&studyInstanceUID=${study.studyInstanceUID}'>
                         <input type="checkbox" name="isChecked"
                                 ${study.mrsPatient!=null && study.mrsPatient.id+""==param["patientId"].getAt(0) ? "checked" : ""}
-                                onChange="this.form.submit()"
-                                <% if (privilegeModifyImageData) { %>
-                                    enabled
-                                <% } else  { %>
-                                    disabled
-                                <% } %>
+                                onChange="this.form.submit()"/>
                     </form>
                     </td>
                     <td>${match[study.studyInstanceUID]}%</td>

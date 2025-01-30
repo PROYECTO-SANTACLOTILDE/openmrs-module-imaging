@@ -5,17 +5,19 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.imaging.ImagingConstants;
+import org.openmrs.module.imaging.ImagingProperties;
 import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.module.imaging.api.DicomStudyService;
 import org.openmrs.module.imaging.api.OrthancConfigurationService;
 import org.openmrs.module.imaging.api.study.DicomStudy;
 import org.openmrs.ui.framework.Model;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -27,6 +29,10 @@ public class StudiesPageController {
 	protected Log log = LogFactory.getLog(this.getClass());
 	
 	public void get(Model model, @RequestParam(value = "patientId") Patient patient) {
+		
+		//		Context.getRegisteredComponent("multipartResolver", CommonsMultipartResolver.class).setMaxUploadSize(200_000_000);
+		//Context.getRegisteredComponent("multipartResolver", CommonsMultipartResolver.class).setMaxUploadSize(-1);
+		
 		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
 		List<DicomStudy> studies = dicomStudyService.getStudies(patient);
 		model.addAttribute("studies", studies);
@@ -35,7 +41,27 @@ public class StudiesPageController {
 		model.addAttribute("orthancConfigurations", orthancConfigureService.getAllOrthancConfigurations());
 		model.addAttribute("privilegeModifyImageData",
 		    Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_Modify_IMAGE_DATA));
+		
+		ImagingProperties imageProps = Context.getRegisteredComponent("imagingProperties", ImagingProperties.class);
+		//		long maxUploadImageDataSize = imageProps.getMaxUploadImageDataSize();
+		//		Context.getRegisteredComponent("multipartResolver", CommonsMultipartResolver.class).setMaxUploadSize(
+		//				maxUploadImageDataSize);
+		
+		long testSize = 200000000; // Wei: later delete.
+		Context.getRegisteredComponent("multipartResolver", CommonsMultipartResolver.class).setMaxUploadSize(testSize);
 	}
+	
+	//	@ExceptionHandler(MaxUploadSizeExceededException.class)
+	//	@ResponseStatus(HttpStatus.REQUEST_ENTITY_TOO_LARGE)
+	//	public String handleMaxSizeException(RedirectAttributes redirectAttributes, MaxUploadSizeExceededException e) {
+	//		log.error("************** too large");
+	//		//			return new ResponseEntity<>("Total size exceeds maximum upload limit. Please upload smaller or less files.",
+	//		//					HttpStatus.REQUEST_ENTITY_TOO_LARGE);
+	//		String status = "File size exceeds maximum upload limit. Please upload a smaller file.";
+	//		redirectAttributes.addAttribute("patientId", 8);
+	//		redirectAttributes.addAttribute("message", status);
+	//		return "redirect:/imaging/studies.page";
+	//	}
 	
 	@RequestMapping(value = "/module/imaging/uploadStudy.form", method = RequestMethod.POST)
 	public String uploadStudy(RedirectAttributes redirectAttributes, HttpServletResponse response,

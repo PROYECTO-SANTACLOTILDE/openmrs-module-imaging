@@ -13,7 +13,7 @@
         for a list of supported elements and attributes
     -->
 
-    <changeSet id="19" author="weisadre">
+    <changeSet id="35" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_OrthancConfiguration"/>
@@ -30,7 +30,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="18" author="weisadre">
+    <changeSet id="36" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_DicomStudy"/>
@@ -44,7 +44,8 @@
             </column>
             <column name="orthancStudyUID" type="varchar(255)"/>
             <column name="patientName" type="varchar(255)"/>
-            <column name="studyDate" type="datetime"/>
+            <column name="studyDate" type="varchar(255)"/>
+            <column name="studyTime" type="varchar(255)"/>
             <column name="patient_id" type="int">
                 <constraints nullable="true"/>
             </column>

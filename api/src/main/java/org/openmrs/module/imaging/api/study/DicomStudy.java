@@ -4,8 +4,6 @@ import org.openmrs.BaseOpenmrsData;
 import org.openmrs.Patient;
 import org.openmrs.module.imaging.OrthancConfiguration;
 
-import java.util.Date;
-
 public class DicomStudy extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 1;
@@ -20,7 +18,9 @@ public class DicomStudy extends BaseOpenmrsData implements java.io.Serializable 
 	
 	private String patientName;
 	
-	private Date studyDate;
+	private String studyDate;
+	
+	private String studyTime;
 	
 	private String studyDescription;
 	
@@ -30,13 +30,14 @@ public class DicomStudy extends BaseOpenmrsData implements java.io.Serializable 
 	}
 	
 	public DicomStudy(String studyInstanceUID, String orthancStudyUID, Patient patient, OrthancConfiguration config,
-	    String patientName, Date studyDate, String studyDescription, String gender) {
+	    String patientName, String studyDate, String studyTime, String studyDescription, String gender) {
 		this.studyInstanceUID = studyInstanceUID;
 		this.orthancStudyUID = orthancStudyUID;
 		this.mrsPatient = patient;
 		this.orthancConfiguration = config;
 		this.patientName = patientName;
 		this.studyDate = studyDate;
+		this.studyTime = studyTime;
 		this.studyDescription = studyDescription;
 		this.gender = gender;
 	}
@@ -58,11 +59,11 @@ public class DicomStudy extends BaseOpenmrsData implements java.io.Serializable 
 		this.patientName = patientName;
 	}
 	
-	public Date getStudyDate() {
+	public String getStudyDate() {
 		return studyDate;
 	}
 	
-	public void setStudyDate(Date studyDate) {
+	public void setStudyDate(String studyDate) {
 		this.studyDate = studyDate;
 	}
 	
@@ -114,5 +115,13 @@ public class DicomStudy extends BaseOpenmrsData implements java.io.Serializable 
 	
 	public void setOrthancStudyUID(String orthancStudyUID) {
 		this.orthancStudyUID = orthancStudyUID;
+	}
+	
+	public String getStudyTime() {
+		return studyTime;
+	}
+	
+	public void setStudyTime(String studyTime) {
+		this.studyTime = studyTime;
 	}
 }
