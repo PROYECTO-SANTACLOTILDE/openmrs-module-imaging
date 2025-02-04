@@ -107,20 +107,20 @@ public class StudiesPageController {
 		String message;
 		try {
 			DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
-			OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
 			if (orthancConfigurationId == -1) {
 				if (fetchOption.equals("all")) {
-					dicomStudyService.fetchStudies();
+					dicomStudyService.fetchAllStudies();
 				} else {
-					//					dicomStudyService.fetchStudies(0);
-					log.error("cccc");
+					dicomStudyService.fetchNewChangedStudies();
 				}
 			} else {
+				OrthancConfigurationService orthancConfigurationService = Context
+				        .getService(OrthancConfigurationService.class);
+				OrthancConfiguration config = orthancConfigurationService.getOrthancConfiguration(orthancConfigurationId);
 				if (fetchOption.equals("all")) {
-					dicomStudyService.fetchStudies(orthancConfigurationService
-					        .getOrthancConfiguration(orthancConfigurationId));
+					dicomStudyService.fetchAllStudies(config);
 				} else {
-					dicomStudyService.fetchStudies(orthancConfigurationService.getOrthancConfiguration(0));
+					dicomStudyService.fetchNewChangedStudies(config);
 				}
 			}
 			message = "Studies successfully fetched";

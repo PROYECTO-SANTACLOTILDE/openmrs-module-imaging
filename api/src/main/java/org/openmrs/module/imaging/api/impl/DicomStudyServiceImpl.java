@@ -17,14 +17,9 @@ import org.openmrs.module.imaging.api.study.DicomSeries;
 import org.openmrs.module.imaging.api.study.DicomStudy;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 
@@ -41,6 +36,11 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 	
 	public DicomStudyDao getDao() {
 		return dao;
+	}
+	
+	private static void throwConnectionException(OrthancConfiguration config, HttpURLConnection con) throws IOException {
+		throw new IOException("Request to Orthanc server " + config.getOrthancBaseUrl() + " failed with error "
+		        + con.getResponseCode() + " " + con.getResponseMessage());
 	}
 	
 	private HttpURLConnection getOrthancConnection(String method, String url, String path, String username, String password)
@@ -74,11 +74,11 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 	}
 	
 	@Override
-	public void fetchStudies() throws IOException {
+	public void fetchAllStudies() throws IOException {
 		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
 		List<OrthancConfiguration> configs = orthancConfigurationService.getAllOrthancConfigurations();
 		for (OrthancConfiguration config : configs) {
-			fetchStudies(config);
+			fetchAllStudies(config);
 		}
 	}
 	
@@ -88,9 +88,8 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 	}
 	
 	@Override
-	public void fetchStudies(OrthancConfiguration config) throws IOException {
-		log.info("Fetching studies from orthanc server " + config.getOrthancBaseUrl());
-		//		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
+	public void fetchAllStudies(OrthancConfiguration config) throws IOException {
+		log.info("Fetching all studies from orthanc server " + config.getOrthancBaseUrl());
 		HttpURLConnection con = getOrthancConnection("POST", config.getOrthancBaseUrl(), "/tools/find",
 		    config.getOrthancUsername(), config.getOrthancPassword());
 		sendOrthancQuery(con, "{" + "\"Level\": \"Studies\"," + " \"Expand\": true," + " \"Query\": {}" + " }");
@@ -98,44 +97,49 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		if (status == HttpURLConnection.HTTP_OK) {
 			JsonNode studiesData = new ObjectMapper().readTree(con.getInputStream());
 			for (JsonNode studyData : studiesData) {
-				log.info("Parsing study data received from orthanc server");
-				String studyInstanceUID = studyData.path("MainDicomTags").path("StudyInstanceUID").getTextValue();
-				String orthancStudyUID = studyData.path("ID").getTextValue();
-				String patientName = studyData.path("PatientMainDicomTags").path("PatientName").getTextValue();
-				String studyDate = Optional.ofNullable(studyData.path("MainDicomTags").path("StudyDate").getTextValue())
-				        .orElse("");
-				String studyTime = Optional.ofNullable(studyData.path("MainDicomTags").path("StudyTime").getTextValue())
-				        .orElse("");
-				//				Date studyDate;
-				//				try {
-				//					JsonNode studyDateNode = studyData.path("MainDicomTags").path("StudyDate");
-				//					JsonNode studyTimeNode = studyData.path("MainDicomTags").path("StudyTime");
-				//					if (!studyDateNode.isMissingNode() && studyTimeNode.isMissingNode()) {
-				//						studyDate = dateFormat.parse(studyData.path("MainDicomTags").path("StudyDate").getTextValue());
-				//					} else if (studyDateNode.isMissingNode() && !studyTimeNode.isMissingNode()) {
-				//						studyDate = dateFormat.parse(studyData.path("MainDicomTags").path("StudyTime").getTextValue());
-				//					} else {
-				//						studyDate = null;
-				//					}
-				//				}
-				//				catch (ParseException e) {
-				//					studyDate = null;
-				//				}
-				String studyDescription = Optional.ofNullable(
-				    studyData.path("MainDicomTags").path("StudyDescription").getTextValue()).orElse("");
-				String gender = Optional.ofNullable(studyData.path("PatientMainDicomTags").path("Gender").getTextValue())
-				        .orElse("");
-				DicomStudy study = new DicomStudy(studyInstanceUID, orthancStudyUID, null, config, patientName, studyDate,
-				        studyTime, studyDescription, gender);
-				
-				// only save if the study does not already exist
-				if (getDicomStudy(studyInstanceUID) == null) {
-					dao.saveDicomStudy(study);
-				}
+				createOrUpdateStudy(config, studyData);
 			}
 		} else {
-			throw new IOException("Request to Orthanc server " + config.getOrthancBaseUrl() + " failed with error "
-			        + con.getResponseCode() + " " + con.getResponseMessage());
+			throwConnectionException(config, con);
+		}
+	}
+	
+	private void createOrUpdateStudy(OrthancConfiguration config, JsonNode studyData) {
+		String studyInstanceUID = studyData.path("MainDicomTags").path("StudyInstanceUID").getTextValue();
+		String orthancStudyUID = studyData.path("ID").getTextValue();
+		String patientName = studyData.path("PatientMainDicomTags").path("PatientName").getTextValue();
+		String studyDate = Optional.ofNullable(studyData.path("MainDicomTags").path("StudyDate").getTextValue()).orElse("");
+		String studyTime = Optional.ofNullable(studyData.path("MainDicomTags").path("StudyTime").getTextValue()).orElse("");
+		//		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
+		//				Date studyDate;
+		//				try {
+		//					JsonNode studyDateNode = studyData.path("MainDicomTags").path("StudyDate");
+		//					JsonNode studyTimeNode = studyData.path("MainDicomTags").path("StudyTime");
+		//					if (!studyDateNode.isMissingNode() && studyTimeNode.isMissingNode()) {
+		//						studyDate = dateFormat.parse(studyData.path("MainDicomTags").path("StudyDate").getTextValue());
+		//					} else if (studyDateNode.isMissingNode() && !studyTimeNode.isMissingNode()) {
+		//						studyDate = dateFormat.parse(studyData.path("MainDicomTags").path("StudyTime").getTextValue());
+		//					} else {
+		//						studyDate = null;
+		//					}
+		//				}
+		//				catch (ParseException e) {
+		//					studyDate = null;
+		//				}
+		String studyDescription = Optional.ofNullable(
+		    studyData.path("MainDicomTags").path("StudyDescription").getTextValue()).orElse("");
+		String gender = Optional.ofNullable(studyData.path("PatientMainDicomTags").path("Gender").getTextValue()).orElse("");
+		DicomStudy study = new DicomStudy(studyInstanceUID, orthancStudyUID, null, config, patientName, studyDate,
+		        studyTime, studyDescription, gender);
+		
+		DicomStudy existingStudy = getDicomStudy(studyInstanceUID);
+		// new study? -> save
+		if (existingStudy == null) {
+			dao.saveDicomStudy(study);
+		} else {
+			// DICOM studies are immutable. Only the Orthanc ID can change.
+			existingStudy.setOrthancStudyUID(study.getOrthancStudyUID());
+			dao.saveDicomStudy(existingStudy);
 		}
 	}
 	
@@ -157,6 +161,69 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 	@Override
 	public List<DicomStudy> getAllStudies() {
 		return dao.getAllDicomStudies();
+	}
+	
+	@Override
+	public void fetchNewChangedStudies() throws IOException {
+		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
+		List<OrthancConfiguration> configs = orthancConfigurationService.getAllOrthancConfigurations();
+		for (OrthancConfiguration config : configs) {
+			fetchNewChangedStudies(config);
+		}
+	}
+	
+	@Override
+	public void fetchNewChangedStudies(OrthancConfiguration config) throws IOException {
+		// repeat until all updates have been received
+		while(true) {
+			// get changes from server
+			String params = "?limit=1000";
+			if (config.getLastChangedIndex() != -1) {
+				params += "&since=" + config.getLastChangedIndex();
+			}
+			HttpURLConnection con = getOrthancConnection("GET", config.getOrthancBaseUrl(), "/changes" + params,
+					config.getOrthancUsername(), config.getOrthancPassword());
+			int status = con.getResponseCode();
+			if (status == HttpURLConnection.HTTP_OK) {
+				// collect changes
+				JsonNode changesData = new ObjectMapper().readTree(con.getInputStream());
+				JsonNode changes = changesData.get("Changes");
+				List<String> orthancStudyIds = new ArrayList<>();
+				for (JsonNode change : changes) {
+					String changeType = change.get("ChangeType").getTextValue();
+					if (changeType.equals("NewStudy") || changeType.equals("StableStudy")) {
+						orthancStudyIds.add(change.get("ID").getTextValue());
+					}
+				}
+				// update the studies
+				fetchNewChangedStudies(config, orthancStudyIds);
+				// remember last processed change
+				OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
+				config.setLastChangedIndex(changesData.get("Last").asInt());
+				orthancConfigurationService.saveOrthancConfiguration(config);
+				// stop when all changes read
+				if(changesData.get("Done").asText().equals("true")) {
+					break;
+				}
+			} else {
+				throwConnectionException(config, con);
+			}
+		}
+	}
+	
+	private void fetchNewChangedStudies(OrthancConfiguration config, List<String> orthancStudyIds) throws IOException {
+		// TODO: don't open a new connection for every study
+		for (String orthancStudyId : orthancStudyIds) {
+			HttpURLConnection con = getOrthancConnection("GET", config.getOrthancBaseUrl(), "/studies/" + orthancStudyId,
+			    config.getOrthancUsername(), config.getOrthancPassword());
+			int status = con.getResponseCode();
+			if (status == HttpURLConnection.HTTP_OK) {
+				JsonNode studyData = new ObjectMapper().readTree(con.getInputStream());
+				createOrUpdateStudy(config, studyData);
+			} else {
+				throwConnectionException(config, con);
+			}
+		}
 	}
 	
 	@Override

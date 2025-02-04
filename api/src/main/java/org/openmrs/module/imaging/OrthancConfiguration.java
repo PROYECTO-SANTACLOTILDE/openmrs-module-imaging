@@ -15,13 +15,16 @@ public class OrthancConfiguration extends BaseOpenmrsData implements Serializabl
 	
 	private String orthancPassword;
 	
+	private Integer lastChangedIndex = -1;
+	
 	public OrthancConfiguration() {
 	}
 	
-	public OrthancConfiguration(String orthancBaseUrl, String orthancUsername, String orthancPassword) {
+	public OrthancConfiguration(String orthancBaseUrl, String orthancUsername, String orthancPassword, int lastChangedIndex) {
 		this.orthancBaseUrl = orthancBaseUrl;
 		this.orthancUsername = orthancUsername;
 		this.orthancPassword = orthancPassword;
+		this.lastChangedIndex = lastChangedIndex;
 	}
 	
 	@Override
@@ -58,4 +61,11 @@ public class OrthancConfiguration extends BaseOpenmrsData implements Serializabl
 		return this.orthancPassword;
 	}
 	
+	public Integer getLastChangedIndex() {
+		return lastChangedIndex;
+	}
+	
+	public void setLastChangedIndex(Integer lastChangedIndex) {
+		this.lastChangedIndex = lastChangedIndex;
+	}
 }

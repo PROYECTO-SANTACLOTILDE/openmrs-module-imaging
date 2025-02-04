@@ -8,7 +8,6 @@ import org.openmrs.module.imaging.api.study.DicomSeries;
 import org.openmrs.module.imaging.api.study.DicomStudy;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -24,11 +23,15 @@ public interface DicomStudyService extends OpenmrsService {
 	
 	int testOrthancConnection(String url, String username, String password) throws IOException;
 	
-	void fetchStudies() throws IOException;
-	
 	boolean hasStudy(OrthancConfiguration orthancConfiguration);
 	
-	void fetchStudies(OrthancConfiguration orthancConfiguration) throws IOException;
+	void fetchAllStudies() throws IOException;
+	
+	void fetchAllStudies(OrthancConfiguration orthancConfiguration) throws IOException;
+	
+	void fetchNewChangedStudies() throws IOException;
+	
+	void fetchNewChangedStudies(OrthancConfiguration orthancConfiguration) throws IOException;
 	
 	int uploadFile(OrthancConfiguration config, InputStream is) throws IOException;
 	
