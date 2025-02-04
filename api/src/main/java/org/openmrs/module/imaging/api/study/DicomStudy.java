@@ -106,7 +106,6 @@ public class DicomStudy extends BaseOpenmrsData implements java.io.Serializable 
 	
 	@Override
 	public void setId(Integer integer) {
-		
 	}
 	
 	public String getOrthancStudyUID() {

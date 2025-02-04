@@ -11,10 +11,8 @@ import org.openmrs.module.imaging.api.DicomStudyService;
 import org.openmrs.module.imaging.api.OrthancConfigurationService;
 import org.openmrs.module.imaging.api.study.DicomStudy;
 import org.openmrs.ui.framework.Model;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -30,7 +28,7 @@ public class StudiesPageController {
 	
 	public void get(Model model, @RequestParam(value = "patientId") Patient patient) {
 		
-		//		Context.getRegisteredComponent("multipartResolver", CommonsMultipartResolver.class).setMaxUploadSize(200_000_000);
+		// Context.getRegisteredComponent("multipartResolver", CommonsMultipartResolver.class).setMaxUploadSize(200_000_000);
 		//Context.getRegisteredComponent("multipartResolver", CommonsMultipartResolver.class).setMaxUploadSize(-1);
 		
 		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
@@ -43,8 +41,8 @@ public class StudiesPageController {
 		    Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_Modify_IMAGE_DATA));
 		
 		ImagingProperties imageProps = Context.getRegisteredComponent("imagingProperties", ImagingProperties.class);
-		//		long maxUploadImageDataSize = imageProps.getMaxUploadImageDataSize();
-		//		Context.getRegisteredComponent("multipartResolver", CommonsMultipartResolver.class).setMaxUploadSize(
+		//	long maxUploadImageDataSize = imageProps.getMaxUploadImageDataSize();
+		//	Context.getRegisteredComponent("multipartResolver", CommonsMultipartResolver.class).setMaxUploadSize(
 		//				maxUploadImageDataSize);
 		
 		long testSize = 200000000; // Wei: later delete.
@@ -105,16 +103,25 @@ public class StudiesPageController {
 	@RequestMapping(value = "/module/imaging/syncStudies.form", method = RequestMethod.POST)
 	public String syncStudy(RedirectAttributes redirectAttributes,
 	        @RequestParam(value = "orthancConfigurationId") int orthancConfigurationId,
-	        @RequestParam(value = "patientId") Patient patient) {
+	        @RequestParam(value = "fetchOption") String fetchOption, @RequestParam(value = "patientId") Patient patient) {
 		String message;
 		try {
 			DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
 			OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
-			
 			if (orthancConfigurationId == -1) {
-				dicomStudyService.fetchStudies();
+				if (fetchOption.equals("all")) {
+					dicomStudyService.fetchStudies();
+				} else {
+					//					dicomStudyService.fetchStudies(0);
+					log.error("cccc");
+				}
 			} else {
-				dicomStudyService.fetchStudies(orthancConfigurationService.getOrthancConfiguration(orthancConfigurationId));
+				if (fetchOption.equals("all")) {
+					dicomStudyService.fetchStudies(orthancConfigurationService
+					        .getOrthancConfiguration(orthancConfigurationId));
+				} else {
+					dicomStudyService.fetchStudies(orthancConfigurationService.getOrthancConfiguration(0));
+				}
 			}
 			message = "Studies successfully fetched";
 		}

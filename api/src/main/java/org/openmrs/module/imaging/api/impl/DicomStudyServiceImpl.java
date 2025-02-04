@@ -244,7 +244,7 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 //					} catch (ParseException e) {
 //						seriesDate = null;
 //					}
-					DicomSeries series = new DicomSeries(seriesInstanceUID, orthancSeriesUID, seriesDescription, seriesNumber, modality, seriesDate, seriesTime);
+					DicomSeries series = new DicomSeries(seriesInstanceUID, orthancSeriesUID, config, seriesDescription, seriesNumber, modality, seriesDate, seriesTime);
 					seriesList.add(series);
 				}
 			} else {

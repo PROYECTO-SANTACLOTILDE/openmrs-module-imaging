@@ -1,6 +1,7 @@
 package org.openmrs.module.imaging.api.study;
 
 import org.openmrs.BaseOpenmrsData;
+import org.openmrs.module.imaging.OrthancConfiguration;
 
 public class DicomSeries extends BaseOpenmrsData implements java.io.Serializable {
 	
@@ -9,6 +10,8 @@ public class DicomSeries extends BaseOpenmrsData implements java.io.Serializable
 	private String seriesInstanceUID;
 	
 	private String orthancSeriesUID;
+	
+	private OrthancConfiguration orthancConfiguration;
 	
 	private String seriesDescription;
 	
@@ -23,11 +26,12 @@ public class DicomSeries extends BaseOpenmrsData implements java.io.Serializable
 	public DicomSeries() {
 	}
 	
-	public DicomSeries(String seriesInstanceUID, String orthancSeriesUID, String seriesDescription, String seriesNumber,
-	    String modality, String seriesDate, String seriesTime) {
+	public DicomSeries(String seriesInstanceUID, String orthancSeriesUID, OrthancConfiguration config,
+	    String seriesDescription, String seriesNumber, String modality, String seriesDate, String seriesTime) {
 		this.seriesInstanceUID = seriesInstanceUID;
 		this.seriesDescription = seriesDescription;
 		this.orthancSeriesUID = orthancSeriesUID;
+		this.orthancConfiguration = config;
 		this.seriesNumber = seriesNumber;
 		this.modality = modality;
 		this.seriesDate = seriesDate;
@@ -99,5 +103,13 @@ public class DicomSeries extends BaseOpenmrsData implements java.io.Serializable
 	
 	public void setSeriesTime(String seriesTime) {
 		this.seriesTime = seriesTime;
+	}
+	
+	public OrthancConfiguration getOrthancConfiguration() {
+		return orthancConfiguration;
+	}
+	
+	public void setOrthancConfiguration(OrthancConfiguration orthancConfiguration) {
+		this.orthancConfiguration = orthancConfiguration;
 	}
 }

@@ -51,7 +51,7 @@ ${param["message"]?.getAt(0) ?: ""}
         <% if (privilegeModifyImageData) { %>
             <button class="btn-open-popup-upload" onclick="togglePopupUpload()">Upload Study</button>
         <% } %>
-        <button class="btn-open-popup-sync" onclick="toggleSynchronizeStudies()">Get latest studies</button>
+        <button class="btn-open-popup-sync" onclick="toggleSynchronizeStudies()">Get Studies</button>
      <% } %>
 </div>
 
@@ -89,10 +89,12 @@ ${param["message"]?.getAt(0) ?: ""}
                             </a>
                         <% } %>
                         <div style="display: flex">
-                           <a href="http://localhost:8042/stone-webviewer/index.html?study=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openStoneView.label") }">
+                           <a href="${ui.format(study.orthancConfiguration.orthancBaseUrl)}/stone-webviewer/index.html?study=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openStoneView.label") }">
                                 <img class="stone-img" alt="Show image in stone viewer" src="${ ui.resourceLink("imaging", "images/stoneViewer.png")}"/></a>
-                           <a href="http://localhost:8042/ohif/viewer?StudyInstanceUIDs=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openOHIFView.label") }">
+                           <a href="${ui.format(study.orthancConfiguration.orthancBaseUrl)}ohif/viewer?StudyInstanceUIDs=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openOHIFView.label") }">
                                <img class="ohif-img" alt="Show image in OHIF viewer" src="${ ui.resourceLink("imaging", "images/ohifViewer.png")}"/></a>
+                           <a href="${ui.format(study.orthancConfiguration.orthancBaseUrl)}/ui/app/index.html#/?StudyInstanceUID=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.orthancExplorer.label") }">
+                               <img class="orthanc-img" alt="Show image data in Orthanc explorer" src="${ ui.resourceLink("imaging", "images/orthanc.png")}"/></a>
                        </div>
                     </td>
                 </tr>
@@ -124,6 +126,10 @@ ${param["message"]?.getAt(0) ?: ""}
     <div class="popup-box">
         <h2 style="color: #009384;">Fetch studies from providers</h2>
         <form class="form-container" method='POST' action='/openmrs/module/imaging/syncStudies.form?patientId=${patient.id}'>
+            <div class="radio-div">
+                <label><input type="radio" id="fetchAll" name="fetchOption" value="all" checked>Get all studies</label>
+                <label><input type="radio" id="fetchNewest" name="fetchOption" value="newest">Get the latest studies</label>
+            </div>
             <label class="form-label" for="server">Select Orthanc server</label>
             <select class="select-config" id="orthancConfigurationId" name="orthancConfigurationId">
                 <option value="-1">All servers</option>

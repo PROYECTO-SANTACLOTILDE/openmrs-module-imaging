@@ -87,10 +87,10 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                 <tr>
                     <td class="uid-td">${ui.format(instance.sopInstanceUID)}</td>
                     <td>${ui.format(instance.instanceNumber)}</td>
-                    <td>${ui.format(instance.imagePositionPatient)}</td>
+                    <td id="testID">${ui.format(instance.imagePositionPatient)}</td>
                     <td>
                         <a style="margin-left:15px" title="${ ui.message("imaging.app.instancePreview.label") }"
-                            onclick="togglePopupPreview('${ui.format(instance.orthancInstanceUID)}', '${param['studyInstanceUID'].getAt(0)}' )">
+                            onclick="togglePopupPreview('${ui.format(instance.orthancInstanceUID)}', '${param['studyInstanceUID'].getAt(0)}')">
                             <img class="instance-preview" src="${ ui.resourceLink("imaging", "images/preview.png") }"/>
                         </a>
                     </td>

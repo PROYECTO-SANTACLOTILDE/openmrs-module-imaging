@@ -62,8 +62,10 @@ ${param["message"]?.getAt(0) ?: ""}
                     <td>${ui.format(study.studyDescription)}</td>
                     <td>${ui.format(study.orthancConfiguration.orthancBaseUrl)}</td>
                      <td>
-                        <a href="http://localhost:8042/stone-webviewer/index.html?study=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openStoneView.label") }">
+                        <a href="${ui.format(study.orthancConfiguration.orthancBaseUrl)}"+"/stone-webviewer/index.html?study=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openStoneView.label") }">
                             <img class="stone-img" alt="Show image in stone viewer" src="${ ui.resourceLink("imaging", "images/stoneViewer.png")}"/></a>
+                        <a href="${ui.format(study.orthancConfiguration.orthancBaseUrl)}/ui/app/index.html#/?StudyInstanceUID=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.orthancExplorer.label") }">
+                            <img class="orthanc-img" alt="Show image data in Orthanc explorer" src="${ ui.resourceLink("imaging", "images/orthanc.png")}"/></a>
                     </td>
                 </tr>
             <% } %>
