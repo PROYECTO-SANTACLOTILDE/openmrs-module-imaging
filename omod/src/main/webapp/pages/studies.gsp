@@ -64,7 +64,7 @@ ${param["message"]?.getAt(0) ?: ""}
                 <th>${ ui.message("imaging.app.date.label")}</th>
                 <th>${ ui.message("imaging.app.description.label")}</th>
                 <th>${ ui.message("imaging.app.server.label")}</th>
-                <th>${ ui.message("coreapps.actions") }</th>
+                <th style="width: max-content;">${ ui.message("coreapps.actions") }</th>
             </tr>
         </thead>
         <tbody>
@@ -127,8 +127,10 @@ ${param["message"]?.getAt(0) ?: ""}
         <h2 style="color: #009384;">Fetch studies from providers</h2>
         <form class="form-container" method='POST' action='/openmrs/module/imaging/syncStudies.form?patientId=${patient.id}'>
             <div class="radio-div">
-                <label><input type="radio" id="fetchAll" name="fetchOption" value="all" checked>Get all studies</label>
-                <label><input type="radio" id="fetchNewest" name="fetchOption" value="newest">Get the latest studies</label>
+                <label style="margin-right: 30px; color: #5B57A6;">
+                    <input style="width:20px; margin-top: 2px; height: 20px;" type="radio" id="fetchAll" name="fetchOption" value="all" checked>Get all studies</label>
+                <label style="margin-left: 30px; color: #5B57A6;">
+                    <input style="width:20px; margin-top: 2px; height: 20px;" type="radio" id="fetchNewest" name="fetchOption" value="newest">Get the latest studies</label>
             </div>
             <label class="form-label" for="server">Select Orthanc server</label>
             <select class="select-config" id="orthancConfigurationId" name="orthancConfigurationId">

@@ -74,7 +74,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                 <th>${ ui.message("imaging.app.sopInstanceUID.label")}</th>
                 <th>${ ui.message("imaging.app.instanceNumber.label")}</th>
                 <th>${ ui.message("imaging.app.imagePositionPatient.label")}</th>
-                <th>${ ui.message("coreapps.actions") }</th>
+                <th style="width: max-content;">${ ui.message("coreapps.actions") }</th>
             </tr>
         </thead>
         <tbody>

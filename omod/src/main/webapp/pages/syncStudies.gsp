@@ -37,7 +37,7 @@ ${param["message"]?.getAt(0) ?: ""}
                 <th>${ ui.message("imaging.app.date.label")}</th>
                 <th>${ ui.message("imaging.app.description.label")}</th>
                 <th>${ ui.message("imaging.app.server.label")}</th>
-                <th>${ ui.message("coreapps.actions") }</th>
+                <th style="width: max-content;">${ ui.message("coreapps.actions") }</th>
             </tr>
         </thead>
         <tbody>
