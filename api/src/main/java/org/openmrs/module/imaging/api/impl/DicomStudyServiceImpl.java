@@ -1,3 +1,15 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
+
 package org.openmrs.module.imaging.api.impl;
 
 import org.apache.commons.io.IOUtils;
@@ -30,19 +42,39 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 	
 	private DicomStudyDao dao;
 	
+	/**
+	 * @param dao the dao to set
+	 */
 	public void setDao(DicomStudyDao dao) {
 		this.dao = dao;
 	}
 	
+	/**
+	 * @return the dao
+	 */
 	public DicomStudyDao getDao() {
 		return dao;
 	}
 	
+	/**
+	 * @param config the orthanc server configuration
+	 * @param con the http url connection
+	 * @throws IOException the IO exception
+	 */
 	private static void throwConnectionException(OrthancConfiguration config, HttpURLConnection con) throws IOException {
 		throw new IOException("Request to Orthanc server " + config.getOrthancBaseUrl() + " failed with error "
 		        + con.getResponseCode() + " " + con.getResponseMessage());
 	}
 	
+	/**
+	 * @param method the request method
+	 * @param url the url
+	 * @param path the connection path
+	 * @param username the user name
+	 * @param password the user password
+	 * @return The request connection
+	 * @throws IOException IO connection
+	 */
 	private HttpURLConnection getOrthancConnection(String method, String url, String path, String username, String password)
 	        throws IOException {
 		String encoding = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
@@ -54,6 +86,11 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		return con;
 	}
 	
+	/**
+	 * @param con http url request connection
+	 * @param query the query string
+	 * @throws IOException IO exception
+	 */
 	private void sendOrthancQuery(HttpURLConnection con, String query) throws IOException {
 		con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
 		con.setRequestProperty( "charset", "utf-8");
@@ -65,6 +102,13 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		}
 	}
 	
+	/**
+	 * @param url the Url
+	 * @param username the user name
+	 * @param password the password
+	 * @return the response status
+	 * @throws IOException the IO exception
+	 */
 	@Override
 	public int testOrthancConnection(String url, String username, String password) throws IOException {
 		HttpURLConnection con = getOrthancConnection("GET", url, "/system", username, password);
@@ -73,6 +117,9 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		return status;
 	}
 	
+	/**
+	 * @throws IOException the IO exception
+	 */
 	@Override
 	public void fetchAllStudies() throws IOException {
 		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
@@ -82,11 +129,19 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		}
 	}
 	
+	/**
+	 * @param orthancConfiguration the orthanc configuration
+	 * @return Is there study in the database
+	 */
 	@Override
 	public boolean hasStudy(OrthancConfiguration orthancConfiguration) {
 		return dao.hasStudy(orthancConfiguration);
 	}
 	
+	/**
+	 * @param config the configuration
+	 * @throws IOException the IO exception
+	 */
 	@Override
 	public void fetchAllStudies(OrthancConfiguration config) throws IOException {
 		log.info("Fetching all studies from orthanc server " + config.getOrthancBaseUrl());
@@ -104,6 +159,10 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		}
 	}
 	
+	/**
+	 * @param config the orthanc configuration
+	 * @param studyData the patient image study data
+	 */
 	private void createOrUpdateStudy(OrthancConfiguration config, JsonNode studyData) {
 		String studyInstanceUID = studyData.path("MainDicomTags").path("StudyInstanceUID").getTextValue();
 		String orthancStudyUID = studyData.path("ID").getTextValue();
@@ -127,6 +186,12 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		}
 	}
 	
+	/**
+	 * @param config the orthanc configuration
+	 * @param is the input strem
+	 * @return the respose code
+	 * @throws IOException the IO exception
+	 */
 	@Override
 	public int uploadFile(OrthancConfiguration config, InputStream is) throws IOException {
 		HttpURLConnection con = getOrthancConnection("POST", config.getOrthancBaseUrl(), "/instances",
@@ -137,16 +202,26 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		return con.getResponseCode();
 	}
 	
+	/**
+	 * @param pt the openmrs patient
+	 * @return the list of studies
+	 */
 	@Override
 	public List<DicomStudy> getStudies(Patient pt) {
 		return dao.getAllDicomStudiesByPatient(pt);
 	}
 	
+	/**
+	 * @return the list dicom studies
+	 */
 	@Override
 	public List<DicomStudy> getAllStudies() {
 		return dao.getAllDicomStudies();
 	}
 	
+	/**
+	 * @throws IOException the IO exception
+	 */
 	@Override
 	public void fetchNewChangedStudies() throws IOException {
 		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
@@ -156,6 +231,10 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		}
 	}
 	
+	/**
+	 * @param config The orthanc configuation
+	 * @throws IOException the IO exception
+	 */
 	@Override
 	public void fetchNewChangedStudies(OrthancConfiguration config) throws IOException {
 		// repeat until all updates have been received
@@ -195,6 +274,11 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		}
 	}
 	
+	/**
+	 * @param config the orthanc configuration
+	 * @param orthancStudyIds the study instance UIDs
+	 * @throws IOException the IO exception
+	 */
 	private void fetchNewChangedStudies(OrthancConfiguration config, List<String> orthancStudyIds) throws IOException {
 		// TODO: don't open a new connection for every study
 		for (String orthancStudyId : orthancStudyIds) {
@@ -218,17 +302,28 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		}
 	}
 	
+	/**
+	 * @param studyInstanceUID the study instance UID
+	 * @return the dicom study
+	 */
 	@Override
 	public DicomStudy getDicomStudy(String studyInstanceUID) {
 		return dao.getDicomStudy(studyInstanceUID);
 	}
 	
+	/**
+	 * @param study the dicom study
+	 * @param patient the openmrs patient
+	 */
 	@Override
 	public void setPatient(DicomStudy study, Patient patient) {
 		study.setMrsPatient(patient);
 		dao.saveDicomStudy(study);
 	}
 	
+	/**
+	 * @param dicomStudy the dicom study
+	 */
 	@Override
 	public void deleteStudy(DicomStudy dicomStudy) {
 		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
@@ -250,6 +345,11 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		}
 	}
 	
+	/**
+	 * @param seriesOrthancUID the series of the dicom study
+	 * @param seriesStudy the dicom study
+	 * @return response status code
+	 */
 	@Override
 	public int deleteSeries(String seriesOrthancUID, DicomStudy seriesStudy) {
 		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
@@ -267,9 +367,13 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		return responseCode;
 	}
 	
+	/**
+	 * @param studyInstanceUID the study instance UID
+	 * @return the list of series of the dicom study
+	 * @throws IOException the IO exception
+	 */
 	@Override
 	public List<DicomSeries> fetchSeries(String studyInstanceUID) throws IOException {
-//		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
 		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
 		List<OrthancConfiguration> configs = orthancConfigurationService.getAllOrthancConfigurations();
 		List<DicomSeries> seriesList = new ArrayList<>();
@@ -300,6 +404,11 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		return seriesList;
 	}
 	
+	/**
+	 * @param seriesInstanceUID the series instance UID
+	 * @return the list of the series of the dicom study
+	 * @throws IOException the IO exception
+	 */
 	@Override
 	public List<DicomInstance> fetchInstances(String seriesInstanceUID) throws IOException {
 		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
@@ -329,6 +438,12 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		return instanceList;
 	}
 	
+	/**
+	 * @param orthancInstanceUID the orthanc identifier UID
+	 * @param study the dicom study
+	 * @return the preview image
+	 * @throws IOException the IO exception
+	 */
 	@Override
 	public PreviewResult fetchInstancePreview(String orthancInstanceUID, DicomStudy study) throws IOException {
 		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);

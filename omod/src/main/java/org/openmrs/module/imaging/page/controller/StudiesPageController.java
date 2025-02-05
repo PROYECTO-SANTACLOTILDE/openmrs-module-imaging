@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.module.imaging.page.controller;
 
 import org.apache.commons.logging.Log;
@@ -5,7 +18,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.imaging.ImagingConstants;
-import org.openmrs.module.imaging.ImagingProperties;
 import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.module.imaging.api.DicomStudyService;
 import org.openmrs.module.imaging.api.OrthancConfigurationService;
@@ -13,9 +25,10 @@ import org.openmrs.module.imaging.api.study.DicomStudy;
 import org.openmrs.ui.framework.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -40,27 +53,45 @@ public class StudiesPageController {
 		model.addAttribute("privilegeModifyImageData",
 		    Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_Modify_IMAGE_DATA));
 		
-		ImagingProperties imageProps = Context.getRegisteredComponent("imagingProperties", ImagingProperties.class);
-		//	long maxUploadImageDataSize = imageProps.getMaxUploadImageDataSize();
-		//	Context.getRegisteredComponent("multipartResolver", CommonsMultipartResolver.class).setMaxUploadSize(
-		//				maxUploadImageDataSize);
+		//		ImagingProperties imageProps = Context.getRegisteredComponent("imagingProperties", ImagingProperties.class);
+		//		long maxUploadImageDataSize = imageProps.getMaxUploadImageDataSize();
+		//		Context.getRegisteredComponent("multipartResolver", CommonsMultipartResolver.class).setMaxUploadSize(
+		//					maxUploadImageDataSize);
 		
-		long testSize = 200000000; // Wei: later delete.
-		Context.getRegisteredComponent("multipartResolver", CommonsMultipartResolver.class).setMaxUploadSize(testSize);
+		//		long testSize = 200000000; // Wei: later delete.
+		//		Context.getRegisteredComponent("multipartResolver", CommonsMultipartResolver.class).setMaxUploadSize(testSize);
 	}
 	
-	//	@ExceptionHandler(MaxUploadSizeExceededException.class)
+	/**
+	 * @param redirectAttributes the redirect attributes
+	 * @return the model and view object
+	 */
+	@ExceptionHandler(MaxUploadSizeExceededException.class)
 	//	@ResponseStatus(HttpStatus.REQUEST_ENTITY_TOO_LARGE)
-	//	public String handleMaxSizeException(RedirectAttributes redirectAttributes, MaxUploadSizeExceededException e) {
-	//		log.error("************** too large");
-	//		//			return new ResponseEntity<>("Total size exceeds maximum upload limit. Please upload smaller or less files.",
-	//		//					HttpStatus.REQUEST_ENTITY_TOO_LARGE);
-	//		String status = "File size exceeds maximum upload limit. Please upload a smaller file.";
-	//		redirectAttributes.addAttribute("patientId", 8);
-	//		redirectAttributes.addAttribute("message", status);
-	//		return "redirect:/imaging/studies.page";
-	//	}
+	public ModelAndView handleMaxSizeException(RedirectAttributes redirectAttributes) {
+		//			return new ResponseEntity<>("Total size exceeds maximum upload limit. Please upload smaller or less files.",
+		//					HttpStatus.REQUEST_ENTITY_TOO_LARGE);
+		
+		System.out.print("++ too large");
+		String status = "File size exceeds maximum upload limit. Please upload a smaller file.";
+		//		return ResponseEntity.status(HttpStatus.REQUEST_ENTITY_TOO_LARGE).body(
+		//		    "Total size exceeds maximum upload limit. Please upload a smaller file.");
+		
+		//				String status = "File size exceeds maximum upload limit. Please upload a smaller file.";
+		redirectAttributes.addAttribute("patientId", 8);
+		redirectAttributes.addAttribute("message", status);
+		//		return new RedirectController().redirectWithUsingRedirectView(redirectAttributes);
+		return new ModelAndView("redirect:/imaging/studies.page");
+	}
 	
+	/**
+	 * @param redirectAttributes the redirect attributes
+	 * @param response the http servlet response
+	 * @param orthancConfigurationId the orthanc configuration ID
+	 * @param files the upload files
+	 * @param patient the openmrs patient
+	 * @return the redirect url
+	 */
 	@RequestMapping(value = "/module/imaging/uploadStudy.form", method = RequestMethod.POST)
 	public String uploadStudy(RedirectAttributes redirectAttributes, HttpServletResponse response,
 	        @RequestParam(value = "orthancConfigurationId") int orthancConfigurationId,
@@ -100,6 +131,13 @@ public class StudiesPageController {
 		return "redirect:/imaging/studies.page";
 	}
 	
+	/**
+	 * @param redirectAttributes the redirect attributes
+	 * @param orthancConfigurationId the orthanc configuration ID
+	 * @param fetchOption the fetch option (all studies, new studies)
+	 * @param patient the openmrs patient
+	 * @return the redirect url
+	 */
 	@RequestMapping(value = "/module/imaging/syncStudies.form", method = RequestMethod.POST)
 	public String syncStudy(RedirectAttributes redirectAttributes,
 	        @RequestParam(value = "orthancConfigurationId") int orthancConfigurationId,
@@ -134,6 +172,12 @@ public class StudiesPageController {
 		return "redirect:/imaging/syncStudies.page";
 	}
 	
+	/**
+	 * @param redirectAttributes the redirect attributes
+	 * @param studyInstanceUID the study instance UID
+	 * @param patient the openmrs patient
+	 * @return the redirect url
+	 */
 	@RequestMapping(value = "/module/imaging/deleteStudy.form", method = RequestMethod.POST)
 	public String deleteStudy(RedirectAttributes redirectAttributes,
 	        @RequestParam(value = "studyInstanceUID") String studyInstanceUID,

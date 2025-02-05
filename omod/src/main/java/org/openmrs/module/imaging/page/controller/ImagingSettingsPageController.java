@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.module.imaging.page.controller;
 
 import org.apache.commons.logging.Log;
@@ -32,6 +45,13 @@ public class ImagingSettingsPageController {
 		    Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_Manager_ORTHANC_CONFIGURATION));
 	}
 	
+	/**
+	 * @param redirectAttributes the redirect attributes for direct to another page
+	 * @param url the orthanc url
+	 * @param username the orthanc user name
+	 * @param password the orthanc user password
+	 * @return the response status code
+	 */
 	@RequestMapping(value = "/module/imaging/storeConfiguration.form", method = RequestMethod.POST)
 	public String storeConfiguration(RedirectAttributes redirectAttributes, @RequestParam(value = "url") String url,
 	        @RequestParam(value = "username") String username, @RequestParam(value = "password") String password) {
@@ -52,6 +72,11 @@ public class ImagingSettingsPageController {
 		}
 	}
 	
+	/**
+	 * @param redirectAttributes the redirect attributes for direct to another page
+	 * @param id the configuration id
+	 * @return the status of the delete orthanc configuration
+	 */
 	@RequestMapping(value = "/module/imaging/deleteConfiguration.form", method = RequestMethod.POST)
 	public String deleteConfiguration(RedirectAttributes redirectAttributes, @RequestParam(value = "id") int id) {
 		OrthancConfigurationService orthancConfigureService = Context.getService(OrthancConfigurationService.class);
@@ -67,6 +92,12 @@ public class ImagingSettingsPageController {
 		return "redirect:/imaging/imagingSettings.page";
 	}
 	
+	/**
+	 * @param response the response
+	 * @param url the orthanc url
+	 * @param username the orthanc user name
+	 * @param password the orthanc user password
+	 */
 	@RequestMapping(value = "/module/imaging/checkConfiguration.form", method = RequestMethod.GET)
 	@ResponseBody
 	public void checkConfiguration(HttpServletResponse response, @RequestParam(value = "url") String url,

@@ -130,12 +130,25 @@
 	</messages>
 	<messages>
 		<lang>fr</lang>
-		<file>messages_fr.properties</file>
+		<file>messages_de.properties</file>
 	</messages>
 	<messages>
 		<lang>es</lang>
 		<file>messages_es.properties</file>
 	</messages>
+	<messages>
+		<lang>es</lang>
+		<file>messages_fr.properties</file>
+	</messages>
+	<messages>
+		<lang>es</lang>
+		<file>messages_it.properties</file>
+	</messages>
+	<messages>
+		<lang>es</lang>
+		<file>messages_pl.properties</file>
+	</messages>
+
 	<!-- /Internationalization -->
 	
 </module>

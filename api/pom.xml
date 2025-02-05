@@ -11,7 +11,15 @@
 	<packaging>jar</packaging>
 	<name>Imaging API</name>
 	<description>API project for Imaging</description>
-<build>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>5.3.30</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

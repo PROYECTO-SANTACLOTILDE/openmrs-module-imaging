@@ -46,6 +46,10 @@ public class ImagingProperties {
 		return administrationService;
 	}
 	
+	/**
+	 * @param globalPropertyName the global property name
+	 * @return the openmrs concept
+	 */
 	protected Concept getConceptByGlobalProperty(String globalPropertyName) {
 		String globalProperty = administrationService.getGlobalProperty(globalPropertyName);
 		Concept concept = conceptService.getConceptByUuid(globalProperty);
@@ -55,6 +59,11 @@ public class ImagingProperties {
 		return concept;
 	}
 	
+	/**
+	 * @param globalPropertyName the global property name
+	 * @param required the required id
+	 * @return the value of the global property
+	 */
 	protected String getGlobalProperty(String globalPropertyName, boolean required) {
 		String globalProperty = administrationService.getGlobalProperty(globalPropertyName);
 		if (required && StringUtils.isEmpty(globalProperty)) {
@@ -63,6 +72,10 @@ public class ImagingProperties {
 		return globalProperty;
 	}
 	
+	/**
+	 * @param globalPropertyName the globla property name
+	 * @return the value (Long)
+	 */
 	protected Long getLongByGlobalProperty(String globalPropertyName) {
 		String globalProperty = administrationService.getGlobalProperty(globalPropertyName);
 		try {
@@ -74,6 +87,9 @@ public class ImagingProperties {
 		}
 	}
 	
+	/**
+	 * @return the global property for the max upload data size
+	 */
 	public Long getMaxUploadImageDataSize() {
 		String globalProperty = administrationService.getGlobalProperty(ImagingConstants.GP_MAX_UPLOAD_IMAGEDATA_SIZE);
 		return getLongByGlobalProperty(ImagingConstants.GP_MAX_UPLOAD_IMAGEDATA_SIZE);
