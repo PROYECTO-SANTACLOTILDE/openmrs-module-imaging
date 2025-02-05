@@ -89,10 +89,15 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                     <td>${ui.format(instance.instanceNumber)}</td>
                     <td id="testID">${ui.format(instance.imagePositionPatient)}</td>
                     <td>
-                        <a style="margin-left:15px" title="${ ui.message("imaging.app.instancePreview.label") }"
+                        <a title="${ ui.message("imaging.app.instancePreview.label") }"
                             onclick="togglePopupPreview('${ui.format(instance.orthancInstanceUID)}', '${param['studyInstanceUID'].getAt(0)}')">
                             <img class="instance-preview" src="${ ui.resourceLink("imaging", "images/preview.png") }"/>
                         </a>
+                        <a href="${ui.format(instance.orthancConfiguration.orthancBaseUrl)}/instances/${ui.format(instance.orthancInstanceUID)}/preview">
+                            <img class="instance-preview" src="${ ui.resourceLink("imaging", "images/preview.png") }"/>
+                        </a>
+                        <a href="${ui.format(instance.orthancConfiguration.orthancBaseUrl)}ui/app/#/filtered-studies?StudyInstanceUID=${param['studyInstanceUID'].getAt(0)}&expand=series" title="${ ui.message("imaging.app.orthancExplorer.label") }">
+                            <img class="orthanc-img" alt="Show image data in Orthanc explorer" src="${ ui.resourceLink("imaging", "images/orthanc.png")}"/></a>
                     </td>
                 </tr>
             <% } %>

@@ -71,7 +71,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                         <a href="${ui.format(series.orthancConfiguration.orthancBaseUrl)}/stone-webviewer/index.html?study=${ui.format(studyInstanceUID)}&series=${series.seriesInstanceUID}"
                             title="${ ui.message("imaging.app.openStoneView.label") }">
                             <img class="series-stone-img" src="${ ui.resourceLink("imaging", "images/stoneViewer.png") }"/></a>
-                        <a href="${ui.format(series.orthancConfiguration.orthancBaseUrl)}/ui/app/index.html#/?StudyInstanceUID=${ui.format(studyInstanceUID)}" title="${ ui.message("imaging.app.orthancExplorer.label") }">
+                        <a href="${ui.format(series.orthancConfiguration.orthancBaseUrl)}ui/app/#/filtered-studies?StudyInstanceUID=${ui.format(studyInstanceUID)}&expand=series" title="${ ui.message("imaging.app.orthancExplorer.label") }">
                             <img class="orthanc-img" alt="Show image data in Orthanc explorer" src="${ ui.resourceLink("imaging", "images/orthanc.png")}"/></a>
                      </td>
                 </tr>

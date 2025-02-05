@@ -427,7 +427,8 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 					String orthancInstanceUID = instanceData.path("ID").getTextValue();
 					String instanceNumber = instanceData.path("MainDicomTags").path("InstanceNumber").getTextValue();
 					String imagePositionPatient = Optional.ofNullable(instanceData.path("MainDicomTags").path("ImagePositionPatient").getTextValue()).orElse("");
-					DicomInstance instance = new DicomInstance(sopInstanceUID, orthancInstanceUID, instanceNumber, imagePositionPatient);
+					DicomInstance instance = new DicomInstance(sopInstanceUID, orthancInstanceUID, instanceNumber, imagePositionPatient, config);
+					System.out.print("++++++++++ configu instance: " + instance.getOrthancConfiguration().getOrthancBaseUrl());
 					instanceList.add(instance);
 				}
 			} else {

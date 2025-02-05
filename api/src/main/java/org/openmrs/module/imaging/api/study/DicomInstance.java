@@ -15,6 +15,7 @@
 package org.openmrs.module.imaging.api.study;
 
 import org.openmrs.BaseOpenmrsData;
+import org.openmrs.module.imaging.OrthancConfiguration;
 
 public class DicomInstance extends BaseOpenmrsData implements java.io.Serializable {
 	
@@ -28,14 +29,18 @@ public class DicomInstance extends BaseOpenmrsData implements java.io.Serializab
 	
 	private String imagePositionPatient;
 	
+	private OrthancConfiguration orthancConfiguration;
+	
 	public DicomInstance() {
 	}
 	
-	public DicomInstance(String sopInstanceUID, String orthancInstanceUID, String instanceNumber, String imagePositionPatient) {
+	public DicomInstance(String sopInstanceUID, String orthancInstanceUID, String instanceNumber,
+	    String imagePositionPatient, OrthancConfiguration orthancConfiguration) {
 		this.sopInstanceUID = sopInstanceUID;
 		this.orthancInstanceUID = orthancInstanceUID;
 		this.instanceNumber = instanceNumber;
 		this.imagePositionPatient = imagePositionPatient;
+		this.orthancConfiguration = orthancConfiguration;
 	}
 	
 	// Getters and Setters
@@ -78,5 +83,13 @@ public class DicomInstance extends BaseOpenmrsData implements java.io.Serializab
 	
 	@Override
 	public void setId(Integer integer) {
+	}
+	
+	public OrthancConfiguration getOrthancConfiguration() {
+		return orthancConfiguration;
+	}
+	
+	public void setOrthancConfiguration(OrthancConfiguration orthancConfiguration) {
+		this.orthancConfiguration = orthancConfiguration;
 	}
 }

@@ -93,7 +93,7 @@ ${param["message"]?.getAt(0) ?: ""}
                                 <img class="stone-img" alt="Show image in stone viewer" src="${ ui.resourceLink("imaging", "images/stoneViewer.png")}"/></a>
                            <a href="${ui.format(study.orthancConfiguration.orthancBaseUrl)}ohif/viewer?StudyInstanceUIDs=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openOHIFView.label") }">
                                <img class="ohif-img" alt="Show image in OHIF viewer" src="${ ui.resourceLink("imaging", "images/ohifViewer.png")}"/></a>
-                           <a href="${ui.format(study.orthancConfiguration.orthancBaseUrl)}/ui/app/index.html#/?StudyInstanceUID=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.orthancExplorer.label") }">
+                           <a href="${ui.format(study.orthancConfiguration.orthancBaseUrl)}ui/app/#/filtered-studies?StudyInstanceUID=${ui.format(study.studyInstanceUID)}&expand=study" title="${ ui.message("imaging.app.orthancExplorer.label") }">
                                <img class="orthanc-img" alt="Show image data in Orthanc explorer" src="${ ui.resourceLink("imaging", "images/orthanc.png")}"/></a>
                        </div>
                     </td>
