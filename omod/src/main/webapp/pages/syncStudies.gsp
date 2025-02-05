@@ -14,6 +14,7 @@
 </script>
 
 <% ui.includeJavascript("imaging", "sortable.min.js") %>
+<% ui.includeJavascript("imaging", "filter_table.js")%>
 
 ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
 ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
@@ -28,7 +29,8 @@ ${param["message"]?.getAt(0) ?: ""}
 
 <div id="table-scroll">
     <table id="sync-studies" class="table table-sm table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl" data-sortable>
-        <thead>
+        <thead class="imaging-table-thead">
+            <script src="filter_table.js" defer></script>
             <tr>
                 <th></th>
                 <th>Match</th>
@@ -37,7 +39,7 @@ ${param["message"]?.getAt(0) ?: ""}
                 <th>${ ui.message("imaging.app.date.label")}</th>
                 <th>${ ui.message("imaging.app.description.label")}</th>
                 <th>${ ui.message("imaging.app.server.label")}</th>
-                <th style="width: 85px;">${ ui.message("coreapps.actions") }</th>
+                <th data-no-filter style="width: 85px;">${ ui.message("coreapps.actions") }</th>
             </tr>
         </thead>
         <tbody>
@@ -62,9 +64,9 @@ ${param["message"]?.getAt(0) ?: ""}
                     <td>${ui.format(study.studyDescription)}</td>
                     <td>${ui.format(study.orthancConfiguration.orthancBaseUrl)}</td>
                      <td>
-                        <a href="${ui.format(study.orthancConfiguration.orthancBaseUrl)}"+"/stone-webviewer/index.html?study=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openStoneView.label") }">
+                        <a href="${ui.format(study.orthancConfiguration.orthancBaseUrl)}/stone-webviewer/index.html?study=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openStoneView.label") }">
                             <img class="stone-img" alt="Show image in stone viewer" src="${ ui.resourceLink("imaging", "images/stoneViewer.png")}"/></a>
-                        <a href="${ui.format(study.orthancConfiguration.orthancBaseUrl)}/ui/app/#/filtered-studies?StudyInstanceUID=${ui.format(study.studyInstanceUID)}&expand=study" title="${ ui.message("imaging.app.orthancExplorer.label") }">
+                        <a href="${ui.format(study.orthancConfiguration.orthancBaseUrl)}ui/app/#/filtered-studies?StudyInstanceUID=${ui.format(study.studyInstanceUID)}&expand=study" title="${ ui.message("imaging.app.orthancExplorer.label") }">
                             <img class="orthanc-img" alt="Show image data in Orthanc explorer" src="${ ui.resourceLink("imaging", "images/orthanc.png")}"/></a>
                     </td>
                 </tr>

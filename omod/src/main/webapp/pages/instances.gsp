@@ -19,8 +19,8 @@
 
 ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
 ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
-
 <% ui.includeJavascript("imaging", "sortable.min.js") %>
+<% ui.includeJavascript("imaging", "filter_table.js")%>
 
 <h2>
     ${ ui.message("imaging.instances") }
@@ -69,12 +69,13 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
 
 <div id="table-scroll">
     <table id="instances" class="table table-sm table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl" data-sortable>
-        <thead>
+        <thead class="imaging-table-thead">
+            <script src="filter_table.js" defer></script>
             <tr>
                 <th>${ ui.message("imaging.app.sopInstanceUID.label")}</th>
                 <th>${ ui.message("imaging.app.instanceNumber.label")}</th>
                 <th>${ ui.message("imaging.app.imagePositionPatient.label")}</th>
-                <th style="width: max-content;">${ ui.message("coreapps.actions") }</th>
+                <th data-no-filter style="width: 130px;">${ ui.message("coreapps.actions") }</th>
             </tr>
         </thead>
         <tbody>
@@ -93,7 +94,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                             onclick="togglePopupPreview('${ui.format(instance.orthancInstanceUID)}', '${param['studyInstanceUID'].getAt(0)}')">
                             <img class="instance-preview" src="${ ui.resourceLink("imaging", "images/preview.png") }"/>
                         </a>
-                        <a href="${ui.format(instance.orthancConfiguration.orthancBaseUrl)}/instances/${ui.format(instance.orthancInstanceUID)}/preview">
+                        <a href="${ui.format(instance.orthancConfiguration.orthancBaseUrl)}instances/${ui.format(instance.orthancInstanceUID)}/preview">
                             <img class="instance-preview" src="${ ui.resourceLink("imaging", "images/preview.png") }"/>
                         </a>
                         <a href="${ui.format(instance.orthancConfiguration.orthancBaseUrl)}ui/app/#/filtered-studies?StudyInstanceUID=${param['studyInstanceUID'].getAt(0)}&expand=series" title="${ ui.message("imaging.app.orthancExplorer.label") }">

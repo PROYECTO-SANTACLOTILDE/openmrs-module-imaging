@@ -4,6 +4,7 @@
 %>
 
 <% ui.includeJavascript("imaging", "sortable.min.js") %>
+<% ui.includeJavascript("imaging", "filter_table.js")%>
 
 <h2><img class="orthanc-icon" src="${ ui.resourceLink("imaging", "images/orthanc.png") }"/> ${ ui.message("imaging.app.orthancconfiguration.heading")}</h2>
 <br/>
@@ -37,7 +38,8 @@ ${param["message"]?.getAt(0) ?: ""}
 <% } %>
 <div id="table-scroll">
     <table id="imaging-settings" class="table table-sm table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl" data-sortable>
-        <thead>
+        <thead class="imaging-table-thead">
+           <script src="filter_table.js" defer></script>
            <tr>
                 <th>${ ui.message("imaging.app.id.label")}</th>
                 <th>${ ui.message("imaging.app.url.label")}</th>

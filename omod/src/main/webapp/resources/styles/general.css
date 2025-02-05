@@ -192,3 +192,11 @@ table[data-sortable] th[data-sorted-direction="ascending"]:after {
   border-bottom-color: inherit;
   margin-top: 0px;
 }
+
+.imaging-table-thead, .th, .td {
+    border: 0px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    background-color: #f4f4f4;
+
+}

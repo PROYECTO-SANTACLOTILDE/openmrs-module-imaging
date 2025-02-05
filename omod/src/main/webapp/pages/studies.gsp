@@ -15,6 +15,7 @@
 ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
 ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
 <% ui.includeJavascript("imaging", "sortable.min.js") %>
+<% ui.includeJavascript("imaging", "filter_table.js")%>
 
 <h2>
     ${ ui.message("imaging.studies") }
@@ -57,14 +58,15 @@ ${param["message"]?.getAt(0) ?: ""}
 
 <div id="table-scroll">
     <table id="studies" class="table table-sm table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl" data-sortable>
-        <thead>
+        <thead class="imaging-table-thead">
+            <script src="filter_table.js" defer></script>
             <tr>
                 <th>${ ui.message("imaging.app.studyInstanceUid.label")}</th>
                 <th>${ ui.message("imaging.app.patientName.label")}</th>
                 <th>${ ui.message("imaging.app.date.label")}</th>
                 <th>${ ui.message("imaging.app.description.label")}</th>
                 <th>${ ui.message("imaging.app.server.label")}</th>
-                <th style="width: max-content;">${ ui.message("coreapps.actions") }</th>
+                <th data-no-filter style="width: max-content;">${ ui.message("coreapps.actions") }</th>
             </tr>
         </thead>
         <tbody>
