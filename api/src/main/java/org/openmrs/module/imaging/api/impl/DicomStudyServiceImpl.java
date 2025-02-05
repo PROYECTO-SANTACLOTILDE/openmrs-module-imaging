@@ -110,22 +110,6 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		String patientName = studyData.path("PatientMainDicomTags").path("PatientName").getTextValue();
 		String studyDate = Optional.ofNullable(studyData.path("MainDicomTags").path("StudyDate").getTextValue()).orElse("");
 		String studyTime = Optional.ofNullable(studyData.path("MainDicomTags").path("StudyTime").getTextValue()).orElse("");
-		//		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
-		//				Date studyDate;
-		//				try {
-		//					JsonNode studyDateNode = studyData.path("MainDicomTags").path("StudyDate");
-		//					JsonNode studyTimeNode = studyData.path("MainDicomTags").path("StudyTime");
-		//					if (!studyDateNode.isMissingNode() && studyTimeNode.isMissingNode()) {
-		//						studyDate = dateFormat.parse(studyData.path("MainDicomTags").path("StudyDate").getTextValue());
-		//					} else if (studyDateNode.isMissingNode() && !studyTimeNode.isMissingNode()) {
-		//						studyDate = dateFormat.parse(studyData.path("MainDicomTags").path("StudyTime").getTextValue());
-		//					} else {
-		//						studyDate = null;
-		//					}
-		//				}
-		//				catch (ParseException e) {
-		//					studyDate = null;
-		//				}
 		String studyDescription = Optional.ofNullable(
 		    studyData.path("MainDicomTags").path("StudyDescription").getTextValue()).orElse("");
 		String gender = Optional.ofNullable(studyData.path("PatientMainDicomTags").path("Gender").getTextValue()).orElse("");
@@ -216,6 +200,10 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		for (String orthancStudyId : orthancStudyIds) {
 			HttpURLConnection con = getOrthancConnection("GET", config.getOrthancBaseUrl(), "/studies/" + orthancStudyId,
 			    config.getOrthancUsername(), config.getOrthancPassword());
+			
+			// Enable connection reuse (Keep-Alive)
+			con.setRequestProperty("Connection", "keep-alive");
+			
 			int status = con.getResponseCode();
 			if (status == HttpURLConnection.HTTP_OK) {
 				JsonNode studyData = new ObjectMapper().readTree(con.getInputStream());
@@ -223,6 +211,10 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 			} else {
 				throwConnectionException(config, con);
 			}
+			
+			// Close input stream to free connection for reuse
+			con.getInputStream().close();
+			con.disconnect();
 		}
 	}
 	
@@ -297,20 +289,6 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 					String modality = seriesData.path("MainDicomTags").path("Modality").getTextValue();
 					String seriesDate = Optional.ofNullable(seriesData.path("MainDicomTags").path("SeriesDate").getTextValue()).orElse("");
 					String seriesTime = Optional.ofNullable(seriesData.path("MainDicomTags").path("SeriesTime").getTextValue()).orElse("");
-//					Date seriesDate;
-//					try {
-//						JsonNode seriesDateNode = seriesData.path("MainDicomTags").path("SeriesDate");
-//						JsonNode seriesTimeNode = seriesData.path("MainDicomTags").path("SeriesTime");
-//						if (!seriesDateNode.isMissingNode() || seriesTimeNode.isMissingNode()) {
-//							seriesDate = dateFormat.parse(seriesData.path("MainDicomTags").path("SeriesDate").getTextValue());
-//						} else if (seriesDateNode.isMissingNode() || !seriesDateNode.isMissingNode()){
-//							seriesDate = dateFormat.parse(seriesData.path("MainDicomTags").path("SeriesTime").getTextValue());
-//						} else {
-//							seriesDate = null;
-//						}
-//					} catch (ParseException e) {
-//						seriesDate = null;
-//					}
 					DicomSeries series = new DicomSeries(seriesInstanceUID, orthancSeriesUID, config, seriesDescription, seriesNumber, modality, seriesDate, seriesTime);
 					seriesList.add(series);
 				}

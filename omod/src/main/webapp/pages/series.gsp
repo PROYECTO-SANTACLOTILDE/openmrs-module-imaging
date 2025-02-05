@@ -44,7 +44,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                 <th>${ ui.message("imaging.app.description.label")}</th>
                 <th>${ ui.message("imaging.app.date.label")}</th>
                 <th>${ ui.message("imaging.app.modality.label")}</th>
-                <th style="width: max-content;">${ ui.message("coreapps.actions") }</th>
+                <th style="width: 70px;">${ ui.message("coreapps.actions") }</th>
             </tr>
         </thead>
         <tbody>
