@@ -29,17 +29,20 @@ public class DicomInstance extends BaseOpenmrsData implements java.io.Serializab
 	
 	private String imagePositionPatient;
 	
+	private String numberOfFrames;
+	
 	private OrthancConfiguration orthancConfiguration;
 	
 	public DicomInstance() {
 	}
 	
 	public DicomInstance(String sopInstanceUID, String orthancInstanceUID, String instanceNumber,
-	    String imagePositionPatient, OrthancConfiguration orthancConfiguration) {
+	    String imagePositionPatient, String numberOfFrames, OrthancConfiguration orthancConfiguration) {
 		this.sopInstanceUID = sopInstanceUID;
 		this.orthancInstanceUID = orthancInstanceUID;
 		this.instanceNumber = instanceNumber;
 		this.imagePositionPatient = imagePositionPatient;
+		this.numberOfFrames = numberOfFrames;
 		this.orthancConfiguration = orthancConfiguration;
 	}
 	
@@ -91,5 +94,9 @@ public class DicomInstance extends BaseOpenmrsData implements java.io.Serializab
 	
 	public void setOrthancConfiguration(OrthancConfiguration orthancConfiguration) {
 		this.orthancConfiguration = orthancConfiguration;
+	}
+	
+	public String getNumberOfFrames() {
+		return numberOfFrames;
 	}
 }

@@ -75,6 +75,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                 <th>${ ui.message("imaging.app.sopInstanceUID.label")}</th>
                 <th>${ ui.message("imaging.app.instanceNumber.label")}</th>
                 <th>${ ui.message("imaging.app.imagePositionPatient.label")}</th>
+                <th>${ ui.message("imaging.app.numberOfFrames.label")}</th>
                 <th data-no-filter style="width: 130px;">${ ui.message("coreapps.actions") }</th>
             </tr>
         </thead>
@@ -88,15 +89,18 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                 <tr>
                     <td class="uid-td">${ui.format(instance.sopInstanceUID)}</td>
                     <td>${ui.format(instance.instanceNumber)}</td>
-                    <td id="testID">${ui.format(instance.imagePositionPatient)}</td>
+                    <td>${ui.format(instance.imagePositionPatient)}</td>
+                    <td>${ui.format(instance.numberOfFrames)}</td>
                     <td>
-                        <a title="${ ui.message("imaging.app.instancePreview.label") }"
-                            onclick="togglePopupPreview('${ui.format(instance.orthancInstanceUID)}', '${param['studyInstanceUID'].getAt(0)}')">
-                            <img class="instance-preview" src="${ ui.resourceLink("imaging", "images/preview.png") }"/>
-                        </a>
-                        <a href="${ui.format(instance.orthancConfiguration.orthancBaseUrl)}instances/${ui.format(instance.orthancInstanceUID)}/preview">
-                            <img class="instance-preview" src="${ ui.resourceLink("imaging", "images/preview.png") }"/>
-                        </a>
+                        <% if (ui.format(instance.numberOfFrames) == "") { %>
+                            <a title="${ ui.message("imaging.app.instancePreview.label") }"
+                                onclick="togglePopupPreview('${ui.format(instance.orthancInstanceUID)}', '${param['studyInstanceUID'].getAt(0)}')">
+                                <img class="instance-preview" src="${ ui.resourceLink("imaging", "images/preview.png") }"/>
+                            </a>
+                            <a href="${ui.format(instance.orthancConfiguration.orthancBaseUrl)}instances/${ui.format(instance.orthancInstanceUID)}/preview">
+                                <img class="instance-preview" src="${ ui.resourceLink("imaging", "images/preview.png") }"/>
+                            </a>
+                        <% } %>
                         <a href="${ui.format(instance.orthancConfiguration.orthancBaseUrl)}ui/app/#/filtered-studies?StudyInstanceUID=${param['studyInstanceUID'].getAt(0)}&expand=series" title="${ ui.message("imaging.app.orthancExplorer.label") }">
                             <img class="orthanc-img" alt="Show image data in Orthanc explorer" src="${ ui.resourceLink("imaging", "images/orthanc.png")}"/></a>
                     </td>

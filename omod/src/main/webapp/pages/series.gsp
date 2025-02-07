@@ -70,9 +70,11 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                                 onclick="togglePopupDeleteSeries('${ui.format(series.orthancSeriesUID)}', '${studyInstanceUID}', '${patient.id}')"><i class="icon-remove" delete-action></i>
                             </a>
                         <% } %>
-                        <a href="${ui.format(series.orthancConfiguration.orthancBaseUrl)}/stone-webviewer/index.html?study=${ui.format(studyInstanceUID)}&series=${series.seriesInstanceUID}"
-                            title="${ ui.message("imaging.app.openStoneView.label") }">
-                            <img class="series-stone-img" src="${ ui.resourceLink("imaging", "images/stoneViewer.png") }"/></a>
+                        <% if (ui.format(series.modality) != "RTDOSE"  && ui.format(series.modality) != "RTSTRUCT") { %>
+                            <a href="${ui.format(series.orthancConfiguration.orthancBaseUrl)}/stone-webviewer/index.html?study=${ui.format(studyInstanceUID)}&series=${series.seriesInstanceUID}"
+                                title="${ ui.message("imaging.app.openStoneView.label") }">
+                                <img class="series-stone-img" src="${ ui.resourceLink("imaging", "images/stoneViewer.png") }"/></a>
+                        <% } %>
                         <a href="${ui.format(series.orthancConfiguration.orthancBaseUrl)}ui/app/#/filtered-studies?StudyInstanceUID=${ui.format(studyInstanceUID)}&expand=series" title="${ ui.message("imaging.app.orthancExplorer.label") }">
                             <img class="orthanc-img" alt="Show image data in Orthanc explorer" src="${ ui.resourceLink("imaging", "images/orthanc.png")}"/></a>
                      </td>
