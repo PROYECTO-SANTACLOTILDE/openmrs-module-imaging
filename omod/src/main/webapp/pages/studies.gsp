@@ -114,7 +114,7 @@ ${param["message"]?.getAt(0) ?: ""}
                     <option value="${config.id}">${ui.format(config.orthancBaseUrl)}</option>
                 <% } %>
             </select>
-            <label class="form-label" for="files">Select files to upload</label>
+            <label class="form-label" for="files">Select files to upload (dicom files or zip files containing dicom files)</label>
             <input class="form-input" type='file' name='files' multiple>
             <div class="popup-box-btn">
                 <button class="btn-submit" type="submit">Upload</button>

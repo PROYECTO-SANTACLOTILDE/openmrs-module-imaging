@@ -325,46 +325,37 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 	 * @param dicomStudy the dicom study
 	 */
 	@Override
-	public void deleteStudy(DicomStudy dicomStudy) {
+	public void deleteStudy(DicomStudy dicomStudy) throws IOException {
 		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
 		OrthancConfiguration config = orthancConfigurationService.getOrthancConfiguration(dicomStudy
 		        .getOrthancConfiguration().getId());
-		try {
-			HttpURLConnection con = getOrthancConnection("DELETE", config.getOrthancBaseUrl(),
-			    "/studies/" + dicomStudy.getOrthancStudyUID(), config.getOrthancUsername(), config.getOrthancPassword());
-			int responseCode = con.getResponseCode();
-			if (responseCode == HttpURLConnection.HTTP_OK || responseCode == 404) {
-				dao.removeDicomStudy(dicomStudy);
-			} else {
-				throw new RuntimeException("Failed to delete DICOM study. Response Code: " + responseCode + ", Study UID: "
-				        + dicomStudy.getOrthancStudyUID());
-			}
-		}
-		catch (IOException e) {
-			throw new RuntimeException("Error while communicating with Orthanc server.", e);
+		HttpURLConnection con = getOrthancConnection("DELETE", config.getOrthancBaseUrl(),
+		    "/studies/" + dicomStudy.getOrthancStudyUID(), config.getOrthancUsername(), config.getOrthancPassword());
+		int responseCode = con.getResponseCode();
+		if (responseCode == HttpURLConnection.HTTP_OK || responseCode == 404) {
+			dao.removeDicomStudy(dicomStudy);
+		} else {
+			throw new IOException("Failed to delete DICOM study. Response Code: " + responseCode + ", Study UID: "
+			        + dicomStudy.getOrthancStudyUID());
 		}
 	}
 	
 	/**
 	 * @param seriesOrthancUID the series of the dicom study
 	 * @param seriesStudy the dicom study
-	 * @return response status code
 	 */
 	@Override
-	public int deleteSeries(String seriesOrthancUID, DicomStudy seriesStudy) {
+	public void deleteSeries(String seriesOrthancUID, DicomStudy seriesStudy) throws IOException {
 		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
 		OrthancConfiguration config = orthancConfigurationService.getOrthancConfiguration(seriesStudy
 		        .getOrthancConfiguration().getId());
-		int responseCode = 0;
-		try {
-			HttpURLConnection con = getOrthancConnection("DELETE", config.getOrthancBaseUrl(),
-			    "/series/" + seriesOrthancUID, config.getOrthancUsername(), config.getOrthancPassword());
-			responseCode = con.getResponseCode();
+		HttpURLConnection con = getOrthancConnection("DELETE", config.getOrthancBaseUrl(), "/series/" + seriesOrthancUID,
+		    config.getOrthancUsername(), config.getOrthancPassword());
+		int responseCode = con.getResponseCode();
+		if (responseCode != HttpURLConnection.HTTP_OK) {
+			throw new IOException("Failed to delete DICOM series. Response Code: " + responseCode + ", Series UID: "
+			        + seriesOrthancUID);
 		}
-		catch (IOException e) {
-			throw new RuntimeException("Error while communicating with Orthanc server.", e);
-		}
-		return responseCode;
 	}
 	
 	/**

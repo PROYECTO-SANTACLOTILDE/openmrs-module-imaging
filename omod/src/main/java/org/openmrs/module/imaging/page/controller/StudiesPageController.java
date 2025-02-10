@@ -27,7 +27,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletResponse;
@@ -40,10 +39,6 @@ public class StudiesPageController {
 	protected Log log = LogFactory.getLog(this.getClass());
 	
 	public void get(Model model, @RequestParam(value = "patientId") Patient patient) {
-		
-		// Context.getRegisteredComponent("multipartResolver", CommonsMultipartResolver.class).setMaxUploadSize(200_000_000);
-		//Context.getRegisteredComponent("multipartResolver", CommonsMultipartResolver.class).setMaxUploadSize(-1);
-		
 		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
 		List<DicomStudy> studies = dicomStudyService.getStudies(patient);
 		model.addAttribute("studies", studies);
@@ -52,36 +47,17 @@ public class StudiesPageController {
 		model.addAttribute("orthancConfigurations", orthancConfigureService.getAllOrthancConfigurations());
 		model.addAttribute("privilegeModifyImageData",
 		    Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_Modify_IMAGE_DATA));
-		
-		//		ImagingProperties imageProps = Context.getRegisteredComponent("imagingProperties", ImagingProperties.class);
-		//		long maxUploadImageDataSize = imageProps.getMaxUploadImageDataSize();
-		//		Context.getRegisteredComponent("multipartResolver", CommonsMultipartResolver.class).setMaxUploadSize(
-		//					maxUploadImageDataSize);
-		
-		//		long testSize = 200000000; // Wei: later delete.
-		//		Context.getRegisteredComponent("multipartResolver", CommonsMultipartResolver.class).setMaxUploadSize(testSize);
 	}
 	
-	/**
-	 * @param redirectAttributes the redirect attributes
-	 * @return the model and view object
-	 */
 	@ExceptionHandler(MaxUploadSizeExceededException.class)
 	//	@ResponseStatus(HttpStatus.REQUEST_ENTITY_TOO_LARGE)
-	public ModelAndView handleMaxSizeException(RedirectAttributes redirectAttributes) {
-		//			return new ResponseEntity<>("Total size exceeds maximum upload limit. Please upload smaller or less files.",
-		//					HttpStatus.REQUEST_ENTITY_TOO_LARGE);
-		
+	public String handleMaxSizeException(MaxUploadSizeExceededException e, RedirectAttributes redirectAttributes,
+	        @RequestParam(value = "patientId") Patient patient) {
 		System.out.print("++ too large");
 		String status = "File size exceeds maximum upload limit. Please upload a smaller file.";
-		//		return ResponseEntity.status(HttpStatus.REQUEST_ENTITY_TOO_LARGE).body(
-		//		    "Total size exceeds maximum upload limit. Please upload a smaller file.");
-		
-		//				String status = "File size exceeds maximum upload limit. Please upload a smaller file.";
-		redirectAttributes.addAttribute("patientId", 8);
+		redirectAttributes.addAttribute("patientId", patient.getId());
 		redirectAttributes.addAttribute("message", status);
-		//		return new RedirectController().redirectWithUsingRedirectView(redirectAttributes);
-		return new ModelAndView("redirect:/imaging/studies.page");
+		return "redirect:/imaging/studies.page";
 	}
 	
 	/**
@@ -101,15 +77,15 @@ public class StudiesPageController {
 		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
 		OrthancConfiguration config = orthancConfigurationService.getOrthancConfiguration(orthancConfigurationId);
 		
-		int numUploaded = 0;
-		int numFiles = 0;
+		int numUploaded = 0; // number of successfully uploaded files
+		int numFiles = 0; // number of files received from the user
 		for (MultipartFile file : files) {
 			if (!file.isEmpty()) {
 				numFiles++;
 				try {
 					int status = dicomStudyService.uploadFile(config, file.getInputStream());
 					if (status == 200) {
-						numUploaded++;
+						numUploaded++; // successfully uploaded
 					}
 				}
 				catch (IOException e) {
@@ -164,7 +140,7 @@ public class StudiesPageController {
 			message = "Studies successfully fetched";
 		}
 		catch (IOException e) {
-			message = "Not all studies could be downloaded successfully. The server might be unavailable or stopped";
+			message = "Not all studies could be downloaded successfully. The server might be unavailable.";
 		}
 		
 		redirectAttributes.addAttribute("patientId", patient.getId());
@@ -174,7 +150,7 @@ public class StudiesPageController {
 	
 	/**
 	 * @param redirectAttributes the redirect attributes
-	 * @param studyInstanceUID the study instance UID
+	 * @param studyInstanceUID the study instance UID of the study to delete
 	 * @param patient the openmrs patient
 	 * @return the redirect url
 	 */
@@ -183,10 +159,24 @@ public class StudiesPageController {
 	        @RequestParam(value = "studyInstanceUID") String studyInstanceUID,
 	        @RequestParam(value = "patientId") Patient patient) {
 		
-		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
-		DicomStudy deleteStudy = dicomStudyService.getDicomStudy(studyInstanceUID);
-		dicomStudyService.deleteStudy(deleteStudy);
+		String message;
+		boolean hasPrivilege = Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_Modify_IMAGE_DATA);
+		if (hasPrivilege) {
+			DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
+			DicomStudy deleteStudy = dicomStudyService.getDicomStudy(studyInstanceUID);
+			try {
+				dicomStudyService.deleteStudy(deleteStudy);
+				message = "Study successfully deleted";
+			}
+			catch (IOException e) {
+				message = "Deletion of study failed. Reason: " + e.getMessage();
+			}
+		} else {
+			message = "Permission denied (you don't have the necessary privileges)";
+		}
+		
 		redirectAttributes.addAttribute("patientId", patient.getId());
+		redirectAttributes.addAttribute("message", message);
 		return "redirect:/imaging/studies.page";
 	}
 }

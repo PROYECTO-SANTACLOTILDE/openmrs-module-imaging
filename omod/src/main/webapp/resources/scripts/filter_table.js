@@ -6,10 +6,11 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!thead) return;
 
         const headerRow = thead.rows[0];
-        const filterRow = document.createElement("tr");
+        const tfoot = table.createTFoot();
+        const filterRow = tfoot.insertRow();
 
         Array.from(headerRow.cells).forEach((cell, columnIndex) => {
-            const filterCell = document.createElement("th");
+            const filterCell = document.createElement("td");
 
             // Check if column has the 'data-no-filter' attribute
             if (cell.hasAttributes("data-no-filter")) {
@@ -27,8 +28,8 @@ document.addEventListener("DOMContentLoaded", function () {
             filterCell.appendChild(input);
             filterRow.appendChild(filterCell);
         });
-
-        thead.appendChild(filterRow);
+        table.insertBefore(tfoot, table.querySelector("tbody"));
+//        tfoot.appendChild(filterRow);
     });
 });
 

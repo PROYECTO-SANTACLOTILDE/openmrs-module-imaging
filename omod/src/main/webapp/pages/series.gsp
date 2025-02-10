@@ -25,6 +25,10 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
     ${ ui.message("imaging.series") }
 </h2>
 
+<div style="color:red;">
+${param["message"]?.getAt(0) ?: ""}
+</div>
+
 <script>
     function togglePopupDeleteSeries(orthancSeriesUID, studyInstanceUID, patient) {
         const overlay = document.getElementById('popupOverlayDeleteSeries');

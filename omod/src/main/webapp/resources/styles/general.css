@@ -198,5 +198,12 @@ table[data-sortable] th[data-sorted-direction="ascending"]:after {
     padding: 8px;
     text-align: left;
     background-color: #f4f4f4;
+}
 
+tfoot {
+    display: table-header-group;
+}
+
+tfoot input {
+  margin: 0 0 !important;
 }

@@ -66,15 +66,22 @@ public class SeriesPageController {
 	        @RequestParam(value = "studyInstanceUID") String studyInstanceUID,
 	        @RequestParam(value = "patientId") Patient patient) {
 		
-		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
-		DicomStudy seriesStudy = dicomStudyService.getDicomStudy(studyInstanceUID);
-		int responseCode = dicomStudyService.deleteSeries(orthancSeriesUID, seriesStudy);
 		String message;
-		if (responseCode == 200) {
-			message = "Series successfully deleted";
+		boolean hasPrivilege = Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_Modify_IMAGE_DATA);
+		if (hasPrivilege) {
+			DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
+			DicomStudy seriesStudy = dicomStudyService.getDicomStudy(studyInstanceUID);
+			try {
+				dicomStudyService.deleteSeries(orthancSeriesUID, seriesStudy);
+				message = "Series successfully deleted";
+			}
+			catch (IOException e) {
+				message = "Deletion of series failed. Reason: " + e.getMessage();
+			}
 		} else {
-			message = "Series failed deleted";
+			message = "Permission denied (you don't have the necessary privileges)";
 		}
+		
 		redirectAttributes.addAttribute("patientId", patient.getId());
 		redirectAttributes.addAttribute("studyInstanceUID", studyInstanceUID);
 		redirectAttributes.addAttribute("message", message);

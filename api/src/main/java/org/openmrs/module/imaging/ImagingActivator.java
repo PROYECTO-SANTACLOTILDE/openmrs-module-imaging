@@ -31,7 +31,6 @@ public class ImagingActivator extends BaseModuleActivator {
 		long maxUploadImageDataSize = imageProps.getMaxUploadImageDataSize();
 		Context.getRegisteredComponent("multipartResolver", CommonsMultipartResolver.class).setMaxUploadSize(
 		    maxUploadImageDataSize);
-		
 	}
 	
 	/**
