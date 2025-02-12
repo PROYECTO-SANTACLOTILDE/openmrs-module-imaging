@@ -95,7 +95,7 @@ ${param["message"]?.getAt(0) ?: ""}
         <form name="deleteSeriesForm" class="form-container" method='POST'>
             <h3 id="deleteSeriesMessage">${ ui.message("imaging.deleteSeries.message") }</h3>
             <div class="popup-box-btn">
-                <button class="btn-submit" type="submit">${ ui.message("general.yes") }</button>
+                <button class="btn-submit" type="submit">${ ui.message("imaging.action.delete") }</button>
                 <button class="btn-close-popup" type="button" onclick="togglePopupDeleteSeries()">Cancel</button>
             </div>
         </form>

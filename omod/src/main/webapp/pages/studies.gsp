@@ -114,7 +114,7 @@ ${param["message"]?.getAt(0) ?: ""}
                     <option value="${config.id}">${ui.format(config.orthancBaseUrl)}</option>
                 <% } %>
             </select>
-            <label class="form-label" for="files">Select files to upload (dicom files or zip files containing dicom files)</label>
+            <label class="form-label" for="files" style="color: red;">Select files to upload (dicom files or zip files containing dicom files. Note: You cannot upload more than ${ui.format(maxUploadImageDataSize)} MB in one go!)</label>
             <input class="form-input" type='file' name='files' multiple>
             <div class="popup-box-btn">
                 <button class="btn-submit" type="submit">Upload</button>
@@ -155,7 +155,7 @@ ${param["message"]?.getAt(0) ?: ""}
         <form name="deleteStudyForm" class="form-container" method='POST'>
             <h3 id="deleteStudyMessage">${ ui.message("imaging.deleteStudy.message") }</h3>
             <div class="popup-box-btn">
-                <button class="btn-submit" type="submit">${ ui.message("general.yes") }</button>
+                <button class="btn-submit" type="submit">${ ui.message("imaging.action.delete") }</button>
                 <button class="btn-close-popup" type="button" onclick="togglePopupDeleteStudy()">Cancel</button>
             </div>
         </form>

@@ -73,25 +73,16 @@ public class ImagingProperties {
 	}
 	
 	/**
-	 * @param globalPropertyName the globla property name
-	 * @return the value (Long)
-	 */
-	protected Long getLongByGlobalProperty(String globalPropertyName) {
-		String globalProperty = administrationService.getGlobalProperty(globalPropertyName);
-		try {
-			return Long.valueOf(globalProperty);
-		}
-		catch (Exception e) {
-			throw new APIException("Global property " + globalPropertyName + " with value " + globalProperty
-			        + " is not parsable as a long", e);
-		}
-	}
-	
-	/**
 	 * @return the global property for the max upload data size
 	 */
 	public Long getMaxUploadImageDataSize() {
 		String globalProperty = administrationService.getGlobalProperty(ImagingConstants.GP_MAX_UPLOAD_IMAGEDATA_SIZE);
-		return getLongByGlobalProperty(ImagingConstants.GP_MAX_UPLOAD_IMAGEDATA_SIZE);
+		try {
+			return Long.parseLong(globalProperty);
+		}
+		catch (Exception e) {
+			throw new APIException("Global property " + ImagingConstants.GP_MAX_UPLOAD_IMAGEDATA_SIZE + " with value "
+			        + globalProperty + " is not parsable as a long", e);
+		}
 	}
 }

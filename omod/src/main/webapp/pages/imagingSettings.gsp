@@ -97,7 +97,7 @@ ${param["message"]?.getAt(0) ?: ""}
         <form name="deleteOrthancConfigurationForm" class="form-container" method='POST'>
             <h3 id="deleteOrthancConfigurationMessage">${ ui.message("imaging.deleteOrthancConfiguration.message") }</h3>
             <div class="popup-box-btn">
-                <button class="btn-submit" type="submit">${ ui.message("general.yes") }</button>
+                <button class="btn-submit" type="submit">${ ui.message("imaging.action.delete") }</button>
                 <button class="btn-close-popup" type="button" onclick="togglePopupDeleteOrthancConfiguration()">Cancel</button>
             </div>
         </form>

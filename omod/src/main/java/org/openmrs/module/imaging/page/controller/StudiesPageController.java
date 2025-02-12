@@ -18,6 +18,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.imaging.ImagingConstants;
+import org.openmrs.module.imaging.ImagingProperties;
 import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.module.imaging.api.DicomStudyService;
 import org.openmrs.module.imaging.api.OrthancConfigurationService;
@@ -39,6 +40,9 @@ public class StudiesPageController {
 	protected Log log = LogFactory.getLog(this.getClass());
 	
 	public void get(Model model, @RequestParam(value = "patientId") Patient patient) {
+		ImagingProperties imageProps = Context.getRegisteredComponent("imagingProperties", ImagingProperties.class);
+		long maxUploadImageDataSize = imageProps.getMaxUploadImageDataSize() / 1000_000;
+		
 		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
 		List<DicomStudy> studies = dicomStudyService.getStudies(patient);
 		model.addAttribute("studies", studies);
@@ -47,6 +51,7 @@ public class StudiesPageController {
 		model.addAttribute("orthancConfigurations", orthancConfigureService.getAllOrthancConfigurations());
 		model.addAttribute("privilegeModifyImageData",
 		    Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_Modify_IMAGE_DATA));
+		model.addAttribute("maxUploadImageDataSize", maxUploadImageDataSize);
 	}
 	
 	@ExceptionHandler(MaxUploadSizeExceededException.class)
