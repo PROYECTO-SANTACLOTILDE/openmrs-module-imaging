@@ -59,7 +59,9 @@ ${param["message"]?.getAt(0) ?: ""}
                     <td colspan="6" align="center">${ui.message("imaging.series.none")}</td>
                 </tr>
             <% } %>
-            <% serieses.each { series -> %>
+            <% serieses.each { series ->
+                def baseUrl = series.orthancConfiguration.orthancProxyUrl?.trim() ? series.orthancConfiguration.orthancProxyUrl : series.orthancConfiguration.orthancBaseUrl
+            %>
                 <tr>
                     <td class="uid-td">
                         <a href="${ui.pageLink("imaging", "instances", [patientId: patient.id, seriesInstanceUID: series.seriesInstanceUID, studyInstanceUID: studyInstanceUID])}">${ui.format(series.seriesInstanceUID)}</a>
@@ -75,11 +77,11 @@ ${param["message"]?.getAt(0) ?: ""}
                             </a>
                         <% } %>
                         <% if (ui.format(series.modality) != "RTDOSE"  && ui.format(series.modality) != "RTSTRUCT") { %>
-                            <a href="${ui.format(series.orthancConfiguration.orthancBaseUrl)}/stone-webviewer/index.html?study=${ui.format(studyInstanceUID)}&series=${series.seriesInstanceUID}"
+                            <a href="${baseUrl}/stone-webviewer/index.html?study=${ui.format(studyInstanceUID)}&series=${series.seriesInstanceUID}"
                                 title="${ ui.message("imaging.app.openStoneView.label") }">
                                 <img class="series-stone-img" src="${ ui.resourceLink("imaging", "images/stoneViewer.png") }"/></a>
                         <% } %>
-                        <a href="${ui.format(series.orthancConfiguration.orthancBaseUrl)}ui/app/#/filtered-studies?StudyInstanceUID=${ui.format(studyInstanceUID)}&expand=series" title="${ ui.message("imaging.app.orthancExplorer.label") }">
+                        <a href="${baseUrl}/ui/app/#/filtered-studies?StudyInstanceUID=${ui.format(studyInstanceUID)}&expand=series" title="${ ui.message("imaging.app.orthancExplorer.label") }">
                             <img class="orthanc-img" alt="Show image data in Orthanc explorer" src="${ ui.resourceLink("imaging", "images/orthanc.png")}"/></a>
                      </td>
                 </tr>

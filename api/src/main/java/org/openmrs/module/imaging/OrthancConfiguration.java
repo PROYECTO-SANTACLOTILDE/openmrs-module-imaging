@@ -24,6 +24,8 @@ public class OrthancConfiguration extends BaseOpenmrsData implements Serializabl
 	
 	private String orthancBaseUrl;
 	
+	private String orthancProxyUrl;
+	
 	private String orthancUsername;
 	
 	private String orthancPassword;
@@ -33,8 +35,10 @@ public class OrthancConfiguration extends BaseOpenmrsData implements Serializabl
 	public OrthancConfiguration() {
 	}
 	
-	public OrthancConfiguration(String orthancBaseUrl, String orthancUsername, String orthancPassword, int lastChangedIndex) {
+	public OrthancConfiguration(String orthancBaseUrl, String orthancProxyUrl, String orthancUsername,
+	    String orthancPassword, int lastChangedIndex) {
 		this.orthancBaseUrl = orthancBaseUrl;
+		this.orthancProxyUrl = orthancProxyUrl;
 		this.orthancUsername = orthancUsername;
 		this.orthancPassword = orthancPassword;
 		this.lastChangedIndex = lastChangedIndex;
@@ -104,5 +108,13 @@ public class OrthancConfiguration extends BaseOpenmrsData implements Serializabl
 	 */
 	public void setLastChangedIndex(Integer lastChangedIndex) {
 		this.lastChangedIndex = lastChangedIndex;
+	}
+	
+	public String getOrthancProxyUrl() {
+		return orthancProxyUrl;
+	}
+	
+	public void setOrthancProxyUrl(String orthancProxyUrl) {
+		this.orthancProxyUrl = orthancProxyUrl;
 	}
 }

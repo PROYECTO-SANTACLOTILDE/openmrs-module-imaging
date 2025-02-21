@@ -15,8 +15,7 @@
     }
 
     function checkConfiguration() {
-        console.log(url.value, username.value, password.value)
-        fetch("/openmrs/module/imaging/checkConfiguration.form?url="+encodeURI(url.value)+"&username="+username.value+"&password="+password.value)
+        fetch("/openmrs/module/imaging/checkConfiguration.form?url="+encodeURI(url.value)+"&proxyurl="+encodeURI(proxyurl.value)+"&username="+username.value+"&password="+password.value)
         .then((response)=> response.text())
         .then((text)=>window.alert(text))
     }
@@ -43,6 +42,7 @@ ${param["message"]?.getAt(0) ?: ""}
            <tr>
                 <th>${ ui.message("imaging.app.id.label")}</th>
                 <th>${ ui.message("imaging.app.url.label")}</th>
+                <th>${ ui.message("imaging.app.proxyUrl.label")}</th>
                 <th>${ ui.message("imaging.app.username.label")}</th>
                 <th style="width: max-content;">${ ui.message("coreapps.actions") }</th>
             </tr>
@@ -57,6 +57,7 @@ ${param["message"]?.getAt(0) ?: ""}
                 <tr>
                     <td>${ui.format(orthancConfiguration.id)}</td>
                     <td>${ui.format(orthancConfiguration.orthancBaseUrl)}</td>
+                    <td>${ui.format(orthancConfiguration.orthancProxyUrl)}</td>
                     <td>${ui.format(orthancConfiguration.orthancUsername)}</td>
                     <td>
                        <% if (privilegeManagerOrthancConfiguration) { %>
@@ -76,6 +77,9 @@ ${param["message"]?.getAt(0) ?: ""}
         <form class="form-container" action="/openmrs/module/imaging/storeConfiguration.form" method="post">
             <label class="form-label" for="url">${ ui.message("imaging.app.url.label")}</label>
             <input class="form-input" type="text" placeholder="Orthanc URL" id="url" name="url" required>
+
+            <label class="form-label" for="proxyurl">${ ui.message("imaging.app.proxyUrl.label")}</label>
+            <input class="form-input" type="text" placeholder="Orthanc Proxy URL" id="proxyurl" name="proxyurl">
 
             <label class="form-label" for="username">${ ui.message("imaging.app.username.label")}</label>
             <input class="form-input" type="text" placeholder="Orthanc user name" id="username" name="username" required>

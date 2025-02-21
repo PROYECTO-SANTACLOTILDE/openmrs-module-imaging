@@ -85,7 +85,9 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                     <td colspan="6" align="center">${ui.message("imaging.instances.none")}</td>
                 </tr>
             <% } %>
-            <% instances.each { instance -> %>
+            <% instances.each { instance ->
+                def baseUrl = instance.orthancConfiguration.orthancProxyUrl?.trim() ? instance.orthancConfiguration.orthancProxyUrl : instance.orthancConfiguration.orthancBaseUrl
+            %>
                 <tr>
                     <td class="uid-td">${ui.format(instance.sopInstanceUID)}</td>
                     <td>${ui.format(instance.instanceNumber)}</td>
@@ -97,11 +99,11 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                                 onclick="togglePopupPreview('${ui.format(instance.orthancInstanceUID)}', '${param['studyInstanceUID'].getAt(0)}')">
                                 <img class="instance-preview" src="${ ui.resourceLink("imaging", "images/preview.png") }"/>
                             </a>
-                            <a href="${ui.format(instance.orthancConfiguration.orthancBaseUrl)}instances/${ui.format(instance.orthancInstanceUID)}/preview">
+                            <a href="${baseUrl}instances/${ui.format(instance.orthancInstanceUID)}/preview">
                                 <img class="instance-preview" src="${ ui.resourceLink("imaging", "images/preview.png") }"/>
                             </a>
                         <% } %>
-                        <a href="${ui.format(instance.orthancConfiguration.orthancBaseUrl)}ui/app/#/filtered-studies?StudyInstanceUID=${param['studyInstanceUID'].getAt(0)}&expand=series" title="${ ui.message("imaging.app.orthancExplorer.label") }">
+                        <a href="${baseUrl}ui/app/#/filtered-studies?StudyInstanceUID=${param['studyInstanceUID'].getAt(0)}&expand=series" title="${ ui.message("imaging.app.orthancExplorer.label") }">
                             <img class="orthanc-img" alt="Show image data in Orthanc explorer" src="${ ui.resourceLink("imaging", "images/orthanc.png")}"/></a>
                     </td>
                 </tr>

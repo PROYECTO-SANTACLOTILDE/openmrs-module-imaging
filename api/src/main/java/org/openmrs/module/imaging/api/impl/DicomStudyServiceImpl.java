@@ -29,6 +29,7 @@ import org.openmrs.module.imaging.api.study.DicomSeries;
 import org.openmrs.module.imaging.api.study.DicomStudy;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.sound.midi.SysexMessage;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
@@ -111,6 +112,7 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 	 */
 	@Override
 	public int testOrthancConnection(String url, String username, String password) throws IOException {
+		System.out.print(" ++++ from test Orthanc connection: " + url);
 		HttpURLConnection con = getOrthancConnection("GET", url, "/system", username, password);
 		int status = con.getResponseCode();
 		con.disconnect();

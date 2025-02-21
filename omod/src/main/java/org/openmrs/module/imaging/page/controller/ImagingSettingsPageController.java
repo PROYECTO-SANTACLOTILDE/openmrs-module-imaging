@@ -54,7 +54,8 @@ public class ImagingSettingsPageController {
 	 */
 	@RequestMapping(value = "/module/imaging/storeConfiguration.form", method = RequestMethod.POST)
 	public String storeConfiguration(RedirectAttributes redirectAttributes, @RequestParam(value = "url") String url,
-	        @RequestParam(value = "username") String username, @RequestParam(value = "password") String password) {
+	        @RequestParam(value = "proxyurl") String proxyurl, @RequestParam(value = "username") String username,
+	        @RequestParam(value = "password") String password) {
 		OrthancConfigurationService orthancConfigureService = Context.getService(OrthancConfigurationService.class);
 		url = url.trim();
 		username = username.trim();
@@ -62,14 +63,19 @@ public class ImagingSettingsPageController {
 		if (!url.isEmpty() && !username.isEmpty() && !password.isEmpty()) {
 			OrthancConfiguration oc = new OrthancConfiguration();
 			oc.setOrthancBaseUrl(url);
+			oc.setOrthancProxyUrl(proxyurl);
 			oc.setOrthancUsername(username);
 			oc.setOrthancPassword(password);
-			orthancConfigureService.saveOrthancConfiguration(oc);
-			return "redirect:/imaging/imagingSettings.page";
+			try {
+				orthancConfigureService.saveOrthancConfiguration(oc);
+			}
+			catch (Exception ex) {
+				redirectAttributes.addAttribute("message", "Saving configuration failed: " + ex.getMessage());
+			}
 		} else {
 			redirectAttributes.addAttribute("message", "Saving orthanc configuration failed");
-			return "redirect:/imaging/imagingSettings.page";
 		}
+		return "redirect:/imaging/imagingSettings.page";
 	}
 	
 	/**
@@ -101,11 +107,13 @@ public class ImagingSettingsPageController {
 	@RequestMapping(value = "/module/imaging/checkConfiguration.form", method = RequestMethod.GET)
 	@ResponseBody
 	public void checkConfiguration(HttpServletResponse response, @RequestParam(value = "url") String url,
-	        @RequestParam(value = "username") String username, @RequestParam(value = "password") String password) {
+	        @RequestParam(value = "proxyurl") String proxyurl, @RequestParam(value = "username") String username,
+	        @RequestParam(value = "password") String password) {
 		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
+		String checkUrl = (proxyurl != null && !proxyurl.isEmpty()) ? proxyurl : url;
 		try {
 			try {
-				int status = dicomStudyService.testOrthancConnection(url, username, password);
+				int status = dicomStudyService.testOrthancConnection(checkUrl, username, password);
 				if (status == 200) {
 					response.getOutputStream().print("Check successful. The Orthanc server responded correctly.");
 				} else {
@@ -123,5 +131,4 @@ public class ImagingSettingsPageController {
 			throw new RuntimeException(e);
 		}
 	}
-	
 }

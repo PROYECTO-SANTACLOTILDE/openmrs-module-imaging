@@ -48,7 +48,9 @@ ${param["message"]?.getAt(0) ?: ""}
                     <td colspan="6" align="center">${ui.message("imaging.studies.none")}</td>
                 </tr>
             <% } %>
-            <% studies.each { study -> %>
+            <% studies.each { study ->
+                def baseUrl = study.orthancConfiguration.orthancProxyUrl?.trim() ? study.orthancConfiguration.orthancProxyUrl : study.orthancConfiguration.orthancBaseUrl
+            %>
                 <tr>
                     <td>
                     <form method='POST' action='/openmrs/module/imaging/assignStudy.form?patientId=${patient.id}&studyInstanceUID=${study.studyInstanceUID}'>
@@ -64,9 +66,9 @@ ${param["message"]?.getAt(0) ?: ""}
                     <td>${ui.format(study.studyDescription)}</td>
                     <td>${ui.format(study.orthancConfiguration.orthancBaseUrl)}</td>
                      <td>
-                        <a href="${ui.format(study.orthancConfiguration.orthancBaseUrl)}/stone-webviewer/index.html?study=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openStoneView.label") }">
+                        <a href="${baseUrl}/stone-webviewer/index.html?study=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openStoneView.label") }">
                             <img class="stone-img" alt="Show image in stone viewer" src="${ ui.resourceLink("imaging", "images/stoneViewer.png")}"/></a>
-                        <a href="${ui.format(study.orthancConfiguration.orthancBaseUrl)}ui/app/#/filtered-studies?StudyInstanceUID=${ui.format(study.studyInstanceUID)}&expand=study" title="${ ui.message("imaging.app.orthancExplorer.label") }">
+                        <a href="${baseUrl}ui/app/#/filtered-studies?StudyInstanceUID=${ui.format(study.studyInstanceUID)}&expand=study" title="${ ui.message("imaging.app.orthancExplorer.label") }">
                             <img class="orthanc-img" alt="Show image data in Orthanc explorer" src="${ ui.resourceLink("imaging", "images/orthanc.png")}"/></a>
                     </td>
                 </tr>

@@ -77,7 +77,7 @@ public class StudiesPageController {
 	public String uploadStudy(RedirectAttributes redirectAttributes, HttpServletResponse response,
 	        @RequestParam(value = "orthancConfigurationId") int orthancConfigurationId,
 	        @RequestParam("files") MultipartFile[] files, @RequestParam(value = "patientId") Patient patient) {
-		log.info("Uploading " + files.length + " files");
+		log.error("Uploading " + files.length + " files");
 		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
 		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
 		OrthancConfiguration config = orthancConfigurationService.getOrthancConfiguration(orthancConfigurationId);
@@ -93,9 +93,7 @@ public class StudiesPageController {
 						numUploaded++; // successfully uploaded
 					}
 				}
-				catch (IOException e) {
-					// do nothing
-				}
+				catch (IOException e) {}
 			}
 		}
 		String message;

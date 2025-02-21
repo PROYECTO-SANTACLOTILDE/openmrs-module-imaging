@@ -13,7 +13,7 @@
         for a list of supported elements and attributes
     -->
 
-    <changeSet id="41" author="weisadre">
+    <changeSet id="82" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_OrthancConfiguration"/>
@@ -24,14 +24,19 @@
             <column autoIncrement="true" name="id" type="int">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="orthancBaseUrl" type="varchar(255)" />
+            <column name="orthancBaseUrl" type="varchar(255)" >
+                <constraints unique="true" />
+            </column>
+            <column name="orthancProxyUrl" type="varchar(255)" >
+                <constraints nullable="true"/>
+            </column>
             <column name="orthancUsername" type="varchar(255)" />
             <column name="orthancPassword" type="varchar(255)" />
             <column name="lastChangedIndex" type="int" />
         </createTable>
     </changeSet>
 
-    <changeSet id="42" author="weisadre">
+    <changeSet id="83" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_DicomStudy"/>

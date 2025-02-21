@@ -75,7 +75,9 @@ ${param["message"]?.getAt(0) ?: ""}
                     <td colspan="6" align="center">${ui.message("imaging.studies.none")}</td>
                 </tr>
             <% } %>
-            <% studies.each { study -> %>
+            <% studies.each { study ->
+                def baseUrl = study.orthancConfiguration.orthancProxyUrl?.trim() ? study.orthancConfiguration.orthancProxyUrl : study.orthancConfiguration.orthancBaseUrl
+            %>
                 <tr>
                     <td class="uid-td">
                         <a href="${ui.pageLink("imaging", "series", [patientId: patient.id, studyInstanceUID: study.studyInstanceUID])}">${ui.format(study.studyInstanceUID)}</a>
@@ -91,11 +93,11 @@ ${param["message"]?.getAt(0) ?: ""}
                             </a>
                         <% } %>
                         <div style="display: flex">
-                           <a href="${ui.format(study.orthancConfiguration.orthancBaseUrl)}/stone-webviewer/index.html?study=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openStoneView.label") }">
+                           <a href="${baseUrl}/stone-webviewer/index.html?study=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openStoneView.label") }">
                                 <img class="stone-img" alt="Show image in stone viewer" src="${ ui.resourceLink("imaging", "images/stoneViewer.png")}"/></a>
-                           <a href="${ui.format(study.orthancConfiguration.orthancBaseUrl)}ohif/viewer?StudyInstanceUIDs=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openOHIFView.label") }">
+                           <a href="${baseUrl}ohif/viewer?StudyInstanceUIDs=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openOHIFView.label") }">
                                <img class="ohif-img" alt="Show image in OHIF viewer" src="${ ui.resourceLink("imaging", "images/ohifViewer.png")}"/></a>
-                           <a href="${ui.format(study.orthancConfiguration.orthancBaseUrl)}ui/app/#/filtered-studies?StudyInstanceUID=${ui.format(study.studyInstanceUID)}&expand=study" title="${ ui.message("imaging.app.orthancExplorer.label") }">
+                           <a href="${baseUrl}ui/app/#/filtered-studies?StudyInstanceUID=${ui.format(study.studyInstanceUID)}&expand=study" title="${ ui.message("imaging.app.orthancExplorer.label") }">
                                <img class="orthanc-img" alt="Show image data in Orthanc explorer" src="${ ui.resourceLink("imaging", "images/orthanc.png")}"/></a>
                        </div>
                     </td>
