@@ -29,4 +29,15 @@ corresponding studies. In addition, image data can be uploaded directly from the
 In the context of radiology, a worklist is a list of imaging studies or tasks that a radiologist needs to execute, review, or analyze.
 These tasks are typically retrieved from a radiology information system (RIS), a specialized database that manages patient and imaging information.
 However, in situations where an RIS system is not available or feasible (such as for smaller healthcare facilities, clinics, or specific locations),
-a simple radiology worklist can be sufficient. 
+a simple radiology worklist can be sufficient.
+
+Deployment of the new module
+
+* Deploy OpenMRS Imaging module from it's directory by cloning the repository, navigating to the directory and running the following run command. This will automatically 
+deploy the module before the server is started. To streamline the process, add the following run configuration to your IDE to efficiently build, deploy and run the project.:
+
+  ```bash
+  mvn clean install openmrs-sdk:run -DserverId=myserver
+
+* Once OpenMRS is up and running, you can upload the new module (imaging-1.0.0-SNAPSHOT.omod) using the 'Add or Upgrade Module' option in Manage Modules. 
+Please note that the upload may take some time.
