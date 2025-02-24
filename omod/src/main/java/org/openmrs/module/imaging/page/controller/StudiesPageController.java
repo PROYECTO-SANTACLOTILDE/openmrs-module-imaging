@@ -58,7 +58,6 @@ public class StudiesPageController {
 	//	@ResponseStatus(HttpStatus.REQUEST_ENTITY_TOO_LARGE)
 	public String handleMaxSizeException(MaxUploadSizeExceededException e, RedirectAttributes redirectAttributes,
 	        @RequestParam(value = "patientId") Patient patient) {
-		System.out.print("++ too large");
 		String status = "File size exceeds maximum upload limit. Please upload a smaller file.";
 		redirectAttributes.addAttribute("patientId", patient.getId());
 		redirectAttributes.addAttribute("message", status);
