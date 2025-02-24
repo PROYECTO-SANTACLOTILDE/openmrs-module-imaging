@@ -3,9 +3,9 @@
 OpenMRS Imaging Module
 ==========================
 In order to improve the management of patient image data within OpenMRS, the open source electronic healthcare system,
-we have developed an integration between Orthanc PACS and OpenMRS, initially designed for OpenMRS 2.x, the widely
-used version of OpenMRS. We also plan to update the project for OpenMRS 3.x, the next generation electronic medical record (EMR) system.
-This new module is focused on streamlining the management of imaging data and optimizing workflows.
+we have developed an integration between Orthanc PACS and OpenMRS, initially designed for OpenMRS 2.x, the most widely used version of OpenMRS.
+We also plan to update the project for OpenMRS 3.x, the next generation electronic medical record (EMR) system. This new module is focused on
+simplifying the management of imaging data.
 
 Key features of this module include:
 
