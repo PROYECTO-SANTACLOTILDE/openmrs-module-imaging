@@ -112,7 +112,6 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 	 */
 	@Override
 	public int testOrthancConnection(String url, String username, String password) throws IOException {
-		System.out.print(" ++++ from test Orthanc connection: " + url);
 		HttpURLConnection con = getOrthancConnection("GET", url, "/system", username, password);
 		int status = con.getResponseCode();
 		con.disconnect();
