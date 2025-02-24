@@ -9,10 +9,10 @@ This new module is focused on streamlining the management of imaging data and op
 
 Key features of this module include:
 
-* Set up and configure the connection between OpenMRS and one or multiple Orthanc servers.
-* Patient Image Data Visualization**: View patient image data in a preview window or using Orthanc's DICOM viewers.
-* DICOM File Upload**: Upload DICOM files directly in OpenMRS.
-* (Planned for Next Release) Worklist Management**: Manage worklists directly within OpenMRS.
+* Orthanc Server Configuration: Set up and configure the connection between OpenMRS and one or multiple Orthanc servers.
+* Patient Image Data Visualization: View patient image data in a preview window or using Orthanc's DICOM viewers.
+* DICOM File Upload: Upload DICOM files directly in OpenMRS.
+* (Planned for Next Release) Worklist Management: Manage worklists directly within OpenMRS.
 
 Watch the video demonstration of the module here:  
 [![Watch the video](https://img.youtube.com/vi/248A5wPQNgs/0.jpg)](https://youtu.be/248A5wPQNgs)
