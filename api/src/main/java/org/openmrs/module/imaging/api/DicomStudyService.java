@@ -40,11 +40,13 @@ import java.util.List;
 @Transactional
 public interface DicomStudyService extends OpenmrsService {
 	
-	List<DicomStudy> getStudies(Patient pt);
+	List<DicomStudy> getStudiesOfPatient(Patient pt);
 	
 	List<DicomStudy> getAllStudies();
 	
-	DicomStudy getDicomStudy(String studyInstanceUID);
+	DicomStudy getDicomStudy(int id);
+	
+	DicomStudy getDicomStudy(OrthancConfiguration config, String studyInstanceUID);
 	
 	int testOrthancConnection(String url, String username, String password) throws IOException;
 	
@@ -68,9 +70,9 @@ public interface DicomStudyService extends OpenmrsService {
 	
 	void deleteSeries(String seriesOrthancUID, DicomStudy study) throws IOException;
 	
-	List<DicomSeries> fetchSeries(String studyInstanceUID) throws IOException;
+	List<DicomSeries> fetchSeries(DicomStudy study) throws IOException;
 	
-	List<DicomInstance> fetchInstances(String sopInstanceUID) throws IOException;
+	List<DicomInstance> fetchInstances(String sopInstanceUID, DicomStudy study) throws IOException;
 	
 	public class PreviewResult {
 		

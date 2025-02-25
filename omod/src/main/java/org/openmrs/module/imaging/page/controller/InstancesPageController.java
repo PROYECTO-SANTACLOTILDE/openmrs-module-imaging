@@ -36,23 +36,26 @@ public class InstancesPageController {
 	
 	protected Log log = LogFactory.getLog(this.getClass());
 	
-	public void get(Model model, @RequestParam(value = "seriesInstanceUID") String seriesInstanceUID) throws IOException {
+	public void get(Model model, @RequestParam(value = "seriesInstanceUID") String seriesInstanceUID,
+	        @RequestParam(value = "studyId") int studyId) throws IOException {
 		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
-		List<DicomInstance> instances = dicomStudyService.fetchInstances(seriesInstanceUID);
+		DicomStudy dicomStudy = dicomStudyService.getDicomStudy(studyId);
+		List<DicomInstance> instances = dicomStudyService.fetchInstances(seriesInstanceUID, dicomStudy);
 		model.addAttribute("instances", instances);
+		model.addAttribute("studyInstanceUID", dicomStudy.getStudyInstanceUID());
 	}
 	
 	/**
 	 * @param orthancInstanceUID the orthanc identifier UID for the instance
-	 * @param studyInstanceUID the study instance UID
+	 * @param studyId the study instance UID
 	 * @return the response entity
 	 */
 	@RequestMapping(value = "/module/imaging/previewInstance.form", method = RequestMethod.GET)
 	public ResponseEntity previewInstance(@RequestParam(value = "orthancInstanceUID") String orthancInstanceUID,
-	        @RequestParam(value = "studyInstanceUID") String studyInstanceUID) {
+	        @RequestParam(value = "studyId") int studyId) {
 		
 		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
-		DicomStudy study = dicomStudyService.getDicomStudy(studyInstanceUID);
+		DicomStudy study = dicomStudyService.getDicomStudy(studyId);
 		try {
 			DicomStudyService.PreviewResult previewResult = dicomStudyService
 			        .fetchInstancePreview(orthancInstanceUID, study);
@@ -61,7 +64,7 @@ public class InstancesPageController {
 			return new ResponseEntity<byte[]>(previewResult.data, headers, HttpStatus.OK);
 		}
 		catch (IOException e) {
-			return new ResponseEntity(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 }

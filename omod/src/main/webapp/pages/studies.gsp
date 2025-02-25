@@ -36,11 +36,11 @@ ${param["message"]?.getAt(0) ?: ""}
         overlay.classList.toggle('show');
     }
 
-    function togglePopupDeleteStudy(studyInstanceUID, patient) {
+    function togglePopupDeleteStudy(studyId, patient) {
         const overlay = document.getElementById('popupOverlayDeleteStudy');
         overlay.classList.toggle('show');
-        document.deleteStudyForm.action = "/openmrs/module/imaging/deleteStudy.form?studyInstanceUID="
-                                             + studyInstanceUID
+        document.deleteStudyForm.action = "/openmrs/module/imaging/deleteStudy.form?studyId="
+                                             + studyId
                                              + "&patientId=" + patient;
     }
 </script>
@@ -80,7 +80,7 @@ ${param["message"]?.getAt(0) ?: ""}
             %>
                 <tr>
                     <td class="uid-td">
-                        <a href="${ui.pageLink("imaging", "series", [patientId: patient.id, studyInstanceUID: study.studyInstanceUID])}">${ui.format(study.studyInstanceUID)}</a>
+                        <a href="${ui.pageLink("imaging", "series", [patientId: patient.id, studyId: study.id])}">${ui.format(study.studyInstanceUID)}</a>
                     </td>
                     <td>${ui.format(study.patientName)}</td>
                     <td>${ui.format(study.studyDate)}</td>
@@ -89,7 +89,7 @@ ${param["message"]?.getAt(0) ?: ""}
                      <td>
                         <% if (privilegeModifyImageData) { %>
                             <a class="delete-study"
-                                onclick="togglePopupDeleteStudy('${ui.format(study.studyInstanceUID)}', '${patient.id}')"><i class="icon-remove delete-action"></i>
+                                onclick="togglePopupDeleteStudy('${study.id}', '${patient.id}')"><i class="icon-remove delete-action"></i>
                             </a>
                         <% } %>
                         <div style="display: flex">

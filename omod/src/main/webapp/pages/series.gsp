@@ -30,12 +30,12 @@ ${param["message"]?.getAt(0) ?: ""}
 </div>
 
 <script>
-    function togglePopupDeleteSeries(orthancSeriesUID, studyInstanceUID, patient) {
+    function togglePopupDeleteSeries(orthancSeriesUID, studyId, patient) {
         const overlay = document.getElementById('popupOverlayDeleteSeries');
         overlay.classList.toggle('show');
         document.deleteSeriesForm.action = "/openmrs/module/imaging/deleteSeries.form?orthancSeriesUID="
                                              + orthancSeriesUID
-                                             + "&studyInstanceUID=" + studyInstanceUID
+                                             + "&studyId=" + studyId
                                              + "&patientId=" + patient;
     }
 </script>
@@ -64,7 +64,7 @@ ${param["message"]?.getAt(0) ?: ""}
             %>
                 <tr>
                     <td class="uid-td">
-                        <a href="${ui.pageLink("imaging", "instances", [patientId: patient.id, seriesInstanceUID: series.seriesInstanceUID, studyInstanceUID: studyInstanceUID])}">${ui.format(series.seriesInstanceUID)}</a>
+                        <a href="${ui.pageLink("imaging", "instances", [patientId: patient.id, seriesInstanceUID: series.seriesInstanceUID, studyId: studyId])}">${ui.format(series.seriesInstanceUID)}</a>
                     </td>
                     <td>${ui.format(series.seriesNumber)}</td>
                     <td>${ui.format(series.seriesDescription)}</td>
@@ -73,15 +73,15 @@ ${param["message"]?.getAt(0) ?: ""}
                      <td>
                          <% if (privilegeModifyImageData) { %>
                             <a class="delete-series"
-                                onclick="togglePopupDeleteSeries('${ui.format(series.orthancSeriesUID)}', '${studyInstanceUID}', '${patient.id}')"><i class="icon-remove" delete-action></i>
+                                onclick="togglePopupDeleteSeries('${series.orthancSeriesUID}', '${studyId}', '${patient.id}')"><i class="icon-remove" delete-action></i>
                             </a>
                         <% } %>
                         <% if (ui.format(series.modality) != "RTDOSE"  && ui.format(series.modality) != "RTSTRUCT") { %>
-                            <a href="${baseUrl}/stone-webviewer/index.html?study=${ui.format(studyInstanceUID)}&series=${series.seriesInstanceUID}"
+                            <a href="${baseUrl}/stone-webviewer/index.html?study=${studyInstanceUID}&series=${series.seriesInstanceUID}"
                                 title="${ ui.message("imaging.app.openStoneView.label") }">
                                 <img class="series-stone-img" src="${ ui.resourceLink("imaging", "images/stoneViewer.png") }"/></a>
                         <% } %>
-                        <a href="${baseUrl}/ui/app/#/filtered-studies?StudyInstanceUID=${ui.format(studyInstanceUID)}&expand=series" title="${ ui.message("imaging.app.orthancExplorer.label") }">
+                        <a href="${baseUrl}/ui/app/#/filtered-studies?StudyInstanceUID=${studyInstanceUID}&expand=series" title="${ ui.message("imaging.app.orthancExplorer.label") }">
                             <img class="orthanc-img" alt="Show image data in Orthanc explorer" src="${ ui.resourceLink("imaging", "images/orthanc.png")}"/></a>
                      </td>
                 </tr>

@@ -44,7 +44,7 @@ public class SyncStudiesPageController {
 		
 		HashMap<String, Integer> match = new HashMap<String, Integer>();
 		for (DicomStudy study : allStudies) {
-			// https://github.com/xdrop/fuzzywuzzy?tab=readme-ov-file
+			// FuzzySearch by https://github.com/xdrop/fuzzywuzzy?tab=readme-ov-file
 			int score = FuzzySearch.tokenSetRatio(patient.getGivenName() + " " + patient.getFamilyName(),
 			    study.getPatientName());
 			match.put(study.getStudyInstanceUID(), score);
@@ -57,20 +57,20 @@ public class SyncStudiesPageController {
 	/**
 	 * @param redirectAttributes the redirect attributes
 	 * @param patient the openmrs patient
-	 * @param studyInstanceUID the study instance UID
+	 * @param studyId the study ID
 	 * @param isChecked is the study assigned?
 	 * @return the redirect url
 	 */
 	@RequestMapping(value = "/module/imaging/assignStudy.form", method = RequestMethod.POST)
 	public String assignStudy(RedirectAttributes redirectAttributes, @RequestParam(value = "patientId") Patient patient,
-	        @RequestParam(value = "studyInstanceUID") String studyInstanceUID, boolean isChecked) {
+	        @RequestParam(value = "studyId") int studyId, boolean isChecked) {
 		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
 		String message;
 		if (isChecked) {
-			dicomStudyService.setPatient(dicomStudyService.getDicomStudy(studyInstanceUID), patient);
+			dicomStudyService.setPatient(dicomStudyService.getDicomStudy(studyId), patient);
 			message = "Study assigned to patient";
 		} else {
-			dicomStudyService.setPatient(dicomStudyService.getDicomStudy(studyInstanceUID), null);
+			dicomStudyService.setPatient(dicomStudyService.getDicomStudy(studyId), null);
 			message = "Study assignment removed";
 		}
 		

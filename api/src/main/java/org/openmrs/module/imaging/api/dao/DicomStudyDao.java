@@ -44,33 +44,37 @@ public class DicomStudyDao {
 		this.sessionFactory = sessionFactory;
 	}
 	
+	public DicomStudy get(int id) {
+		return (DicomStudy) getSession().get(DicomStudy.class, id);
+	}
+	
 	@SuppressWarnings("unchecked")
-	public List<DicomStudy> getAllDicomStudies() {
+	public List<DicomStudy> getAll() {
 		return getSession().createCriteria(DicomStudy.class).list();
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<DicomStudy> getAllDicomStudiesByPatient(Patient patient) {
+	public List<DicomStudy> getByPatient(Patient patient) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(DicomStudy.class);
 		return criteria.add(Restrictions.eq("mrsPatient", patient)).list();
 	}
 	
-	public DicomStudy getDicomStudy(String studyInstanceUID) {
-		return (DicomStudy) getSession().createCriteria(DicomStudy.class)
-		        .add(Restrictions.eq("studyInstanceUID", studyInstanceUID)).uniqueResult();
-	}
-	
-	public DicomStudy saveDicomStudy(DicomStudy dicomStudy) {
-		getSession().saveOrUpdate(dicomStudy);
-		return dicomStudy;
-	}
-	
-	public void removeDicomStudy(DicomStudy dicomStudy) {
-		getSession().delete(dicomStudy);
-	}
-	
-	public boolean hasStudy(OrthancConfiguration orthancConfiguration) {
+	public DicomStudy getByStudyInstanceUID(OrthancConfiguration config, String studyInstanceUID) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(DicomStudy.class);
-		return !criteria.add(Restrictions.eq("orthancConfiguration", orthancConfiguration)).list().isEmpty();
+		return (DicomStudy) criteria.add(Restrictions.eq("studyInstanceUID", studyInstanceUID))
+		        .add(Restrictions.eq("orthancConfiguration", config)).uniqueResult();
+	}
+	
+	public void save(DicomStudy study) {
+		getSession().saveOrUpdate(study);
+	}
+	
+	public void remove(DicomStudy study) {
+		getSession().delete(study);
+	}
+	
+	public boolean hasStudy(OrthancConfiguration config) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(DicomStudy.class);
+		return !criteria.add(Restrictions.eq("orthancConfiguration", config)).list().isEmpty();
 	}
 }

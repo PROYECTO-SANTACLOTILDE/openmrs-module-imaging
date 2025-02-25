@@ -44,7 +44,7 @@ public class StudiesPageController {
 		long maxUploadImageDataSize = imageProps.getMaxUploadImageDataSize() / 1000_000;
 		
 		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
-		List<DicomStudy> studies = dicomStudyService.getStudies(patient);
+		List<DicomStudy> studies = dicomStudyService.getStudiesOfPatient(patient);
 		model.addAttribute("studies", studies);
 		
 		OrthancConfigurationService orthancConfigureService = Context.getService(OrthancConfigurationService.class);
@@ -153,20 +153,19 @@ public class StudiesPageController {
 	
 	/**
 	 * @param redirectAttributes the redirect attributes
-	 * @param studyInstanceUID the study instance UID of the study to delete
+	 * @param studyId the study ID of the study to delete
 	 * @param patient the openmrs patient
 	 * @return the redirect url
 	 */
 	@RequestMapping(value = "/module/imaging/deleteStudy.form", method = RequestMethod.POST)
-	public String deleteStudy(RedirectAttributes redirectAttributes,
-	        @RequestParam(value = "studyInstanceUID") String studyInstanceUID,
+	public String deleteStudy(RedirectAttributes redirectAttributes, @RequestParam(value = "studyId") int studyId,
 	        @RequestParam(value = "patientId") Patient patient, @RequestParam(value = "deleteOption") String deleteOption) {
 		
 		String message;
 		boolean hasPrivilege = Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_Modify_IMAGE_DATA);
 		if (hasPrivilege) {
 			DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
-			DicomStudy deleteStudy = dicomStudyService.getDicomStudy(studyInstanceUID);
+			DicomStudy deleteStudy = dicomStudyService.getDicomStudy(studyId);
 			try {
 				if (deleteOption.equals("openmrs")) {
 					dicomStudyService.deleteStudyFromOpenmrs(deleteStudy);

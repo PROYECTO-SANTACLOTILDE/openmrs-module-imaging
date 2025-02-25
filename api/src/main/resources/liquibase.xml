@@ -36,7 +36,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="87" author="weisadre">
+    <changeSet id="89" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_DicomStudy"/>
@@ -45,8 +45,11 @@
         </preConditions>
         <comment>Create the DicomStudy table for imaging</comment>
         <createTable tableName="${project.parent.artifactId}_DicomStudy">
-            <column name="studyInstanceUID" type="varchar(255)">
+            <column autoIncrement="true" name="id" type="int">
                 <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="studyInstanceUID" type="varchar(255)">
+                <constraints nullable="false"/>
             </column>
             <column name="orthancStudyUID" type="varchar(255)"/>
             <column name="patientName" type="varchar(255)"/>

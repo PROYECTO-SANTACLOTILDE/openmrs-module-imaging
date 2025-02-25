@@ -36,15 +36,18 @@ public class SeriesPageController {
 	
 	protected Log log = LogFactory.getLog(this.getClass());
 	
-	public void get(Model model, @RequestParam(value = "studyInstanceUID") String studyInstanceUID) throws IOException {
+	public void get(Model model, @RequestParam(value = "studyId") int studyId) throws IOException {
 		try {
 			DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
-			List<DicomSeries> seriesList = dicomStudyService.fetchSeries(studyInstanceUID);
+			DicomStudy dicomStudy = dicomStudyService.getDicomStudy(studyId);
+			
+			List<DicomSeries> seriesList = dicomStudyService.fetchSeries(dicomStudy);
 			if (seriesList.isEmpty()) {
-				seriesList = dicomStudyService.fetchSeries(studyInstanceUID);
+				seriesList = dicomStudyService.fetchSeries(dicomStudy);
 			}
 			model.addAttribute("serieses", seriesList);
-			model.addAttribute("studyInstanceUID", studyInstanceUID);
+			model.addAttribute("studyId", studyId);
+			model.addAttribute("studyInstanceUID", dicomStudy.getStudyInstanceUID());
 			model.addAttribute("privilegeModifyImageData",
 			    Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_Modify_IMAGE_DATA));
 		}
@@ -56,21 +59,20 @@ public class SeriesPageController {
 	/**
 	 * @param redirectAttributes the redirect attributes
 	 * @param orthancSeriesUID the orthanc identifier UID for the series
-	 * @param studyInstanceUID the study instance UID
+	 * @param studyId the study ID
 	 * @param patient the openmrs patient
 	 * @return the delete status
 	 */
 	@RequestMapping(value = "/module/imaging/deleteSeries.form", method = RequestMethod.POST)
 	public String deleteSeries(RedirectAttributes redirectAttributes,
-	        @RequestParam(value = "orthancSeriesUID") String orthancSeriesUID,
-	        @RequestParam(value = "studyInstanceUID") String studyInstanceUID,
+	        @RequestParam(value = "orthancSeriesUID") String orthancSeriesUID, @RequestParam(value = "studyId") int studyId,
 	        @RequestParam(value = "patientId") Patient patient) {
 		
 		String message;
 		boolean hasPrivilege = Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_Modify_IMAGE_DATA);
 		if (hasPrivilege) {
 			DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
-			DicomStudy seriesStudy = dicomStudyService.getDicomStudy(studyInstanceUID);
+			DicomStudy seriesStudy = dicomStudyService.getDicomStudy(studyId);
 			try {
 				dicomStudyService.deleteSeries(orthancSeriesUID, seriesStudy);
 				message = "Series successfully deleted";
@@ -83,7 +85,7 @@ public class SeriesPageController {
 		}
 		
 		redirectAttributes.addAttribute("patientId", patient.getId());
-		redirectAttributes.addAttribute("studyInstanceUID", studyInstanceUID);
+		redirectAttributes.addAttribute("studyId", studyId);
 		redirectAttributes.addAttribute("message", message);
 		return "redirect:/imaging/series.page";
 	}
