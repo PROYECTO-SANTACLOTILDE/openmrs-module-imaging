@@ -64,6 +64,8 @@ public interface DicomStudyService extends OpenmrsService {
 	
 	void deleteStudy(DicomStudy dicomStudy) throws IOException;
 	
+	void deleteStudyFromOpenmrs(DicomStudy dicomStudy);
+	
 	void deleteSeries(String seriesOrthancUID, DicomStudy study) throws IOException;
 	
 	List<DicomSeries> fetchSeries(String studyInstanceUID) throws IOException;

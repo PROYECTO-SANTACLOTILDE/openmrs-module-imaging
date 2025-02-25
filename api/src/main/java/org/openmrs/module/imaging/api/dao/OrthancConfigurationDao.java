@@ -57,6 +57,10 @@ public class OrthancConfigurationDao {
 	 * @ return Orthanc configuration
 	 */
 	public OrthancConfiguration saveOrthancConfiguration(OrthancConfiguration orthancConfiguration) {
+		if (!getSession().createCriteria(OrthancConfiguration.class)
+		        .add(Restrictions.eq("orthancBaseUrl", orthancConfiguration.getOrthancBaseUrl())).list().isEmpty()) {
+			throw new IllegalArgumentException("A configuration with the same base URL already exists");
+		}
 		getSession().saveOrUpdate(orthancConfiguration);
 		return orthancConfiguration;
 	}

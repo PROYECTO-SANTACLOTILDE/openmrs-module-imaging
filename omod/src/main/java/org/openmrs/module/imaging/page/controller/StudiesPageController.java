@@ -55,7 +55,6 @@ public class StudiesPageController {
 	}
 	
 	@ExceptionHandler(MaxUploadSizeExceededException.class)
-	//	@ResponseStatus(HttpStatus.REQUEST_ENTITY_TOO_LARGE)
 	public String handleMaxSizeException(MaxUploadSizeExceededException e, RedirectAttributes redirectAttributes,
 	        @RequestParam(value = "patientId") Patient patient) {
 		String status = "File size exceeds maximum upload limit. Please upload a smaller file.";
@@ -159,7 +158,7 @@ public class StudiesPageController {
 	@RequestMapping(value = "/module/imaging/deleteStudy.form", method = RequestMethod.POST)
 	public String deleteStudy(RedirectAttributes redirectAttributes,
 	        @RequestParam(value = "studyInstanceUID") String studyInstanceUID,
-	        @RequestParam(value = "patientId") Patient patient) {
+	        @RequestParam(value = "patientId") Patient patient, @RequestParam(value = "deleteOption") String deleteOption) {
 		
 		String message;
 		boolean hasPrivilege = Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_Modify_IMAGE_DATA);
@@ -167,7 +166,11 @@ public class StudiesPageController {
 			DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
 			DicomStudy deleteStudy = dicomStudyService.getDicomStudy(studyInstanceUID);
 			try {
-				dicomStudyService.deleteStudy(deleteStudy);
+				if (deleteOption.equals("openmrs")) {
+					dicomStudyService.deleteStudyFromOpenmrs(deleteStudy);
+				} else {
+					dicomStudyService.deleteStudy(deleteStudy);
+				}
 				message = "Study successfully deleted";
 			}
 			catch (IOException e) {

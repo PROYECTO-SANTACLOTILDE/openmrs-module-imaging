@@ -341,6 +341,14 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		}
 	}
 	
+	@Override
+	public void deleteStudyFromOpenmrs(DicomStudy dicomStudy) {
+		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
+		OrthancConfiguration config = orthancConfigurationService.getOrthancConfiguration(dicomStudy
+		        .getOrthancConfiguration().getId());
+		dao.removeDicomStudy(dicomStudy);
+	}
+	
 	/**
 	 * @param seriesOrthancUID the series of the dicom study
 	 * @param seriesStudy the dicom study
