@@ -1,6 +1,6 @@
 [
   {
-    "id": "${project.parent.groupId}.imaging.patientDashboard.secondColumnFragments",
+    "id": "org.openmrs.module.imaging.patientDashboard.secondColumnFragments",
     "extensionPointId": "patientDashboard.secondColumnFragments",
     "extensionParams": {
       "provider": "imaging",
