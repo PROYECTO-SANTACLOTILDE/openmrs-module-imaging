@@ -263,8 +263,9 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 				fetchNewChangedStudies(config, orthancStudyIds);
 				// remember last processed change
 				OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
-				config.setLastChangedIndex(changesData.get("Last").asInt());
-				orthancConfigurationService.saveOrthancConfiguration(config);
+				config.setLastChangedIndex(changesData.get("Last").asInt());;
+//				orthancConfigurationService.saveOrthancConfiguration(config);
+				orthancConfigurationService.updateOrthancConfiguration(config);
 				// stop when all changes read
 				if(changesData.get("Done").asText().equals("true")) {
 					break;

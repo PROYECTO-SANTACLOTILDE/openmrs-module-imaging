@@ -13,7 +13,7 @@
         for a list of supported elements and attributes
     -->
 
-    <changeSet id="82" author="weisadre">
+    <changeSet id="86" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_OrthancConfiguration"/>
@@ -36,7 +36,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="83" author="weisadre">
+    <changeSet id="87" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_DicomStudy"/>
@@ -69,28 +69,5 @@
                                  referencedTableName="imaging_OrthancConfiguration"
                                  referencedColumnNames="id"/>
     </changeSet>
-
-    <!-- Uncomment the changeset below if you want to make the Item class persistable, see also Item and ImagingDaoTest -->
-    <!--
-   <changeSet id="imaging-2016-08-02-12-21" author="raff">
-       <preConditions onFail="MARK_RAN">
-           <not><tableExists tableName="imaging_item"/></not>
-       </preConditions>
-       <comment>
-           Creating the imaging_item table
-       </comment>
-       <createTable tableName="imaging_item">
-           <column name="imaging_item_id" type="int" autoIncrement="true">
-               <constraints primaryKey="true" nullable="false"/>
-           </column>
-           <column name="uuid" type="char(38)">
-               <constraints nullable="false" unique="true"></constraints>
-           </column>
-           <column name="owner" type="int" />
-           <column name="description" type="varchar(255)" />
-       </createTable>
-       <addForeignKeyConstraint constraintName="imaging_item_owner_fk" baseTableName="imaging_item" baseColumnNames="owner"  referencedTableName="users"
-                                referencedColumnNames="user_id" />
-   </changeSet> -->
 
 </databaseChangeLog>

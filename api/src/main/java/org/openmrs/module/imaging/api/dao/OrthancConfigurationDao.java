@@ -71,4 +71,9 @@ public class OrthancConfigurationDao {
 	public void removeOrthancConfiguration(OrthancConfiguration orthancConfiguration) {
 		getSession().delete(orthancConfiguration);
 	}
+	
+	public OrthancConfiguration updateOrthancConfiguration(OrthancConfiguration orthancConfiguration) {
+		getSession().update(orthancConfiguration);
+		return orthancConfiguration;
+	}
 }

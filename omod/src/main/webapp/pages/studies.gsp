@@ -156,13 +156,13 @@ ${param["message"]?.getAt(0) ?: ""}
         <h2>Delete study</h2>
         <form name="deleteStudyForm" class="form-container" method='POST'>
             <h2 id="deleteStudyMessage">${ ui.message("imaging.deleteStudy.message") }</h3>
-            <div class="radio-div" style="margin-top: 30px">
+            <div class="radio-div">
                 <label style="margin-right: 30px; color: #5B57A6">
                     <input style="width:20px; margin-top: 2px; height: 20px;" type="radio" id="deleteOpenmrs" name="deleteOption" value="openmrs" checked>Delete from OpenMRS</label>
                 <label style="margin-left: 30px; color: #5B57A6;">
                     <input style="width:20px; margin-top: 2px; height: 20px;" type="radio" id="deleteBoth" name="deleteOption" value="openmrsOrthanc">Delete from OpenMRS and Orthanc</label>
             </div>
-            <div class="popup-box-btn" style="margin-top: 40px">
+            <div class="popup-box-btn" style="margin-top: 40px;">
                 <button class="btn-submit" type="submit">${ ui.message("imaging.action.delete") }</button>
                 <button class="btn-close-popup" type="button" onclick="togglePopupDeleteStudy()">Cancel</button>
             </div>

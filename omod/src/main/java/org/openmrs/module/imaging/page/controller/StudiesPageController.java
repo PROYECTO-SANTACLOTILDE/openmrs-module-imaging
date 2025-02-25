@@ -91,7 +91,9 @@ public class StudiesPageController {
 						numUploaded++; // successfully uploaded
 					}
 				}
-				catch (IOException e) {}
+				catch (IOException e) {
+					throw new RuntimeException(e);
+				}
 			}
 		}
 		String message;

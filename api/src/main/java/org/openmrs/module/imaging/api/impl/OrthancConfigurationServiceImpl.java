@@ -18,6 +18,7 @@ import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.module.imaging.api.OrthancConfigurationService;
 import org.openmrs.module.imaging.api.dao.OrthancConfigurationDao;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -53,5 +54,10 @@ public class OrthancConfigurationServiceImpl extends BaseOpenmrsService implemen
 	@Override
 	public void removeOrthancConfiguration(OrthancConfiguration orthancConfiguration) {
 		dao.removeOrthancConfiguration(orthancConfiguration);
+	}
+	
+	@Override
+	public OrthancConfiguration updateOrthancConfiguration(OrthancConfiguration orthancConfiguration) {
+		return dao.updateOrthancConfiguration(orthancConfiguration);
 	}
 }

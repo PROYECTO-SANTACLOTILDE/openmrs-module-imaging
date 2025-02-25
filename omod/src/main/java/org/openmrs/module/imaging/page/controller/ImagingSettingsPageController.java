@@ -60,6 +60,10 @@ public class ImagingSettingsPageController {
 		url = url.trim();
 		username = username.trim();
 		password = password.trim();
+		if (proxyurl != null) {
+			proxyurl = proxyurl.trim();
+		}
+		proxyurl = proxyurl.trim();
 		if (!url.isEmpty() && !username.isEmpty() && !password.isEmpty()) {
 			OrthancConfiguration oc = new OrthancConfiguration();
 			oc.setOrthancBaseUrl(url);
