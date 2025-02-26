@@ -32,7 +32,7 @@ ${param["message"]?.getAt(0) ?: ""}
         <thead class="imaging-table-thead">
             <script src="filter_table.js" defer></script>
             <tr>
-                <th></th>
+                <th style="width: 3px;"></th>
                 <th>Match</th>
                 <th>${ ui.message("imaging.app.studyInstanceUid.label")}</th>
                 <th>${ ui.message("imaging.app.patientName.label")}</th>
