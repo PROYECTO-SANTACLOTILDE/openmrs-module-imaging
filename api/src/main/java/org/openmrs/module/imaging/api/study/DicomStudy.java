@@ -21,6 +21,8 @@ public class DicomStudy extends BaseOpenmrsData implements java.io.Serializable 
 	
 	private static final long serialVersionUID = 1;
 	
+	private Integer id;
+	
 	private String studyInstanceUID;
 	
 	private String orthancStudyUID;
@@ -55,70 +57,23 @@ public class DicomStudy extends BaseOpenmrsData implements java.io.Serializable 
 		this.gender = gender;
 	}
 	
+	@Override
+	public Integer getId() {
+		return this.id;
+	}
+	
+	@Override
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	
 	// Getters and Setters
 	public String getStudyInstanceUID() {
-		return studyInstanceUID;
+		return this.studyInstanceUID;
 	}
 	
 	public void setStudyInstanceUID(String studyInstanceUID) {
 		this.studyInstanceUID = studyInstanceUID;
-	}
-	
-	public String getPatientName() {
-		return patientName;
-	}
-	
-	public void setPatientName(String patientName) {
-		this.patientName = patientName;
-	}
-	
-	public String getStudyDate() {
-		return studyDate;
-	}
-	
-	public void setStudyDate(String studyDate) {
-		this.studyDate = studyDate;
-	}
-	
-	public String getStudyDescription() {
-		return studyDescription;
-	}
-	
-	public void setStudyDescription(String studyDescription) {
-		this.studyDescription = studyDescription;
-	}
-	
-	public String getGender() {
-		return gender;
-	}
-	
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
-	
-	public OrthancConfiguration getOrthancConfiguration() {
-		return orthancConfiguration;
-	}
-	
-	public void setOrthancConfiguration(OrthancConfiguration orthancConfiguration) {
-		this.orthancConfiguration = orthancConfiguration;
-	}
-	
-	public Patient getMrsPatient() {
-		return mrsPatient;
-	}
-	
-	public void setMrsPatient(Patient mrsPatient) {
-		this.mrsPatient = mrsPatient;
-	}
-	
-	@Override
-	public Integer getId() {
-		return 0;
-	}
-	
-	@Override
-	public void setId(Integer integer) {
 	}
 	
 	public String getOrthancStudyUID() {
@@ -129,11 +84,59 @@ public class DicomStudy extends BaseOpenmrsData implements java.io.Serializable 
 		this.orthancStudyUID = orthancStudyUID;
 	}
 	
+	public Patient getMrsPatient() {
+		return this.mrsPatient;
+	}
+	
+	public void setMrsPatient(Patient mrsPatient) {
+		this.mrsPatient = mrsPatient;
+	}
+	
+	public OrthancConfiguration getOrthancConfiguration() {
+		return this.orthancConfiguration;
+	}
+	
+	public void setOrthancConfiguration(OrthancConfiguration orthancConfiguration) {
+		this.orthancConfiguration = orthancConfiguration;
+	}
+	
+	public String getPatientName() {
+		return this.patientName;
+	}
+	
+	public void setPatientName(String patientName) {
+		this.patientName = patientName;
+	}
+	
+	public String getStudyDate() {
+		return this.studyDate;
+	}
+	
+	public void setStudyDate(String studyDate) {
+		this.studyDate = studyDate;
+	}
+	
 	public String getStudyTime() {
-		return studyTime;
+		return this.studyTime;
 	}
 	
 	public void setStudyTime(String studyTime) {
 		this.studyTime = studyTime;
+	}
+	
+	public String getStudyDescription() {
+		return this.studyDescription;
+	}
+	
+	public void setStudyDescription(String studyDescription) {
+		this.studyDescription = studyDescription;
+	}
+	
+	public String getGender() {
+		return this.gender;
+	}
+	
+	public void setGender(String gender) {
+		this.gender = gender;
 	}
 }

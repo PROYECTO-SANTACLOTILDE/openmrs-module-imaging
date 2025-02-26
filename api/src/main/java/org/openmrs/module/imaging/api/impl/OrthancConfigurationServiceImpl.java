@@ -37,21 +37,26 @@ public class OrthancConfigurationServiceImpl extends BaseOpenmrsService implemen
 	
 	@Override
 	public List<OrthancConfiguration> getAllOrthancConfigurations() {
-		return dao.getAllOrthancConfigurations();
+		return dao.getAll();
 	}
 	
 	@Override
 	public OrthancConfiguration getOrthancConfiguration(int id) {
-		return dao.getOrthancConfiguration(id);
+		return dao.get(id);
 	}
 	
 	@Override
-	public OrthancConfiguration saveOrthancConfiguration(OrthancConfiguration orthancConfiguration) {
-		return dao.saveOrthancConfiguration(orthancConfiguration);
+	public void saveOrthancConfiguration(OrthancConfiguration config) {
+		dao.saveNew(config);
 	}
 	
 	@Override
 	public void removeOrthancConfiguration(OrthancConfiguration orthancConfiguration) {
-		dao.removeOrthancConfiguration(orthancConfiguration);
+		dao.remove(orthancConfiguration);
+	}
+	
+	@Override
+	public void updateOrthancConfiguration(OrthancConfiguration orthancConfiguration) {
+		dao.updateExisting(orthancConfiguration);
 	}
 }

@@ -36,11 +36,11 @@ ${param["message"]?.getAt(0) ?: ""}
         overlay.classList.toggle('show');
     }
 
-    function togglePopupDeleteStudy(studyInstanceUID, patient) {
+    function togglePopupDeleteStudy(studyId, patient) {
         const overlay = document.getElementById('popupOverlayDeleteStudy');
         overlay.classList.toggle('show');
-        document.deleteStudyForm.action = "/openmrs/module/imaging/deleteStudy.form?studyInstanceUID="
-                                             + studyInstanceUID
+        document.deleteStudyForm.action = "/openmrs/module/imaging/deleteStudy.form?studyId="
+                                             + studyId
                                              + "&patientId=" + patient;
     }
 </script>
@@ -80,7 +80,7 @@ ${param["message"]?.getAt(0) ?: ""}
             %>
                 <tr>
                     <td class="uid-td">
-                        <a href="${ui.pageLink("imaging", "series", [patientId: patient.id, studyInstanceUID: study.studyInstanceUID])}">${ui.format(study.studyInstanceUID)}</a>
+                        <a href="${ui.pageLink("imaging", "series", [patientId: patient.id, studyId: study.id])}">${ui.format(study.studyInstanceUID)}</a>
                     </td>
                     <td>${ui.format(study.patientName)}</td>
                     <td>${ui.format(study.studyDate)}</td>
@@ -89,7 +89,7 @@ ${param["message"]?.getAt(0) ?: ""}
                      <td>
                         <% if (privilegeModifyImageData) { %>
                             <a class="delete-study"
-                                onclick="togglePopupDeleteStudy('${ui.format(study.studyInstanceUID)}', '${patient.id}')"><i class="icon-remove delete-action"></i>
+                                onclick="togglePopupDeleteStudy('${study.id}', '${patient.id}')"><i class="icon-remove delete-action"></i>
                             </a>
                         <% } %>
                         <div style="display: flex">
@@ -155,15 +155,20 @@ ${param["message"]?.getAt(0) ?: ""}
     <div class="popup-box" style="width: 65%;">
         <h2>Delete study</h2>
         <form name="deleteStudyForm" class="form-container" method='POST'>
-            <h3 id="deleteStudyMessage">${ ui.message("imaging.deleteStudy.message") }</h3>
-            <div class="popup-box-btn">
+            <h2 id="deleteStudyMessage">${ ui.message("imaging.deleteStudy.message") }</h3>
+            <div class="radio-div">
+                <label style="margin-right: 30px; color: #5B57A6">
+                    <input style="width:20px; margin-top: 2px; height: 20px;" type="radio" id="deleteOpenmrs" name="deleteOption" value="openmrs" checked>Delete from OpenMRS</label>
+                <label style="margin-left: 30px; color: #5B57A6;">
+                    <input style="width:20px; margin-top: 2px; height: 20px;" type="radio" id="deleteBoth" name="deleteOption" value="openmrsOrthanc">Delete from OpenMRS and Orthanc</label>
+            </div>
+            <div class="popup-box-btn" style="margin-top: 40px;">
                 <button class="btn-submit" type="submit">${ ui.message("imaging.action.delete") }</button>
                 <button class="btn-close-popup" type="button" onclick="togglePopupDeleteStudy()">Cancel</button>
             </div>
         </form>
     </div>
 </div>
-
 
 
 

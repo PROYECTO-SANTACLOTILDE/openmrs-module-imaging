@@ -32,7 +32,7 @@ ${param["message"]?.getAt(0) ?: ""}
         <thead class="imaging-table-thead">
             <script src="filter_table.js" defer></script>
             <tr>
-                <th></th>
+                <th style="width: 3px;"></th>
                 <th>Match</th>
                 <th>${ ui.message("imaging.app.studyInstanceUid.label")}</th>
                 <th>${ ui.message("imaging.app.patientName.label")}</th>
@@ -53,7 +53,7 @@ ${param["message"]?.getAt(0) ?: ""}
             %>
                 <tr>
                     <td>
-                    <form method='POST' action='/openmrs/module/imaging/assignStudy.form?patientId=${patient.id}&studyInstanceUID=${study.studyInstanceUID}'>
+                    <form method='POST' action='/openmrs/module/imaging/assignStudy.form?patientId=${patient.id}&studyId=${study.id}'>
                         <input type="checkbox" name="isChecked"
                                 ${study.mrsPatient!=null && study.mrsPatient.id+""==param["patientId"].getAt(0) ? "checked" : ""}
                                 onChange="this.form.submit()"/>

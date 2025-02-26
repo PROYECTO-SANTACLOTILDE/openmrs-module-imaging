@@ -122,7 +122,7 @@ public class DicomSeries extends BaseOpenmrsData implements java.io.Serializable
 		return orthancConfiguration;
 	}
 	
-	public void setOrthancConfiguration(OrthancConfiguration orthancConfiguration) {
-		this.orthancConfiguration = orthancConfiguration;
+	public void setOrthancConfiguration(OrthancConfiguration config) {
+		this.orthancConfiguration = config;
 	}
 }

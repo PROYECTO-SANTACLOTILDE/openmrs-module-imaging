@@ -41,30 +41,36 @@ public class OrthancConfigurationDao {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<OrthancConfiguration> getAllOrthancConfigurations() {
+	public List<OrthancConfiguration> getAll() {
 		return getSession().createCriteria(OrthancConfiguration.class).list();
 	}
 	
 	/**
 	 * @param id the configuration ID
 	 */
-	public OrthancConfiguration getOrthancConfiguration(int id) {
-		return (OrthancConfiguration) getSession().createCriteria(OrthancConfiguration.class).add(Restrictions.eq("id", id))
-		        .uniqueResult();
+	public OrthancConfiguration get(int id) {
+		return (OrthancConfiguration) getSession().get(OrthancConfiguration.class, id);
 	}
 	
 	/**
 	 * @ return Orthanc configuration
 	 */
-	public OrthancConfiguration saveOrthancConfiguration(OrthancConfiguration orthancConfiguration) {
-		getSession().saveOrUpdate(orthancConfiguration);
-		return orthancConfiguration;
+	public void saveNew(OrthancConfiguration config) {
+		if (!getSession().createCriteria(OrthancConfiguration.class)
+		        .add(Restrictions.eq("orthancBaseUrl", config.getOrthancBaseUrl())).list().isEmpty()) {
+			throw new IllegalArgumentException("A configuration with the same base URL already exists");
+		}
+		getSession().saveOrUpdate(config);
+	}
+	
+	public void updateExisting(OrthancConfiguration config) {
+		getSession().update(config);
 	}
 	
 	/**
-	 * @param orthancConfiguration: Orthanc Configuration
+	 * @param config: Orthanc Configuration
 	 */
-	public void removeOrthancConfiguration(OrthancConfiguration orthancConfiguration) {
-		getSession().delete(orthancConfiguration);
+	public void remove(OrthancConfiguration config) {
+		getSession().delete(config);
 	}
 }

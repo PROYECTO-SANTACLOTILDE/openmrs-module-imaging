@@ -44,7 +44,7 @@ public class StudiesPageController {
 		long maxUploadImageDataSize = imageProps.getMaxUploadImageDataSize() / 1000_000;
 		
 		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
-		List<DicomStudy> studies = dicomStudyService.getStudies(patient);
+		List<DicomStudy> studies = dicomStudyService.getStudiesOfPatient(patient);
 		model.addAttribute("studies", studies);
 		
 		OrthancConfigurationService orthancConfigureService = Context.getService(OrthancConfigurationService.class);
@@ -55,7 +55,6 @@ public class StudiesPageController {
 	}
 	
 	@ExceptionHandler(MaxUploadSizeExceededException.class)
-	//	@ResponseStatus(HttpStatus.REQUEST_ENTITY_TOO_LARGE)
 	public String handleMaxSizeException(MaxUploadSizeExceededException e, RedirectAttributes redirectAttributes,
 	        @RequestParam(value = "patientId") Patient patient) {
 		String status = "File size exceeds maximum upload limit. Please upload a smaller file.";
@@ -92,7 +91,9 @@ public class StudiesPageController {
 						numUploaded++; // successfully uploaded
 					}
 				}
-				catch (IOException e) {}
+				catch (IOException e) {
+					throw new RuntimeException(e);
+				}
 			}
 		}
 		String message;
@@ -152,22 +153,25 @@ public class StudiesPageController {
 	
 	/**
 	 * @param redirectAttributes the redirect attributes
-	 * @param studyInstanceUID the study instance UID of the study to delete
+	 * @param studyId the study ID of the study to delete
 	 * @param patient the openmrs patient
 	 * @return the redirect url
 	 */
 	@RequestMapping(value = "/module/imaging/deleteStudy.form", method = RequestMethod.POST)
-	public String deleteStudy(RedirectAttributes redirectAttributes,
-	        @RequestParam(value = "studyInstanceUID") String studyInstanceUID,
-	        @RequestParam(value = "patientId") Patient patient) {
+	public String deleteStudy(RedirectAttributes redirectAttributes, @RequestParam(value = "studyId") int studyId,
+	        @RequestParam(value = "patientId") Patient patient, @RequestParam(value = "deleteOption") String deleteOption) {
 		
 		String message;
 		boolean hasPrivilege = Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_Modify_IMAGE_DATA);
 		if (hasPrivilege) {
 			DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
-			DicomStudy deleteStudy = dicomStudyService.getDicomStudy(studyInstanceUID);
+			DicomStudy deleteStudy = dicomStudyService.getDicomStudy(studyId);
 			try {
-				dicomStudyService.deleteStudy(deleteStudy);
+				if (deleteOption.equals("openmrs")) {
+					dicomStudyService.deleteStudyFromOpenmrs(deleteStudy);
+				} else {
+					dicomStudyService.deleteStudy(deleteStudy);
+				}
 				message = "Study successfully deleted";
 			}
 			catch (IOException e) {

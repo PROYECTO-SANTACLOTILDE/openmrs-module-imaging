@@ -31,7 +31,7 @@ public class StudiesFragmentController {
 	
 	public void get(FragmentModel model, @FragmentParam("patientId") Patient patient) {
 		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
-		List<DicomStudy> patientStudies = dicomStudyService.getStudies(patient);
+		List<DicomStudy> patientStudies = dicomStudyService.getStudiesOfPatient(patient);
 		model.addAttribute("patientStudiesNo", patientStudies.size());
 	}
 }

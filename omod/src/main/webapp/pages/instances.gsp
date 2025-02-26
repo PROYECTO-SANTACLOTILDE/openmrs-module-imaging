@@ -12,7 +12,7 @@
         { label: "${ ui.message("imaging.studies") }",
             link: '${ui.pageLink("imaging", "studies", [patientId: patient.id])}'},
         { label: "${ ui.message("imaging.series") }",
-            link: '${ui.pageLink("imaging", "series", [patientId: patient.id, studyInstanceUID: param["studyInstanceUID"].getAt(0)])}'},
+            link: '${ui.pageLink("imaging", "series", [patientId: patient.id, studyId: param["studyId"].getAt(0)])}'},
         { label: "${ ui.message("imaging.instances") }" }
     ];
 </script>
@@ -27,7 +27,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
 </h2>
 
 <script>
-    function togglePopupPreview(orthancInstanceUID, studyInstanceUID) {
+    function togglePopupPreview(orthancInstanceUID, studyId) {
         const overlay = document.getElementById('popupOverlayPreview');
         overlay.classList.toggle('show');
 
@@ -36,7 +36,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
             if(container.lastChild) container.removeChild(container.lastChild);
             container.appendChild(document.createTextNode("Loading preview"))
 
-            const url = '/openmrs/module/imaging/previewInstance.form?orthancInstanceUID='+orthancInstanceUID+'&studyInstanceUID='+studyInstanceUID
+            const url = '/openmrs/module/imaging/previewInstance.form?orthancInstanceUID='+orthancInstanceUID+'&studyId='+studyId
             fetch(url, { method: 'GET'})
                 .then((response) => {
                     if(response.ok)
@@ -96,14 +96,14 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                     <td>
                         <% if (ui.format(instance.numberOfFrames) == "") { %>
                             <a title="${ ui.message("imaging.app.instancePreview.label") }"
-                                onclick="togglePopupPreview('${ui.format(instance.orthancInstanceUID)}', '${param['studyInstanceUID'].getAt(0)}')">
+                                onclick="togglePopupPreview('${instance.orthancInstanceUID}', '${param['studyId'].getAt(0)}')">
                                 <img class="instance-preview" src="${ ui.resourceLink("imaging", "images/preview.png") }"/>
                             </a>
                             <a href="${baseUrl}instances/${ui.format(instance.orthancInstanceUID)}/preview">
                                 <img class="instance-preview" src="${ ui.resourceLink("imaging", "images/preview.png") }"/>
                             </a>
                         <% } %>
-                        <a href="${baseUrl}ui/app/#/filtered-studies?StudyInstanceUID=${param['studyInstanceUID'].getAt(0)}&expand=series" title="${ ui.message("imaging.app.orthancExplorer.label") }">
+                        <a href="${baseUrl}ui/app/#/filtered-studies?StudyInstanceUID=${studyInstanceUID}&expand=series" title="${ ui.message("imaging.app.orthancExplorer.label") }">
                             <img class="orthanc-img" alt="Show image data in Orthanc explorer" src="${ ui.resourceLink("imaging", "images/orthanc.png")}"/></a>
                     </td>
                 </tr>
