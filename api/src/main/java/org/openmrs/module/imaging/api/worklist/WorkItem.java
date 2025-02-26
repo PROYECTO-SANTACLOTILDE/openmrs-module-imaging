@@ -12,17 +12,18 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package org.openmrs.module.imaging;
+package org.openmrs.module.imaging.api.worklist;
 
 import org.openmrs.BaseOpenmrsData;
 import org.openmrs.Patient;
+import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.module.imaging.api.study.DicomStudy;
 
-public class DicomWorklist extends BaseOpenmrsData implements java.io.Serializable {
+public class WorkItem extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 1;
 	
-	private Integer worklistID;
+	private Integer id;
 	
 	private String accessionNumber;
 	
@@ -56,14 +57,13 @@ public class DicomWorklist extends BaseOpenmrsData implements java.io.Serializab
 	
 	private String specialNeeds;
 	
-	public DicomWorklist() {
+	public WorkItem() {
 	}
 	
-	public DicomWorklist(int worklistID, String accessionNumber, OrthancConfiguration orthancConfiguration,
-	    DicomStudy study, Patient mrPatient, String referringPhysician, String studyDescription, String stepStartDate,
-	    String stepStartTime, String modality, String reqProcedureID, String reqProcedureDescription, String stationAETitle,
-	    String performingPhysician, String procedureStepLocation, String preMedication, String specialNeeds) {
-		this.worklistID = worklistID;
+	public WorkItem(String accessionNumber, OrthancConfiguration orthancConfiguration, DicomStudy study, Patient mrPatient,
+	    String referringPhysician, String studyDescription, String stepStartDate, String stepStartTime, String modality,
+	    String reqProcedureID, String reqProcedureDescription, String stationAETitle, String performingPhysician,
+	    String procedureStepLocation, String preMedication, String specialNeeds) {
 		this.accessionNumber = accessionNumber;
 		this.orthancConfiguration = orthancConfiguration;
 		this.study = study;
@@ -82,26 +82,16 @@ public class DicomWorklist extends BaseOpenmrsData implements java.io.Serializab
 		this.specialNeeds = specialNeeds;
 	}
 	
-	@Override
 	public Integer getId() {
-		return 0;
+		return id;
 	}
 	
-	@Override
-	public void setId(Integer integer) {
-		
-	}
-	
-	public Integer getWorklistID() {
-		return worklistID;
-	}
-	
-	public void setWorklistID(Integer worklistID) {
-		this.worklistID = worklistID;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 	
 	public String getAccessionNumber() {
-		return accessionNumber;
+		return this.accessionNumber;
 	}
 	
 	public void setAccessionNumber(String accessionNumber) {
@@ -109,7 +99,7 @@ public class DicomWorklist extends BaseOpenmrsData implements java.io.Serializab
 	}
 	
 	public OrthancConfiguration getOrthancConfiguration() {
-		return orthancConfiguration;
+		return this.orthancConfiguration;
 	}
 	
 	public void setOrthancConfiguration(OrthancConfiguration orthancConfiguration) {
@@ -117,7 +107,7 @@ public class DicomWorklist extends BaseOpenmrsData implements java.io.Serializab
 	}
 	
 	public DicomStudy getStudy() {
-		return study;
+		return this.study;
 	}
 	
 	public void setStudy(DicomStudy dicomStudy) {
@@ -125,7 +115,7 @@ public class DicomWorklist extends BaseOpenmrsData implements java.io.Serializab
 	}
 	
 	public Patient getMrsPatient() {
-		return mrsPatient;
+		return this.mrsPatient;
 	}
 	
 	public void setMrsPatient(Patient mrsPatient) {
@@ -133,7 +123,7 @@ public class DicomWorklist extends BaseOpenmrsData implements java.io.Serializab
 	}
 	
 	public String getReferringPhysician() {
-		return referringPhysician;
+		return this.referringPhysician;
 	}
 	
 	public void setReferringPhysician(String referringPhysician) {
@@ -141,7 +131,7 @@ public class DicomWorklist extends BaseOpenmrsData implements java.io.Serializab
 	}
 	
 	public String getStudyDescription() {
-		return studyDescription;
+		return this.studyDescription;
 	}
 	
 	public void setStudyDescription(String studyDescription) {
@@ -149,7 +139,7 @@ public class DicomWorklist extends BaseOpenmrsData implements java.io.Serializab
 	}
 	
 	public String getStepStartDate() {
-		return stepStartDate;
+		return this.stepStartDate;
 	}
 	
 	public void setStepStartDate(String stepStartDate) {
@@ -157,7 +147,7 @@ public class DicomWorklist extends BaseOpenmrsData implements java.io.Serializab
 	}
 	
 	public String getStepStartTime() {
-		return stepStartTime;
+		return this.stepStartTime;
 	}
 	
 	public void setStepStartTime(String stepStartTime) {
@@ -165,7 +155,7 @@ public class DicomWorklist extends BaseOpenmrsData implements java.io.Serializab
 	}
 	
 	public String getModality() {
-		return modality;
+		return this.modality;
 	}
 	
 	public void setModality(String modality) {
@@ -173,7 +163,7 @@ public class DicomWorklist extends BaseOpenmrsData implements java.io.Serializab
 	}
 	
 	public String getReqProcedureID() {
-		return reqProcedureID;
+		return this.reqProcedureID;
 	}
 	
 	public void setReqProcedureID(String reqProcedureID) {
@@ -181,7 +171,7 @@ public class DicomWorklist extends BaseOpenmrsData implements java.io.Serializab
 	}
 	
 	public String getReqProcedureDescription() {
-		return reqProcedureDescription;
+		return this.reqProcedureDescription;
 	}
 	
 	public void setReqProcedureDescription(String reqProcedureDescription) {
@@ -189,7 +179,7 @@ public class DicomWorklist extends BaseOpenmrsData implements java.io.Serializab
 	}
 	
 	public String getStationAETitle() {
-		return stationAETitle;
+		return this.stationAETitle;
 	}
 	
 	public void setStationAETitle(String stationAETitle) {
@@ -197,23 +187,23 @@ public class DicomWorklist extends BaseOpenmrsData implements java.io.Serializab
 	}
 	
 	public String getPerformingPhysician() {
-		return performingPhysician;
+		return this.performingPhysician;
 	}
 	
 	public void setPerformingPhysician(String performingPhysician) {
-		performingPhysician = performingPhysician;
+		this.performingPhysician = performingPhysician;
 	}
 	
 	public String getProcedureStepLocation() {
-		return procedureStepLocation;
+		return this.procedureStepLocation;
 	}
 	
 	public void setProcedureStepLocation(String procedureStepLocation) {
-		procedureStepLocation = procedureStepLocation;
+		this.procedureStepLocation = procedureStepLocation;
 	}
 	
 	public String getPreMedication() {
-		return preMedication;
+		return this.preMedication;
 	}
 	
 	public void setPreMedication(String preMedication) {
@@ -221,7 +211,7 @@ public class DicomWorklist extends BaseOpenmrsData implements java.io.Serializab
 	}
 	
 	public String getSpecialNeeds() {
-		return specialNeeds;
+		return this.specialNeeds;
 	}
 	
 	public void setSpecialNeeds(String specialNeeds) {
