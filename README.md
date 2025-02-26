@@ -15,7 +15,7 @@ Key features of this module include:
 * (Planned for Next Release) Worklist Management: Manage worklists directly within OpenMRS.
 
 Watch the video demonstration of the module here:  
-[![Watch the video](https://img.youtube.com/vi/248A5wPQNgs/0.jpg)](https://youtu.be/248A5wPQNgs)
+[![Watch the video](https://www.youtube.com/watch?v=7Mv79AF1fiU)](https://www.youtube.com/watch?v=7Mv79AF1fiU)
 
 ## Orthanc Server Configuration
 The purpose of this dialog is to configure the connection between OpenMRS and one or multiple Orthanc servers.
