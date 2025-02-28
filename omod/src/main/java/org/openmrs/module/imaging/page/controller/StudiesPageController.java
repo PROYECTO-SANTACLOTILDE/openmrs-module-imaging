@@ -50,7 +50,7 @@ public class StudiesPageController {
 		OrthancConfigurationService orthancConfigureService = Context.getService(OrthancConfigurationService.class);
 		model.addAttribute("orthancConfigurations", orthancConfigureService.getAllOrthancConfigurations());
 		model.addAttribute("privilegeModifyImageData",
-		    Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_Modify_IMAGE_DATA));
+		    Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_MODIFY_IMAGE_DATA));
 		model.addAttribute("maxUploadImageDataSize", maxUploadImageDataSize);
 	}
 	
@@ -162,7 +162,7 @@ public class StudiesPageController {
 	        @RequestParam(value = "patientId") Patient patient, @RequestParam(value = "deleteOption") String deleteOption) {
 		
 		String message;
-		boolean hasPrivilege = Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_Modify_IMAGE_DATA);
+		boolean hasPrivilege = Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_MODIFY_IMAGE_DATA);
 		if (hasPrivilege) {
 			DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
 			DicomStudy deleteStudy = dicomStudyService.getDicomStudy(studyId);

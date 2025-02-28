@@ -2,6 +2,7 @@
     ui.decorateWith("appui", "standardEmrPage",  [ title: ui.message("imaging.app.imageStudies.title") ])
     ui.includeCss("imaging", "general.css")
     ui.includeCss("imaging", "studies.css")
+    ui.includeCss("imaging", "worklist.css")
 %>
 <script type="text/javascript">
     var breadcrumbs = [
@@ -43,6 +44,7 @@ ${param["message"]?.getAt(0) ?: ""}
                                              + studyId
                                              + "&patientId=" + patient;
     }
+
 </script>
 
 <div>
@@ -53,7 +55,10 @@ ${param["message"]?.getAt(0) ?: ""}
             <button class="btn-open-popup-upload" onclick="togglePopupUpload()">Upload Study</button>
         <% } %>
         <button class="btn-open-popup-sync" onclick="toggleSynchronizeStudies()">Get Studies</button>
-     <% } %>
+        <a href="${ui.pageLink("imaging", "worklist", [patientId: patient.id])}" title="${ ui.message("imaging.app.managerWorklist.label") }">
+            <img class="worklist-img" alt="Management worklist" src="${ ui.resourceLink("imaging", "images/worklist.png")}"/>
+        </a>
+    <% } %>
 </div>
 
 <div id="table-scroll">

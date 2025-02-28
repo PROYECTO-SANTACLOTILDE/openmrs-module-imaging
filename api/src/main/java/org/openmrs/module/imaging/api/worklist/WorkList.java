@@ -1,12 +1,15 @@
 package org.openmrs.module.imaging.api.worklist;
 
 import org.openmrs.BaseOpenmrsData;
+import org.openmrs.module.imaging.OrthancConfiguration;
 
 public class WorkList extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 1;
 	
 	private Integer id;
+	
+	private OrthancConfiguration orthancConfiguration;
 	
 	private String createdDate;
 	
@@ -43,5 +46,13 @@ public class WorkList extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public void setModalityId(String modalityId) {
 		this.modalityId = modalityId;
+	}
+	
+	public OrthancConfiguration getOrthancConfiguration() {
+		return orthancConfiguration;
+	}
+	
+	public void setOrthancConfiguration(OrthancConfiguration orthancConfiguration) {
+		this.orthancConfiguration = orthancConfiguration;
 	}
 }

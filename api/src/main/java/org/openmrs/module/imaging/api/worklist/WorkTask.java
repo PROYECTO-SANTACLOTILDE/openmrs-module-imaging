@@ -19,7 +19,7 @@ import org.openmrs.Patient;
 import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.module.imaging.api.study.DicomStudy;
 
-public class WorkItem extends BaseOpenmrsData implements java.io.Serializable {
+public class WorkTask extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 1;
 	
@@ -57,10 +57,10 @@ public class WorkItem extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private String specialNeeds;
 	
-	public WorkItem() {
+	public WorkTask() {
 	}
 	
-	public WorkItem(String accessionNumber, OrthancConfiguration orthancConfiguration, DicomStudy study, Patient mrPatient,
+	public WorkTask(String accessionNumber, OrthancConfiguration orthancConfiguration, DicomStudy study, Patient mrPatient,
 	    String referringPhysician, String studyDescription, String stepStartDate, String stepStartTime, String modality,
 	    String reqProcedureID, String reqProcedureDescription, String stationAETitle, String performingPhysician,
 	    String procedureStepLocation, String preMedication, String specialNeeds) {

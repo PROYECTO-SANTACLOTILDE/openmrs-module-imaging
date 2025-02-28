@@ -21,3 +21,45 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
 <h2>
     ${ ui.message("imaging.worklist") }
 </h2>
+
+<script>
+</script>
+
+<div>
+    <% if (orthancConfigurations.size() == 0) { %>
+        No Orthanc server configured
+    <% } else { %>
+        <% if (privilegeModifyWorklist) { %>
+            <button class="btn-popup-create" onclick="togglePopupCreate()">Create Worklist</button>
+        <% } %>
+        <button class="btn-popup-synchronize" onclick="toggleSynchronizeWorklist()">Get Worklist</button>
+    <% } %>
+</div>
+
+<div id="table-scroll">
+    <table id="studies" class="table table-sm table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl" data-sortable>
+        <thead class="imaging-table-thead">
+            <script src="filter_table.js" defer></script>
+            <tr>
+                <th>${ ui.message("imaging.app.createDate.label")}</th>
+                <th>${ ui.message("imaging.app.worklistStatus.label")}</th>
+                <th>${ ui.message("imaging.app.modality.label")}</th>
+                <th>${ ui.message("imaging.app.server.label")}</th>
+                <th data-no-filter style="width: max-content;">${ ui.message("coreapps.actions") }</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (workTasks.size() == 0) { %>
+                <tr>
+                    <td colspan="6" align="center">${ui.message("imaging.workTasks.none")}</td>
+                </tr>
+            <% } %>
+            <% workTasks.each { task ->
+                def baseUrl = task.orthancConfiguration.orthancProxyUrl?.trim() ? task.orthancConfiguration.orthancProxyUrl : task.orthancConfiguration.orthancBaseUrl
+            %>
+                <tr>
+
+                </tr>
+        </tbody>
+    </table>
+</div>

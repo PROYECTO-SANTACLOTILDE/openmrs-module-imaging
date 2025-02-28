@@ -49,7 +49,7 @@ public class SeriesPageController {
 			model.addAttribute("studyId", studyId);
 			model.addAttribute("studyInstanceUID", dicomStudy.getStudyInstanceUID());
 			model.addAttribute("privilegeModifyImageData",
-			    Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_Modify_IMAGE_DATA));
+			    Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_MODIFY_IMAGE_DATA));
 		}
 		catch (IOException e) {
 			throw new RuntimeException(e);
@@ -69,7 +69,7 @@ public class SeriesPageController {
 	        @RequestParam(value = "patientId") Patient patient) {
 		
 		String message;
-		boolean hasPrivilege = Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_Modify_IMAGE_DATA);
+		boolean hasPrivilege = Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_MODIFY_IMAGE_DATA);
 		if (hasPrivilege) {
 			DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
 			DicomStudy seriesStudy = dicomStudyService.getDicomStudy(studyId);
