@@ -130,6 +130,9 @@ public class ImagingSettingsPageController {
 			catch (UnknownHostException e) {
 				response.getOutputStream().print("The server could not be reached.");
 			}
+			catch (IOException e) {
+				response.getOutputStream().print(e.getMessage());
+			}
 		}
 		catch (IOException e) {
 			throw new RuntimeException(e);

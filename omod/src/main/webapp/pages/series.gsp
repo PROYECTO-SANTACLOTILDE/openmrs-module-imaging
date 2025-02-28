@@ -33,7 +33,7 @@ ${param["message"]?.getAt(0) ?: ""}
     function togglePopupDeleteSeries(orthancSeriesUID, studyId, patient) {
         const overlay = document.getElementById('popupOverlayDeleteSeries');
         overlay.classList.toggle('show');
-        document.deleteSeriesForm.action = "/openmrs/module/imaging/deleteSeries.form?orthancSeriesUID="
+        document.deleteSeriesForm.action = "/${contextPath}/module/imaging/deleteSeries.form?orthancSeriesUID="
                                              + orthancSeriesUID
                                              + "&studyId=" + studyId
                                              + "&patientId=" + patient;
