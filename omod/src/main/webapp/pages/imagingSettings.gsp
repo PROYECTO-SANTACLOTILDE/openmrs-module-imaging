@@ -15,7 +15,7 @@
     }
 
     function checkConfiguration() {
-        fetch("/openmrs/module/imaging/checkConfiguration.form?url="+encodeURI(url.value)+"&proxyurl="+encodeURI(proxyurl.value)+"&username="+username.value+"&password="+password.value)
+        fetch("/${contextPath}/module/imaging/checkConfiguration.form?url="+encodeURI(url.value)+"&proxyurl="+encodeURI(proxyurl.value)+"&username="+username.value+"&password="+password.value)
         .then((response)=> response.text())
         .then((text)=>window.alert(text))
     }
@@ -23,7 +23,7 @@
     function togglePopupDeleteOrthancConfiguration(id) {
         const overlay = document.getElementById('popupOverlayDeleteOrthancConfiguration');
         overlay.classList.toggle('show');
-        document.deleteOrthancConfigurationForm.action = "/openmrs/module/imaging/deleteConfiguration.form?id="+id;
+        document.deleteOrthancConfigurationForm.action = "/${contextPath}/module/imaging/deleteConfiguration.form?id="+id;
     }
 
 </script>
@@ -74,7 +74,7 @@ ${param["message"]?.getAt(0) ?: ""}
 <div id="popupOverlayAdd" class="overlay-container">
     <div class="popup-box">
         <h2 style="color: #009384;">Add Orthanc configuration</h2>
-        <form class="form-container" action="/openmrs/module/imaging/storeConfiguration.form" method="post">
+        <form class="form-container" action="/${contextPath}/module/imaging/storeConfiguration.form" method="post">
             <label class="form-label" for="url">${ ui.message("imaging.app.url.label")}</label>
             <input class="form-input" type="text" placeholder="Orthanc URL" id="url" name="url" required>
 

@@ -53,7 +53,7 @@ ${param["message"]?.getAt(0) ?: ""}
             %>
                 <tr>
                     <td>
-                    <form method='POST' action='/openmrs/module/imaging/assignStudy.form?patientId=${patient.id}&studyId=${study.id}'>
+                    <form method='POST' action='/${contextPath}/module/imaging/assignStudy.form?patientId=${patient.id}&studyId=${study.id}'>
                         <input type="checkbox" name="isChecked"
                                 ${study.mrsPatient!=null && study.mrsPatient.id+""==param["patientId"].getAt(0) ? "checked" : ""}
                                 onChange="this.form.submit()"/>

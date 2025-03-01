@@ -40,7 +40,7 @@ ${param["message"]?.getAt(0) ?: ""}
     function togglePopupDeleteStudy(studyId, patient) {
         const overlay = document.getElementById('popupOverlayDeleteStudy');
         overlay.classList.toggle('show');
-        document.deleteStudyForm.action = "/openmrs/module/imaging/deleteStudy.form?studyId="
+        document.deleteStudyForm.action = "/${contextPath}/module/imaging/deleteStudy.form?studyId="
                                              + studyId
                                              + "&patientId=" + patient;
     }
@@ -114,7 +114,7 @@ ${param["message"]?.getAt(0) ?: ""}
 <div id="popupOverlayUpload" class="overlay-container">
     <div class="popup-box">
         <h2 style="color: #009384;">Upload study</h2>
-        <form class="form-container" enctype='multipart/form-data' method='POST' action='/openmrs/module/imaging/uploadStudy.form?patientId=${patient.id}'>
+        <form class="form-container" enctype='multipart/form-data' method='POST' action='/${contextPath}/module/imaging/uploadStudy.form?patientId=${patient.id}'>
             <label class="form-label" for="server">Select Orthanc server</label>
             <select class="select-config" id="orthancConfigurationId" name="orthancConfigurationId">
                 <% orthancConfigurations.each { config -> %>
@@ -134,7 +134,7 @@ ${param["message"]?.getAt(0) ?: ""}
 <div id="popupOverlaySynchronization" class="overlay-container">
     <div class="popup-box">
         <h2 style="color: #009384;">Fetch studies from providers</h2>
-        <form class="form-container" method='POST' action='/openmrs/module/imaging/syncStudies.form?patientId=${patient.id}'>
+        <form class="form-container" method='POST' action='/${contextPath}/module/imaging/syncStudies.form?patientId=${patient.id}'>
             <div class="radio-div">
                 <label style="margin-right: 30px; color: #5B57A6;">
                     <input style="width:20px; margin-top: 2px; height: 20px;" type="radio" id="fetchAll" name="fetchOption" value="all" checked>Get all studies</label>

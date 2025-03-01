@@ -36,7 +36,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
             if(container.lastChild) container.removeChild(container.lastChild);
             container.appendChild(document.createTextNode("Loading preview"))
 
-            const url = '/openmrs/module/imaging/previewInstance.form?orthancInstanceUID='+orthancInstanceUID+'&studyId='+studyId
+            const url = '/${contextPath}/module/imaging/previewInstance.form?orthancInstanceUID='+orthancInstanceUID+'&studyId='+studyId
             fetch(url, { method: 'GET'})
                 .then((response) => {
                     if(response.ok)
@@ -76,7 +76,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                 <th>${ ui.message("imaging.app.instanceNumber.label")}</th>
                 <th>${ ui.message("imaging.app.imagePositionPatient.label")}</th>
                 <th>${ ui.message("imaging.app.numberOfFrames.label")}</th>
-                <th data-no-filter style="width: 130px;">${ ui.message("coreapps.actions") }</th>
+                <th data-no-filter style="width: 150px;">${ ui.message("coreapps.actions") }</th>
             </tr>
         </thead>
         <tbody>
@@ -99,12 +99,12 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                                 onclick="togglePopupPreview('${instance.orthancInstanceUID}', '${param['studyId'].getAt(0)}')">
                                 <img class="instance-preview" src="${ ui.resourceLink("imaging", "images/preview.png") }"/>
                             </a>
-                            <a href="${baseUrl}instances/${ui.format(instance.orthancInstanceUID)}/preview">
+                            <a href="${baseUrl}instances/${ui.format(instance.orthancInstanceUID)}/preview" title="${ ui.message("imaging.app.instancePreview.label") }">
                                 <img class="instance-preview" src="${ ui.resourceLink("imaging", "images/preview.png") }"/>
                             </a>
                         <% } %>
                         <a href="${baseUrl}ui/app/#/filtered-studies?StudyInstanceUID=${studyInstanceUID}&expand=series" title="${ ui.message("imaging.app.orthancExplorer.label") }">
-                            <img class="orthanc-img" alt="Show image data in Orthanc explorer" src="${ ui.resourceLink("imaging", "images/orthanc.png")}"/></a>
+                            <img class="orthanc-img" src="${ ui.resourceLink("imaging", "images/orthanc.png")}"/></a>
                     </td>
                 </tr>
             <% } %>
