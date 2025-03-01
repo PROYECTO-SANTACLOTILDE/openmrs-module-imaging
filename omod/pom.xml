@@ -17,6 +17,7 @@
 			<groupId>org.openmrs.module</groupId>
 			<artifactId>imaging-api</artifactId>
 			<version>1.0.1-SNAPSHOT</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openmrs.web</groupId>
