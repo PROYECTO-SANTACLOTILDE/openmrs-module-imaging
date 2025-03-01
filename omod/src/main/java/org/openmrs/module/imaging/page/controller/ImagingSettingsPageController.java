@@ -42,7 +42,7 @@ public class ImagingSettingsPageController {
 		OrthancConfigurationService orthancConfigureService = Context.getService(OrthancConfigurationService.class);
 		model.addAttribute("orthancConfigurations", orthancConfigureService.getAllOrthancConfigurations());
 		model.addAttribute("privilegeManagerOrthancConfiguration",
-		    Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_Manager_ORTHANC_CONFIGURATION));
+		    Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.TASK_MANAGER_ORTHANC_CONFIGURATION));
 	}
 	
 	/**

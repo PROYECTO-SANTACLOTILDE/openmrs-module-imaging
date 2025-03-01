@@ -51,7 +51,7 @@ public class SyncStudiesPageController {
 		}
 		model.addAttribute("match", match);
 		model.addAttribute("privilegeModifyImageData",
-		    Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_Modify_IMAGE_DATA));
+		    Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_MODIFY_IMAGE_DATA));
 	}
 	
 	/**
