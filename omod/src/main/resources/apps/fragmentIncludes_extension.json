@@ -6,5 +6,13 @@
       "provider": "imaging",
       "fragment": "studies"
     }
+  },
+  {
+    "id": "org.openmrs.module.imaging.patientDashboard.includeWorklistFragments",
+    "extensionPointId": "patientDashboard.secondColumnFragments",
+    "extensionParams": {
+      "provider": "imaging",
+      "fragment": "requestProcedure"
+    }
   }
 ]

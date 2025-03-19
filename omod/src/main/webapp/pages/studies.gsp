@@ -2,7 +2,6 @@
     ui.decorateWith("appui", "standardEmrPage",  [ title: ui.message("imaging.app.imageStudies.title") ])
     ui.includeCss("imaging", "general.css")
     ui.includeCss("imaging", "studies.css")
-    ui.includeCss("imaging", "worklist.css")
 %>
 <script type="text/javascript">
     var breadcrumbs = [
@@ -55,9 +54,6 @@ ${param["message"]?.getAt(0) ?: ""}
             <button class="btn-open-popup-upload" onclick="togglePopupUpload()">Upload Study</button>
         <% } %>
         <button class="btn-open-popup-sync" onclick="toggleSynchronizeStudies()">Get Studies</button>
-        <a href="${ui.pageLink("imaging", "worklist", [patientId: patient.id])}" title="${ ui.message("imaging.app.managerWorklist.label") }">
-            <img class="worklist-img" alt="Management worklist" src="${ ui.resourceLink("imaging", "images/worklist.png")}"/>
-        </a>
     <% } %>
 </div>
 
@@ -98,7 +94,7 @@ ${param["message"]?.getAt(0) ?: ""}
                             </a>
                         <% } %>
                         <div style="display: flex">
-                           <a href="${baseUrl}/stone-webviewer/index.html?study=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openStoneView.label") }">
+                           <a href="${baseUrl}/stone-webviewer/index.html?study=${ui.format(study.studyInstanceUID)}" title="${ui.message("imaging.app.openStoneView.label") }">
                                 <img class="stone-img" alt="Show image in stone viewer" src="${ ui.resourceLink("imaging", "images/stoneViewer.png")}"/></a>
                            <a href="${baseUrl}ohif/viewer?StudyInstanceUIDs=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openOHIFView.label") }">
                                <img class="ohif-img" alt="Show image in OHIF viewer" src="${ ui.resourceLink("imaging", "images/ohifViewer.png")}"/></a>

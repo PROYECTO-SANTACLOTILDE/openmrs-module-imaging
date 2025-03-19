@@ -54,6 +54,7 @@ body {
     display: flex;
     opacity: 1;
     z-index: 2;
+    overflow: auto;
 }
 
 .popup-box {
@@ -117,7 +118,7 @@ body {
     width: 28px;
 }
 
-.table td, .ohif-img, .orthanc-img {
+.table td, .ohif-img, .orthanc-img, .new-img{
     width: 28px;
     margin-left: 12px;
 }
@@ -155,10 +156,12 @@ table[data-sortable] {
   border-spacing: 0;
   display: inline-table;
 }
+
 table[data-sortable] th {
   vertical-align: top !important;
   font-weight: bold;
 }
+
 table[data-sortable] th, table[data-sortable] td {
   text-align: left;
   padding: 5px;

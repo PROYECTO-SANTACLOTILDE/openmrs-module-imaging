@@ -47,6 +47,8 @@
 	<mappingFiles>
 		OrthancConfiguration.hbm.xml
 		DicomStudy.hbm.xml
+		RequestProcedure.hbm.xml
+		RequestProcedureSteps.hbm.xml
 	</mappingFiles>
 
 	<privilege>
@@ -57,6 +59,11 @@
 	<privilege>
 		<name>Task: Modify Image Data</name>
 		<description>Able to add, delete image data</description>
+	</privilege>
+
+	<privilege>
+		<name>Task: Edit Request Procedure</name>
+		<description>Able to add, delete worklist</description>
 	</privilege>
 
 	<!-- Required Global Properties -->

@@ -33,7 +33,7 @@ public class DicomStudyDao {
 	
 	private static final Logger log = LoggerFactory.getLogger(DicomStudyDao.class);
 	
-	@Autowired
+	//	@Autowired
 	DbSessionFactory sessionFactory;
 	
 	private DbSession getSession() {
