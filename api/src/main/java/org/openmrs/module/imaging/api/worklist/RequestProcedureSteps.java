@@ -28,7 +28,7 @@ public class RequestProcedureSteps extends BaseOpenmrsData implements java.io.Se
 	
 	private String aetTitle;
 	
-	private String referringPhysician;
+	private String scheduledReferringPhysician;
 	
 	private String requestedProcedureDescription;
 	
@@ -43,13 +43,13 @@ public class RequestProcedureSteps extends BaseOpenmrsData implements java.io.Se
 	public RequestProcedureSteps() {
 	}
 	
-	public RequestProcedureSteps(RequestProcedure requestProcedure, String modality, String referringPhysician,
+	public RequestProcedureSteps(RequestProcedure requestProcedure, String modality, String scheduledReferringPhysician,
 	    String requestedProcedureDescription, String aetTitle, String stepStartDate, String stepStartTime,
 	    String stationName, String procedureStepLocation) {
 		this.requestProcedure = requestProcedure;
 		this.modality = modality;
 		this.aetTitle = aetTitle;
-		this.referringPhysician = referringPhysician;
+		this.scheduledReferringPhysician = scheduledReferringPhysician;
 		this.requestedProcedureDescription = requestedProcedureDescription;
 		this.stepStartDate = stepStartDate;
 		this.stepStartTime = stepStartTime;
@@ -73,8 +73,8 @@ public class RequestProcedureSteps extends BaseOpenmrsData implements java.io.Se
 		this.requestProcedure = requestProcedure;
 	}
 	
-	public String getReferringPhysician() {
-		return referringPhysician;
+	public String getScheduledReferringPhysician() {
+		return scheduledReferringPhysician;
 	}
 	
 	public String getModality() {
@@ -85,8 +85,8 @@ public class RequestProcedureSteps extends BaseOpenmrsData implements java.io.Se
 		this.modality = modality;
 	}
 	
-	public void setReferringPhysician(String referringPhysician) {
-		this.referringPhysician = referringPhysician;
+	public void setScheduledReferringPhysician(String scheduledReferringPhysician) {
+		this.scheduledReferringPhysician = scheduledReferringPhysician;
 	}
 	
 	public String getRequestedProcedureDescription() {

@@ -43,18 +43,20 @@ public class RequestProcedurePageController {
 
 		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
 		model.addAttribute("orthancConfigurations", orthancConfigurationService.getAllOrthancConfigurations());
-		model.addAttribute("privilegeEditRequestProcedure",
-		    Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_EDIT_REQUESTPROCEDURE));
+		model.addAttribute("privilegeEditWorklist",
+		    Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_EDIT_WORKLIST));
 	}
 	
 	@RequestMapping(value = "/module/imaging/newRequest.form", method = RequestMethod.POST)
 	public String newRequest(RedirectAttributes redirectAttributes, @RequestParam(value = "patientId") Patient patient,
 	        @RequestParam(value = "orthancConfigurationId") int orthancConfigurationId,
-	        @RequestParam(value = "createdDate") String createdDate,
 	        @RequestParam(value = "accessionNumber") String accessionNumber,
-	        @RequestParam(value = "studyInstanceUID") String studyInstanceUID) {
+	        @RequestParam(value = "studyInstanceUID") String studyInstanceUID,
+	        @RequestParam(value = "requestingPhysician") String requestingPhysician,
+	        @RequestParam(value = "requestDescription") String requestDescription,
+	        @RequestParam(value = "priority") String priority) {
 		String message;
-		boolean hasPrivilege = Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_EDIT_REQUESTPROCEDURE);
+		boolean hasPrivilege = Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_EDIT_WORKLIST);
 		if (hasPrivilege) {
 			RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
 			OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
@@ -62,12 +64,15 @@ public class RequestProcedurePageController {
 			        .getOrthancConfiguration(orthancConfigurationId);
 			try {
 				RequestProcedure requestProcedure = new RequestProcedure();
-				requestProcedure.setCreatedDate(createdDate);
 				requestProcedure.setStatus("Incomplete");
 				requestProcedure.setMrsPatient(patient);
 				requestProcedure.setOrthancConfiguration(orthancConfiguration);
 				requestProcedure.setAccessionNumber(accessionNumber);
 				requestProcedure.setStudyInstanceUID(studyInstanceUID);
+				requestProcedure.setRequestingPhysician(requestingPhysician);
+				requestProcedure.setRequestDescription(requestDescription);
+				requestProcedure.setPriority(priority);
+				
 				requestProcedureService.newRequest(requestProcedure);
 				message = "The new request procedure is successfully added";
 			}
@@ -89,7 +94,7 @@ public class RequestProcedurePageController {
 	        @RequestParam(value = "patientId") Patient patient) {
 		
 		String message;
-		boolean hasPrivilege = Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_EDIT_REQUESTPROCEDURE);
+		boolean hasPrivilege = Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_EDIT_WORKLIST);
 		if (hasPrivilege) {
 			RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
 			RequestProcedureStepsService requestProcedureStepsService = Context
@@ -122,7 +127,7 @@ public class RequestProcedurePageController {
 	public String newProcedureSteps(RedirectAttributes redirectAttributes,
 	        @RequestParam(value = "requestProcedureId") int requestProcedureId,
 	        @RequestParam(value = "modality") String modality, @RequestParam(value = "aetTitle") String aetTitle,
-	        @RequestParam(value = "referringPhysician") String referringPhysician,
+	        @RequestParam(value = "scheduledReferringPhysician") String scheduledReferringPhysician,
 	        @RequestParam(value = "requestedProcedureDescription") String requestedProcedureDescription,
 	        @RequestParam(value = "stepStartDate") String stepStartDate,
 	        @RequestParam(value = "stepStartTime") String stepStartTime,
@@ -130,7 +135,7 @@ public class RequestProcedurePageController {
 	        @RequestParam(value = "procedureStepLocation") String procedureStepLocation,
 	        @RequestParam(value = "patientId") Patient patient) {
 		String message;
-		boolean hasPrivilege = Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_EDIT_REQUESTPROCEDURE);
+		boolean hasPrivilege = Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_EDIT_WORKLIST);
 		if (hasPrivilege) {
 			RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
 			RequestProcedure requestProcedure = requestProcedureService.getRequestProcedure(requestProcedureId);
@@ -142,7 +147,7 @@ public class RequestProcedurePageController {
 				steps.setRequestProcedure(requestProcedure);
 				steps.setModality(modality);
 				steps.setAetTitle(aetTitle);
-				steps.setReferringPhysician(referringPhysician);
+				steps.setScheduledReferringPhysician(scheduledReferringPhysician);
 				steps.setRequestedProcedureDescription(requestedProcedureDescription);
 				steps.setStepStartDate(stepStartDate);
 				steps.setStepStartTime(stepStartTime);
@@ -171,7 +176,7 @@ public class RequestProcedurePageController {
 	public String deleteProcedureSteps(RedirectAttributes redirectAttributes, @RequestParam(value = "id") int stepsId,
 	        @RequestParam(value = "patientId") Patient patient) {
 		String message;
-		boolean hasPrivilege = Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_EDIT_REQUESTPROCEDURE);
+		boolean hasPrivilege = Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_EDIT_WORKLIST);
 		if (hasPrivilege) {
 			RequestProcedureStepsService requestProcedureStepsService = Context
 			        .getService(RequestProcedureStepsService.class);

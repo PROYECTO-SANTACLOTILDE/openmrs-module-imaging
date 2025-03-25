@@ -6,6 +6,7 @@ import org.openmrs.Patient;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.imaging.api.RequestProcedureService;
 import org.openmrs.module.imaging.api.dao.RequestProcedureDao;
+import org.openmrs.module.imaging.api.study.DicomStudy;
 import org.openmrs.module.imaging.api.worklist.RequestProcedure;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.List;
 
-@Service
+@Service("requestProcedureServiceImpl")
 @Transactional
 public class RequestProcedureServiceImpl extends BaseOpenmrsService implements RequestProcedureService {
 	
@@ -27,6 +28,11 @@ public class RequestProcedureServiceImpl extends BaseOpenmrsService implements R
 	
 	public RequestProcedureDao getDao() {
 		return dao;
+	}
+	
+	@Override
+	public List<RequestProcedure> getAllRequestProcedures() {
+		return dao.getAll();
 	}
 	
 	@Override

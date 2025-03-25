@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.List;
 
-@Service
+@Service("requestProcedureStepsServiceImpl")
 @Transactional
 public class RequestProcedureStepsServiceImpl extends BaseOpenmrsService implements RequestProcedureStepsService {
 	

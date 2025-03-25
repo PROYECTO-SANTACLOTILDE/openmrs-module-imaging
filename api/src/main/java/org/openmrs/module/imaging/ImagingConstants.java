@@ -23,5 +23,5 @@ public class ImagingConstants {
 	
 	public static final String GP_MAX_UPLOAD_IMAGEDATA_SIZE = "imaging.maxUploadImageDataSize";
 	
-	public static final String PRIVILEGE_EDIT_REQUESTPROCEDURE = "Task: Edit Request Procedure";
+	public static final String PRIVILEGE_EDIT_WORKLIST = "Task: Edit Worklist";
 }

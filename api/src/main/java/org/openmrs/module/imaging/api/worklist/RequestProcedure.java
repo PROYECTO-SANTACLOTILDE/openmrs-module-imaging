@@ -10,8 +10,6 @@ public class RequestProcedure extends BaseOpenmrsData implements java.io.Seriali
 	
 	private Integer id;
 	
-	private String createdDate;
-	
 	private String status; //e.g. active, completed
 	
 	private OrthancConfiguration orthancConfiguration;
@@ -22,17 +20,25 @@ public class RequestProcedure extends BaseOpenmrsData implements java.io.Seriali
 	
 	private String studyInstanceUID;
 	
+	private String requestingPhysician;
+	
+	private String requestDescription;
+	
+	private String priority;
+	
 	public RequestProcedure() {
 	}
 	
-	public RequestProcedure(String createdDate, String status, Patient mrsPatient, OrthancConfiguration config,
-	    String accessionNumber, String studyInstanceUID) {
-		this.createdDate = createdDate;
+	public RequestProcedure(String status, Patient mrsPatient, OrthancConfiguration config, String accessionNumber,
+	    String studyInstanceUID, String requestingPhysician, String requestDescription, String priority) {
 		this.status = status;
 		this.mrsPatient = mrsPatient;
 		this.orthancConfiguration = config;
 		this.accessionNumber = accessionNumber;
 		this.studyInstanceUID = studyInstanceUID;
+		this.requestingPhysician = requestingPhysician;
+		this.requestDescription = requestDescription;
+		this.priority = priority;
 	}
 	
 	public Integer getId() {
@@ -41,14 +47,6 @@ public class RequestProcedure extends BaseOpenmrsData implements java.io.Seriali
 	
 	public void setId(Integer id) {
 		this.id = id;
-	}
-	
-	public String getCreatedDate() {
-		return createdDate;
-	}
-	
-	public void setCreatedDate(String createdDate) {
-		this.createdDate = createdDate;
 	}
 	
 	public String getStatus() {
@@ -89,5 +87,29 @@ public class RequestProcedure extends BaseOpenmrsData implements java.io.Seriali
 	
 	public void setStudyInstanceUID(String studyInstanceUID) {
 		this.studyInstanceUID = studyInstanceUID;
+	}
+	
+	public String getRequestingPhysician() {
+		return requestingPhysician;
+	}
+	
+	public void setRequestingPhysician(String requestingPhysician) {
+		this.requestingPhysician = requestingPhysician;
+	}
+	
+	public String getRequestDescription() {
+		return requestDescription;
+	}
+	
+	public void setRequestDescription(String requestDescription) {
+		this.requestDescription = requestDescription;
+	}
+	
+	public String getPriority() {
+		return priority;
+	}
+	
+	public void setPriority(String priority) {
+		this.priority = priority;
 	}
 }

@@ -13,7 +13,7 @@
         for a list of supported elements and attributes
     -->
 
-    <changeSet id="202" author="weisadre">
+    <changeSet id="221" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_OrthancConfiguration"/>
@@ -36,7 +36,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="203" author="weisadre">
+    <changeSet id="222" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_DicomStudy"/>
@@ -73,7 +73,7 @@
                                  referencedColumnNames="id"/>
     </changeSet>
 
-    <changeSet id="206" author="weisadre">
+    <changeSet id="223" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_RequestProcedure"/>
@@ -84,9 +84,6 @@
         <createTable tableName="${project.parent.artifactId}_RequestProcedure">
             <column autoIncrement="true" name="id" type="int">
                 <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="createdDate" type="varchar(255)">
-                <constraints nullable="false"/>
             </column>
             <column name="status" type="varchar(255)">
                 <constraints nullable="false"/>
@@ -103,6 +100,15 @@
             <column name="studyInstanceUID" type="varchar(255)">
                 <constraints nullable="true" unique="true"/>
             </column>
+            <column name="requestingPhysician" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="requestDescription" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="priority" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
         <addForeignKeyConstraint baseTableName="imaging_RequestProcedure" baseColumnNames="patient_id"
                                  constraintName="imaging_RequestProcedure_patient_id_fk" referencedTableName="patient"
@@ -112,7 +118,7 @@
                                  referencedTableName="imaging_OrthancConfiguration"
                                  referencedColumnNames="id"/>
     </changeSet>
-    <changeSet id="207" author="weisadre">
+    <changeSet id="224" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_RequestProcedureSteps"/>
@@ -133,7 +139,7 @@
             <column name="aetTitle" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="referringPhysician" type="varchar(255)">
+            <column name="scheduledReferringPhysician" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="requestedProcedureDescription" type="varchar(255)">

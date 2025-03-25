@@ -67,7 +67,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
 
     function generateAccessionNumber() {
         // Example: Generate a unique number using the current timestamp
-        let uniqueNumber = 'ACC-' + Date.now();
+        let uniqueNumber = Date.now();
         document.getElementById("accessionNumber").value = uniqueNumber;
     }
 
@@ -77,7 +77,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
     <% if (orthancConfigurations.size() == 0) { %>
         No Orthanc server configured
     <% } else { %>
-        <% if (privilegeEditRequestProcedure) { %>
+        <% if (privilegeEditWorklist) { %>
             <button class="btn-open-popup-new-request" onclick="togglePopupNewRequest('${patient.id}')">New Request</button>
         <% } %>
     <% } %>
@@ -88,10 +88,12 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
        <thead class="imaging-table-thead">
            <script src="filter_table.js" defer></script>
            <tr>
-               <th>${ ui.message("imaging.app.createDate.label")}</th>
-               <th>${ ui.message("imaging.app.worklistStatus.label")}</th>
                <th>${ ui.message("imaging.app.accessionNumber.label")}</th>
+               <th>${ ui.message("imaging.app.worklistStatus.label")}</th>
+               <th>${ ui.message("imaging.app.priority.label")}</th>
                <th>${ ui.message("imaging.app.studyInstanceUid.label")}</th>
+               <th>${ ui.message("imaging.app.physician.label")}</th>
+               <th>${ ui.message("imaging.app.description.label")}</th>
                <th>${ ui.message("imaging.app.server.label")}</th>
                <th data-no-filter style="width: 120px;">${ ui.message("coreapps.actions") }</th>
            </tr>
@@ -104,13 +106,15 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
             <% } %>
             <% requestProcedureMap.keySet().each { requestProcedure -> %>
                  <tr>
-                    <td>${ui.format(requestProcedure.createdDate)}</td>
+                    <th>${ui.format(requestProcedure.accessionNumber)}</th>
                     <td>${ui.format(requestProcedure.status)}</td>
-                    <td>${ui.format(requestProcedure.accessionNumber)}</td>
+                    <td>${ui.format(requestProcedure.priority)}</td>
                     <td>${ui.format(requestProcedure.studyInstanceUID)}</td>
                     <td>${ui.format(requestProcedure.orthancConfiguration.orthancBaseUrl)}</td>
+                    <td>${ui.format(requestProcedure.requestingPhysician)}</td>
+                    <td>${ui.format(requestProcedure.requestDescription)}</td>
                     <td>
-                        <% if (privilegeEditRequestProcedure) { %>
+                        <% if (privilegeEditWorklist) { %>
                            <a class="delete-requestProcedure"
                                 onclick="togglePopupDeleteRequest('${requestProcedure.id}', '${patient.id}')"><i class="icon-remove delete-action"></i></a>
                            <a class="create-requestProcedureSteps"
@@ -127,7 +131,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                      <td colspan="6">
                         <% requestProcedureMap[requestProcedure].each { steps ->  %>
                            <div class="stepsDiv">
-                                <% if (privilegeEditRequestProcedure) { %>
+                                <% if (privilegeEditWorklist) { %>
                                     <button class="btn-delete-request" onclick="togglePopupDeleteProcedureSteps('${steps.id}', '${patient.id}')">Delete</button>
                                 <% } %>
                                 <table class="table procedureStepsTable no-filter">
@@ -148,7 +152,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                                         </tr>
                                         <tr>
                                           <td>Referring Physician:</td>
-                                          <td>${steps.referringPhysician}</td>
+                                          <td>${steps.scheduledReferringPhysician}</td>
                                         </tr>
                                         <tr>
                                            <td>Requested Procedure Description:</td>
@@ -221,7 +225,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                     </tr>
                     <tr>
                         <td>Referring Physician</td>
-                        <td><input class="rpInput" type="text" name="referringPhysician" id="referringPhysician" required></td>
+                        <td><input class="rpInput" type="text" name="scheduledReferringPhysician" id="scheduledReferringPhysician" required></td>
                     </tr>
                     <tr>
                         <td>Description</td>
@@ -265,10 +269,16 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Date</td>
-                        <td><input class="rpInput" type="date" name="createdDate" id="createdDate" required></td>
-                    </tr>
+                   <tr>
+                      <td>Accession Number</td>
+                      <td>
+                        <div style="display: inline-flex; width: 100%">
+                           <input class="rpInput" type="text" name="accessionNumber" id="accessionNumber" required>
+                           <a class="toggle-items" aria-expanded="false" onclick="generateAccessionNumber()">
+                           <img class="numbers-img" alt="Generate the new numbers" src="${ ui.resourceLink("imaging", "images/numbers.png")}"/></a>
+                        </div>
+                      </td>
+                   </tr>
                    <tr>
                         <td>Orthanc Configuration</td>
                         <td>
@@ -280,13 +290,20 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                         </td>
                    </tr>
                    <tr>
-                       <td>Accession Number</td>
-                       <td>
-                         <div style="display: inline-flex; width: 100%">
-                            <input class="rpInput" type="text" name="accessionNumber" id="accessionNumber" required>
-                            <a class="toggle-items" aria-expanded="false" onclick="generateAccessionNumber()">
-                            <img class="numbers-img" alt="Generate the new numbers" src="${ ui.resourceLink("imaging", "images/numbers.png")}"/></a>
-                         </div>
+                        <td>Physician</td>
+                        <td><input class="rpInput" type="text" name="requestingPhysician" id="requestingPhysician" required></td>
+                   </tr>
+                   <tr>
+                       <td>Description</td>
+                       <td><textarea class="rpInput" name="requestDescription" id="requestDescription" rows="4" cols="50" required></textarea></td>
+                   </tr>
+                   <tr>
+                       <td>Priority</td>
+                       <td><select name="priority" id="priority" required>
+                               <option value="HIGH">HIGH</option>
+                               <option value="MEDIUM">MEDIUM</option>
+                               <option value="LOW">LOW</option>
+                           </select>
                        </td>
                    </tr>
                    <tr>

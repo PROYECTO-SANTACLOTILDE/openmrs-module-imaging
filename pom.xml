@@ -209,5 +209,6 @@
 
     <properties>
         <openmrsPlatformVersion>1.11.6</openmrsPlatformVersion>
+        <webservicesRestModuleVersion>2.48.0</webservicesRestModuleVersion>
     </properties>
 </project>

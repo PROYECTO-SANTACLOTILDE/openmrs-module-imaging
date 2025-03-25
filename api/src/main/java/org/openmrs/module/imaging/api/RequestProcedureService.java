@@ -13,6 +13,8 @@ import java.util.List;
 @Transactional
 public interface RequestProcedureService extends OpenmrsService {
 	
+	List<RequestProcedure> getAllRequestProcedures();
+	
 	List<RequestProcedure> getRequestProcedureByPatient(Patient pt);
 	
 	RequestProcedure getRequestProcedure(int requestProcedureId);
