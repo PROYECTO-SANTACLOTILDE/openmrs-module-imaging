@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const tables = document.querySelectorAll("table");
+//    const tables = document.querySelectorAll("table");
+    const tables = document.querySelectorAll("table:not(.no-filter)");
 
     tables.forEach(table => {
         const thead = table.querySelector("thead");

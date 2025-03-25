@@ -20,6 +20,7 @@ import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.module.imaging.api.study.DicomInstance;
 import org.openmrs.module.imaging.api.study.DicomSeries;
 import org.openmrs.module.imaging.api.study.DicomStudy;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
@@ -37,6 +38,7 @@ import java.util.List;
  * 
  * @see org.openmrs.api.context.Context
  */
+@Service
 @Transactional
 public interface DicomStudyService extends OpenmrsService {
 	

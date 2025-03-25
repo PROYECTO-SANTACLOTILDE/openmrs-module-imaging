@@ -13,7 +13,7 @@
         for a list of supported elements and attributes
     -->
 
-    <changeSet id="86" author="weisadre">
+    <changeSet id="221" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_OrthancConfiguration"/>
@@ -36,7 +36,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="89" author="weisadre">
+    <changeSet id="222" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_DicomStudy"/>
@@ -70,6 +70,97 @@
         <addForeignKeyConstraint baseTableName="imaging_DicomStudy" baseColumnNames="orthancConfigurationId"
                                  constraintName="imaging_DicomStudy_orthancConfigurationId_fk"
                                  referencedTableName="imaging_OrthancConfiguration"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="223" author="weisadre">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="${project.parent.artifactId}_RequestProcedure"/>
+            </not>
+            <tableExists tableName="${project.parent.artifactId}_OrthancConfiguration"/>
+        </preConditions>
+        <comment>Create the requestProcedure table for imaging</comment>
+        <createTable tableName="${project.parent.artifactId}_RequestProcedure">
+            <column autoIncrement="true" name="id" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="status" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="patient_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="orthancConfigurationId" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="accessionNumber" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="studyInstanceUID" type="varchar(255)">
+                <constraints nullable="true" unique="true"/>
+            </column>
+            <column name="requestingPhysician" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="requestDescription" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="priority" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="imaging_RequestProcedure" baseColumnNames="patient_id"
+                                 constraintName="imaging_RequestProcedure_patient_id_fk" referencedTableName="patient"
+                                 referencedColumnNames="patient_id"/>
+        <addForeignKeyConstraint baseTableName="imaging_RequestProcedure" baseColumnNames="orthancConfigurationId"
+                                 constraintName="imaging_RequestProcedure_orthancConfigurationId_fk"
+                                 referencedTableName="imaging_OrthancConfiguration"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="224" author="weisadre">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="${project.parent.artifactId}_RequestProcedureSteps"/>
+            </not>
+            <tableExists tableName="${project.parent.artifactId}_RequestProcedure"/>
+        </preConditions>
+        <comment>Create the requestProcedureSteps table for imaging</comment>
+        <createTable tableName="${project.parent.artifactId}_RequestProcedureSteps">
+            <column autoIncrement="true" name="id" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="requestProcedureId" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modality" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="aetTitle" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="scheduledReferringPhysician" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="requestedProcedureDescription" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="stepStartDate" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="stepStartTime" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="stationName" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="procedureStepLocation" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="imaging_RequestProcedureSteps" baseColumnNames="requestProcedureId"
+                                 constraintName="imaging_RequestProcedureSteps_requestProcedureId_fk"
+                                 referencedTableName="imaging_RequestProcedure"
                                  referencedColumnNames="id"/>
     </changeSet>
 

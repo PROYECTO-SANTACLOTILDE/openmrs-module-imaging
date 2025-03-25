@@ -22,4 +22,6 @@ public class ImagingConstants {
 	public static final String TASK_MANAGER_ORTHANC_CONFIGURATION = "Task: Manager Orthanc Configuration";
 	
 	public static final String GP_MAX_UPLOAD_IMAGEDATA_SIZE = "imaging.maxUploadImageDataSize";
+	
+	public static final String PRIVILEGE_EDIT_WORKLIST = "Task: Edit Worklist";
 }

@@ -32,6 +32,9 @@
 		<require_module version="${appuiVersion}">
 			org.openmrs.module.appui
 		</require_module>
+		<require_module version="${webservicesRestModuleVersion}">
+			org.openmrs.module.webservices.rest
+		</require_module>
 	</require_modules>
 	
 	<!-- Extensions -->
@@ -47,6 +50,8 @@
 	<mappingFiles>
 		OrthancConfiguration.hbm.xml
 		DicomStudy.hbm.xml
+		RequestProcedure.hbm.xml
+		RequestProcedureSteps.hbm.xml
 	</mappingFiles>
 
 	<privilege>
@@ -57,6 +62,11 @@
 	<privilege>
 		<name>Task: Modify Image Data</name>
 		<description>Able to add, delete image data</description>
+	</privilege>
+
+	<privilege>
+		<name>Task: Edit Worklist</name>
+		<description>Able to add, delete worklist</description>
 	</privilege>
 
 	<!-- Required Global Properties -->

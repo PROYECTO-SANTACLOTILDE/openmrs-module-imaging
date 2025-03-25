@@ -43,6 +43,7 @@ ${param["message"]?.getAt(0) ?: ""}
                                              + studyId
                                              + "&patientId=" + patient;
     }
+
 </script>
 
 <div>
@@ -53,7 +54,7 @@ ${param["message"]?.getAt(0) ?: ""}
             <button class="btn-open-popup-upload" onclick="togglePopupUpload()">Upload Study</button>
         <% } %>
         <button class="btn-open-popup-sync" onclick="toggleSynchronizeStudies()">Get Studies</button>
-     <% } %>
+    <% } %>
 </div>
 
 <div id="table-scroll">
@@ -93,7 +94,7 @@ ${param["message"]?.getAt(0) ?: ""}
                             </a>
                         <% } %>
                         <div style="display: flex">
-                           <a href="${baseUrl}/stone-webviewer/index.html?study=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openStoneView.label") }">
+                           <a href="${baseUrl}/stone-webviewer/index.html?study=${ui.format(study.studyInstanceUID)}" title="${ui.message("imaging.app.openStoneView.label") }">
                                 <img class="stone-img" alt="Show image in stone viewer" src="${ ui.resourceLink("imaging", "images/stoneViewer.png")}"/></a>
                            <a href="${baseUrl}ohif/viewer?StudyInstanceUIDs=${ui.format(study.studyInstanceUID)}" title="${ ui.message("imaging.app.openOHIFView.label") }">
                                <img class="ohif-img" alt="Show image in OHIF viewer" src="${ ui.resourceLink("imaging", "images/ohifViewer.png")}"/></a>

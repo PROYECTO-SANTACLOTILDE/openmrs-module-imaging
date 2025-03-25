@@ -29,7 +29,7 @@ import java.util.List;
 @Repository("imaging.OrthancConfigurationDao")
 public class OrthancConfigurationDao {
 	
-	@Autowired
+	//	@Autowired
 	DbSessionFactory sessionFactory;
 	
 	private DbSession getSession() {
