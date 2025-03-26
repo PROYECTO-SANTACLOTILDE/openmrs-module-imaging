@@ -13,7 +13,7 @@
         for a list of supported elements and attributes
     -->
 
-    <changeSet id="221" author="weisadre">
+    <changeSet id="229" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_OrthancConfiguration"/>
@@ -36,7 +36,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="222" author="weisadre">
+    <changeSet id="230" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_DicomStudy"/>
@@ -51,7 +51,9 @@
             <column name="studyInstanceUID" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="orthancStudyUID" type="varchar(255)"/>
+            <column name="orthancStudyUID" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
             <column name="patientName" type="varchar(255)"/>
             <column name="studyDate" type="varchar(255)"/>
             <column name="studyTime" type="varchar(255)"/>
@@ -73,7 +75,7 @@
                                  referencedColumnNames="id"/>
     </changeSet>
 
-    <changeSet id="223" author="weisadre">
+    <changeSet id="231" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_RequestProcedure"/>
@@ -118,7 +120,7 @@
                                  referencedTableName="imaging_OrthancConfiguration"
                                  referencedColumnNames="id"/>
     </changeSet>
-    <changeSet id="224" author="weisadre">
+    <changeSet id="232" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_RequestProcedureSteps"/>

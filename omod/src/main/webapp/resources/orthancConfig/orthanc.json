@@ -62,12 +62,6 @@
     "/usr/share/orthanc/plugins/"
   ],
 
-  "Python": {
-    "Name": "find-worklist",
-    "DicomAet": "FIND-WORKLIST",
-    "PythonScript": "/home/wei/Documents/development/openmrs/openmrs-module-imaging/python/orthancRetrieveRequest.py"
-  },
-
   "Java" : {
     "Enabled" : true,
     "classpath" : "./OrthancJavaSDK.jar;.",
@@ -880,5 +874,9 @@
       "EnableModification": false,
       "EnableLinkToLegacyUi": false
     }
-  }
+  },
+  // The API URL for retrieve worklist
+  "ImagingWorklistURL": "http://localhost:your-port/openmrs/ws/rest/v1/imaging/worklist",
+  // The URL to update the request status in worklist
+  "ImagingUpdateRequestStatus": "http://localhost:your-port/openmrs/ws/rest/v1/imaging/updatestatus"
 }

@@ -11,7 +11,6 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-
 package org.openmrs.module.imaging.api.worklist;
 
 import org.openmrs.BaseOpenmrsData;
