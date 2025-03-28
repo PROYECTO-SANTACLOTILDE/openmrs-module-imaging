@@ -34,9 +34,12 @@ public interface RequestProcedureService extends OpenmrsService {
 	
 	RequestProcedure getRequestProcedure(int requestProcedureId);
 	
+	RequestProcedure getRequestProcedureByAccessionNUmber(String accessionNumber);
+	
 	void deleteRequestProcedure(RequestProcedure requestProcedure) throws IOException;
 	
 	void newRequest(RequestProcedure requestProcedure) throws IOException;
 	
 	void updateRequstStatus(RequestProcedure requestProcedure);
+	
 }

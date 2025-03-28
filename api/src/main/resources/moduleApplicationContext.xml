@@ -43,7 +43,7 @@
         <property name="sessionFactory" ref="dbSessionFactory"/>
     </bean>
 
-    <bean id="imaging.RequestProcedureStepsDao" class="org.openmrs.module.imaging.api.dao.RequestProcedureStepsDao">
+    <bean id="imaging.RequestProcedureStepDao" class="org.openmrs.module.imaging.api.dao.RequestProcedureStepDao">
         <property name="sessionFactory" ref="dbSessionFactory"/>
     </bean>
 
@@ -107,16 +107,16 @@ which set audit info like dateCreated, changedBy, etc.-->
         </property>
     </bean>
 
-    <!-- Wraps RequestProcedureStepsService methods in DB transactions and OpenMRS interceptors,
+    <!-- Wraps RequestProcedureStepService methods in DB transactions and OpenMRS interceptors,
 which set audit info like dateCreated, changedBy, etc.-->
-    <bean id="imaging.RequestProcedureStepsService"
+    <bean id="imaging.RequestProcedureStepService"
           class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
         <property name="transactionManager">
             <ref bean="transactionManager" />
         </property>
         <property name="target">
-            <bean class="org.openmrs.module.imaging.api.impl.RequestProcedureStepsServiceImpl">
-                <property name="dao" ref="imaging.RequestProcedureStepsDao" />
+            <bean class="org.openmrs.module.imaging.api.impl.RequestProcedureStepServiceImpl">
+                <property name="dao" ref="imaging.RequestProcedureStepDao" />
             </bean>
         </property>
         <property name="preInterceptors">
@@ -159,8 +159,8 @@ which set audit info like dateCreated, changedBy, etc.-->
     <bean parent="serviceContext">
         <property name="moduleService">
             <list>
-                <value>org.openmrs.module.imaging.api.RequestProcedureStepsService</value>
-                <ref bean="imaging.RequestProcedureStepsService" />
+                <value>org.openmrs.module.imaging.api.RequestProcedureStepService</value>
+                <ref bean="imaging.RequestProcedureStepService" />
             </list>
         </property>
     </bean>

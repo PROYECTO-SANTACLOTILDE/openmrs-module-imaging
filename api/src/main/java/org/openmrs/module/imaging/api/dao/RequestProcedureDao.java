@@ -60,8 +60,13 @@ public class RequestProcedureDao {
 		return criteria.add(Restrictions.eq("mrsPatient", patient)).list();
 	}
 	
+	public RequestProcedure getByAccessionNumber(String accessionNumber) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(RequestProcedure.class);
+		return (RequestProcedure) criteria.add(Restrictions.eq("accessionNumber", accessionNumber));
+	}
+	
 	public void save(RequestProcedure requestProcedure) {
-		getSession().saveOrUpdate(requestProcedure);
+		getSession().save(requestProcedure);
 	}
 	
 	public void update(RequestProcedure requestProcedure) {

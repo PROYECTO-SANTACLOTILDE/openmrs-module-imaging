@@ -1,6 +1,7 @@
 import json
 import orthanc
 import requests
+import time
 
 # Default API URL
 getWorklistURL = "http://localhost:7070/openmrs/ws/rest/v1/imaging/worklist"
@@ -28,17 +29,32 @@ def OnWorkList(answers, query, issuerAet, calledAet):
             answers.WorklistAddAnswer(query, responseDicom)
 
 def OnChange(changeType, level, resource):
-    config = orthanc.GetConfiguration()
-    configJson = json.loads(config)
-    updateRequestStatusURL = configJson["ImagingUpdateRequestStatus"]
 
     # Handle new study or new instance events
-    if changeType == orthanc.ChangeType.STABLE_STUDY:
+    if changeType == orthanc.ChangeType.STABLE_SERIES:
         try:
-            studyInstanceUID = json.loads(orthanc.RestApiGet("/studies/" + resource)) ["MainDicomTags"]["StudyInstanceUID"]
-            response = requests.post(updateRequestStatusURL+"?studyInstanceUID="+studyInstanceUID)
+            stepID = None
+            studyInstanceUID = None
+            seriesJson = json.loads(orthanc.RestApiGet("/series/" + resource))
+            if "PerformedProcedureStepID" in seriesJson:
+                stepID = seriesJson["PerformedProcedureStepID"]
+            elif len(seriesJson["Instances"])>0:
+                instanceUid = seriesJson["Instances"][0]
+                instanceJson = json.loads(orthanc.RestApiGet("/instances/" + instanceUid+"/tags?simplify"))
+                if "PerformedProcedureStepID" in instanceJson:
+                    stepID = instanceJson["PerformedProcedureStepID"]
+                if "StudyInstanceUID" in instanceJson:
+                    studyInstanceUID = instanceJson["StudyInstanceUID"]
+            if stepID:
+                orthanc.LogWarning("step ID of stable series found: "+stepID)
+
+            if studyInstanceUID:
+                orthanc.LogWarning("StudyInstanceUID found: " + studyInstanceUID)
+
+            response = requests.post(updateRequestStatusURL+"?studyInstanceUID=" + studyInstanceUID
+                                     + "&performedProcedureStepID=" + stepID)
             response.raise_for_status()  # Raise an error for failed requests
-            orthanc.LogWarning(f"Successfully updated data: {studyInstanceUID}")
+            orthanc.LogWarning(f"+++++ Successfully updated data: {studyInstanceUID}")
         except requests.RequestException as e:
             orthanc.LogError(f"Failed to update request status: {str(e)}")
     else:
@@ -59,7 +75,6 @@ orthanc.RegisterOnChangeCallback(OnChange)
 # Read the API URL from the configuration of Orthanc
 getWorklistURL = readUrlFromOrthancConfig("ImagingWorklistURL")
 updateRequestStatusURL = readUrlFromOrthancConfig("ImagingUpdateRequestStatus")
-
 
 
 

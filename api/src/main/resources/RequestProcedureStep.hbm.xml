@@ -4,7 +4,7 @@
         "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
 
 <hibernate-mapping package="org.openmrs.module.imaging.api.worklist" auto-import="false">
-    <class name="RequestProcedureSteps"  table="imaging_RequestProcedureSteps">
+    <class name="RequestProcedureStep"  table="imaging_RequestProcedureStep">
         <id name="id" type="int" column="id" unsaved-value="0">
             <generator class="native" />
         </id>
@@ -16,6 +16,7 @@
         <property name="stepStartDate" type="java.lang.String" column="stepStartDate" length="255" not-null="true"/>
         <property name="stepStartTime" type="java.lang.String" column="stepStartTime" length="255" not-null="true"/>
         <property name="stationName" type="java.lang.String" column="stationName" length="255" not-null="false"/>
+        <property name="performedProcedureStepStatus" type="java.lang.String" column="performedProcedureStepStatus" length="255" not-null="true"/>
         <property name="procedureStepLocation" type="java.lang.String" column="procedureStepLocation" length="255" not-null="false"/>
     </class>
 </hibernate-mapping>

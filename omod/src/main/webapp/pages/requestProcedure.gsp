@@ -23,10 +23,10 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
 </h2>
 
 <script>
-    function togglePopupNewProcedureSteps(requestProcedureId, patient){
-      const overlay = document.getElementById('popupOverlayNewProcedureSteps');
+    function togglePopupNewProcedureStep(requestProcedureId, patient){
+      const overlay = document.getElementById('popupOverlayNewProcedureStep');
       overlay.classList.toggle('show');
-      document.newProcedureStepsForm.action = "/${contextPath}/module/imaging/newProcedureSteps.form?requestProcedureId="
+      document.newProcedureStepForm.action = "/${contextPath}/module/imaging/newProcedureStep.form?requestProcedureId="
                                            + requestProcedureId
                                            + "&patientId=" + patient;
     }
@@ -38,17 +38,17 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                                           + patient
     }
 
-    function togglePopupDeleteProcedureSteps(stepsId, patient){
-      const overlay = document.getElementById('popupOverlayDeleteProcedureSteps');
+    function togglePopupDeleteProcedureStep(stepId, patient){
+      const overlay = document.getElementById('popupOverlayDeleteProcedureStep');
       overlay.classList.toggle('show');
-      document.deleteProcedureStepsForm.action = "/${contextPath}/module/imaging/deleteProcedureSteps.form?id="
-                                           + stepsId
+      document.deleteProcedureStepForm.action = "/${contextPath}/module/imaging/deleteProcedureStep.form?id="
+                                           + stepId
                                            + "&patientId=" + patient;
     }
 
-    function toggleSteps(requestProcedureId) {
-        var row = document.getElementById("steps-" + requestProcedureId);
-        var toggleLink= document.querySelector("a.toggle-items[onclick='toggleSteps(\"" + requestProcedureId + "\")']");
+    function toggleStep(requestProcedureId) {
+        var row = document.getElementById("step-" + requestProcedureId);
+        var toggleLink= document.querySelector("a.toggle-items[onclick='toggleStep(\"" + requestProcedureId + "\")']");
 
         if (row.style.display === "none" || row.style.display === "") {
             row.style.display = "table-row";
@@ -66,11 +66,20 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
     }
 
     function generateAccessionNumber() {
-        // Example: Generate a unique number using the current timestamp
-        let uniqueNumber = Date.now();
-        document.getElementById("accessionNumber").value = uniqueNumber;
+        const date = new Date();
+         // Get the current date and time in YYYYMMDDHHmmss format
+        const formattedDate = date.getFullYear() +
+                              String(date.getMonth() + 1).padStart(2, '0') +
+                              String(date.getDate()).padStart(2, '0') +
+                              String(date.getHours()).padStart(2, '0') +
+                              String(date.getMinutes()).padStart(2, '0') +
+                              String(date.getSeconds()).padStart(2, '0');
+        // Generate a random 5-digit number
+        const randomPart = String(Math.floor(10000 + Math.random() * 90000));
+        // Combine the formatted date with the random number
+        const accessionNumber = formattedDate + randomPart;
+        document.getElementById("accessionNumber").value = accessionNumber;
     }
-
 </script>
 
 <div>
@@ -110,31 +119,31 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                     <td>${ui.format(requestProcedure.status)}</td>
                     <td>${ui.format(requestProcedure.priority)}</td>
                     <td>${ui.format(requestProcedure.studyInstanceUID)}</td>
-                    <td>${ui.format(requestProcedure.orthancConfiguration.orthancBaseUrl)}</td>
                     <td>${ui.format(requestProcedure.requestingPhysician)}</td>
                     <td>${ui.format(requestProcedure.requestDescription)}</td>
+                    <td>${ui.format(requestProcedure.orthancConfiguration.orthancBaseUrl)}</td>
                     <td>
                         <% if (privilegeEditWorklist) { %>
                            <a class="delete-requestProcedure"
                                 onclick="togglePopupDeleteRequest('${requestProcedure.id}', '${patient.id}')"><i class="icon-remove delete-action"></i></a>
-                           <a class="create-requestProcedureSteps"
-                                onclick="togglePopupNewProcedureSteps('${requestProcedure.id}', '${patient.id}')">
-                                <img class="new-img" alt="Create a new procedure steps" src="${ ui.resourceLink("imaging", "images/edit.png")}"/></a>
+                           <a class="create-requestProcedureStep"
+                                onclick="togglePopupNewProcedureStep('${requestProcedure.id}', '${patient.id}')">
+                                <img class="new-img" alt="Create a new procedure step" src="${ ui.resourceLink("imaging", "images/edit.png")}"/></a>
                            <a class="toggle-items" aria-expanded="false"
-                                onclick="toggleSteps('${requestProcedure.id}')">
-                                <img class="expand-img" alt="Show the procedure steps" src="${ ui.resourceLink("imaging", "images/expand.png")}"/></a>
+                                onclick="toggleStep('${requestProcedure.id}')">
+                                <img class="expand-img" alt="Show the procedure step" src="${ ui.resourceLink("imaging", "images/expand.png")}"/></a>
                         <% } %>
                     </td>
                  </tr>
                  <!-- Hidden row for item IDs -->
-                 <tr id="steps-${requestProcedure.id}" class="hidden-steps" style="display: none;">
+                 <tr id="step-${requestProcedure.id}" class="hidden-step" style="display: none;">
                      <td colspan="6">
-                        <% requestProcedureMap[requestProcedure].each { steps ->  %>
-                           <div class="stepsDiv">
+                        <% requestProcedureMap[requestProcedure].each { step ->  %>
+                           <div class="stepDiv">
                                 <% if (privilegeEditWorklist) { %>
-                                    <button class="btn-delete-request" onclick="togglePopupDeleteProcedureSteps('${steps.id}', '${patient.id}')">Delete</button>
+                                    <button class="btn-delete-request" onclick="togglePopupDeleteProcedureStep('${step.id}', '${patient.id}')">Delete</button>
                                 <% } %>
-                                <table class="table procedureStepsTable no-filter">
+                                <table class="table procedureStepTable no-filter">
                                     <thead>
                                         <tr>
                                            <th class='step-name-th'>Name</th>
@@ -143,36 +152,44 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                                     </thead>
                                     <tbody>
                                         <tr>
+                                           <td>Step ID:</td>
+                                           <td>${step.id}</td>
+                                        </tr>
+                                        <tr>
                                            <td>Modality:</td>
-                                           <td>${steps.modality}</td>
+                                           <td>${step.modality}</td>
                                         </tr>
                                         <tr>
                                            <td>AET Title:</td>
-                                           <td>${steps.aetTitle}</td>
+                                           <td>${step.aetTitle}</td>
                                         </tr>
                                         <tr>
                                           <td>Referring Physician:</td>
-                                          <td>${steps.scheduledReferringPhysician}</td>
+                                          <td>${step.scheduledReferringPhysician}</td>
                                         </tr>
                                         <tr>
                                            <td>Requested Procedure Description:</td>
-                                           <td>${steps.requestedProcedureDescription}</td>
+                                           <td>${step.requestedProcedureDescription}</td>
                                         </tr>
                                         <tr>
                                            <td>Step Start Date:</td>
-                                           <td>${steps.stepStartDate}</td>
+                                           <td>${step.stepStartDate}</td>
                                         </tr>
                                         <tr>
                                            <td>Step Start Time:</td>
-                                           <td>${steps.stepStartTime}</td>
+                                           <td>${step.stepStartTime}</td>
+                                        </tr>
+                                        <tr>
+                                           <td>Step Status:</td>
+                                           <td>${step.performedProcedureStepStatus}</td>
                                         </tr>
                                         <tr>
                                            <td>Station Name:</td>
-                                           <td>${steps.stationName}</td>
+                                           <td>${step.stationName}</td>
                                         </tr>
                                         <tr>
                                            <td>Procedure Step Location:</td>
-                                           <td>${steps.procedureStepLocation}</td>
+                                           <td>${step.procedureStepLocation}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -185,11 +202,11 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
   </table>
 </div>
 
-<div id="popupOverlayNewProcedureSteps" class="overlay-container">
+<div id="popupOverlayNewProcedureStep" class="overlay-container">
     <div class="popup-box">
-        <h2 style="color: #009384;">Create procedure steps</h2>
-        <form class="form-container" name="newProcedureStepsForm" method="POST">
-            <table class="table procedureStepsTable no-filter">
+        <h2 style="color: #009384;">Create procedure step</h2>
+        <form class="form-container" name="newProcedureStepForm" method="POST">
+            <table class="table procedureStepTable no-filter">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -251,7 +268,7 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
             </table>
             <div class="popup-box-btn">
                 <button class="btn-submit" type="submit">Save</button>
-                <button class="btn-close-popup" type="button" onclick="togglePopupNewProcedureSteps()">Cancel</button>
+                <button class="btn-close-popup" type="button" onclick="togglePopupNewProcedureStep()">Cancel</button>
             </div>
         </form>
     </div>
@@ -333,14 +350,14 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
     </div>
 </div>
 
-<div id="popupOverlayDeleteProcedureSteps" class="overlay-container">
+<div id="popupOverlayDeleteProcedureStep" class="overlay-container">
     <div class="popup-box" style="width: 65%;">
-        <h2>Delete procedure steps</h2>
-        <form name="deleteProcedureStepsForm" class="form-container" method="POST">
-            <h2 id="deleteProcedureStepsMessage">${ ui.message("imaging.deleteProcedureSteps.message") }</h3>
+        <h2>Delete procedure step</h2>
+        <form name="deleteProcedureStepForm" class="form-container" method="POST">
+            <h2 id="deleteProcedureStepMessage">${ ui.message("imaging.deleteProcedureStep.message") }</h3>
             <div class="popup-box-btn" style="margin-top: 40px;">
                 <button class="btn-submit" type="submit">${ ui.message("imaging.action.delete") }</button>
-                <button class="btn-close-popup" type="button" onclick="togglePopupDeleteProcedureSteps()">Cancel</button>
+                <button class="btn-close-popup" type="button" onclick="togglePopupDeleteProcedureStep()">Cancel</button>
             </div>
         </form>
     </div>

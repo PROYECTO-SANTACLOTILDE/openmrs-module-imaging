@@ -17,9 +17,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.imaging.api.RequestProcedureService;
-import org.openmrs.module.imaging.api.RequestProcedureStepsService;
+import org.openmrs.module.imaging.api.RequestProcedureStepService;
 import org.openmrs.module.imaging.api.worklist.RequestProcedure;
-import org.openmrs.module.imaging.api.worklist.RequestProcedureSteps;
+import org.openmrs.module.imaging.api.worklist.RequestProcedureStep;
 import org.openmrs.module.webservices.rest.web.RestConstants;
 import org.openmrs.module.webservices.rest.web.v1_0.controller.MainResourceController;
 import org.springframework.http.HttpStatus;
@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.*;
 
 @Controller
@@ -38,39 +39,39 @@ import java.util.*;
 public class RequestProcedureController extends MainResourceController {
 	
 	protected Log log = LogFactory.getLog(this.getClass());
-
+	
 	@Override
 	public String getNamespace() {
 		return RestConstants.VERSION_1 + "/imaging";
 	}
-
+	
 	@RequestMapping(value = "/worklist", method = RequestMethod.GET,
             // consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
     public ResponseEntity<Object> getRequestProcedures(HttpServletRequest request, HttpServletResponse response) {
         RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
-        RequestProcedureStepsService requestProcedureStepsService = Context.getService(RequestProcedureStepsService.class);
+        RequestProcedureStepService requestProcedureStepService = Context.getService(RequestProcedureStepService.class);
 
         List<RequestProcedure> rps = requestProcedureService.getAllRequestProcedures();
         List<Map<String,Object>> result = new LinkedList<Map<String,Object>>();
         for (RequestProcedure rp : rps) {
-            if(rp.getStatus().equalsIgnoreCase("pending")) {
+            if(rp.getStatus().equalsIgnoreCase("Pending")) {
                 Map<String,Object> map = new HashMap<String,Object>();
-                writeProcedure(rp, map, requestProcedureStepsService);
+                writeProcedure(rp, map, requestProcedureStepService);
                 result.add(map);
             }
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
+	
 	/**
 	 * @param rp The request procedure object
 	 * @param map The worklist data map
-	 * @param requestProcedureStepsService The request procedure steps service
-	 * */
+	 * @param requestProcedureStepService The request procedure step service
+	 */
 	private static void writeProcedure(RequestProcedure rp, Map<String, Object> map,
-	        RequestProcedureStepsService requestProcedureStepsService) {
+	        RequestProcedureStepService requestProcedureStepService) {
 
 		map.put("SpecificCharacterSet", "ISO_IR 100");
 		map.put("AccessionNumber", rp.getAccessionNumber());
@@ -92,48 +93,91 @@ public class RequestProcedureController extends MainResourceController {
 		map.put("RequestedProcedureID", rp.getId().toString());
 		map.put("RequestedProcedurePriority", rp.getPriority());
 
-		// Read the procedure steps
-		List<RequestProcedureSteps> procedureSteps = requestProcedureStepsService.getAllStepsByRequestProcedure(rp);
+		// Read the procedure step
+		List<RequestProcedureStep> procedureStep = requestProcedureStepService.getAllStepByRequestProcedure(rp);
 		List<Map<String, Object>> stepList = new ArrayList<>();
-		for(RequestProcedureSteps steps : procedureSteps) {
-			writeProcedureStep(steps, stepList);
+		for(RequestProcedureStep step : procedureStep) {
+			writeProcedureStep(step, stepList);
 		}
 		map.put("ScheduledProcedureStepSequence", stepList);
 	}
-
+	
 	/**
-	 * @param steps The request procedure steps
-	 * @param stepList The list of the procedure steps
-	 * */
-	private static void writeProcedureStep(RequestProcedureSteps steps, List<Map<String, Object>> stepList) {
+	 * @param step The request procedure step
+	 * @param stepList The list of the procedure step
+	 */
+	private static void writeProcedureStep(RequestProcedureStep step, List<Map<String, Object>> stepList) {
 		Map<String, Object> stepMap = new HashMap<String, Object>();
-		stepMap.put("Modality", steps.getModality());
-		stepMap.put("ScheduledStationAETitle", steps.getAetTitle());
-		stepMap.put("ScheduledProcedureStepStartDate", steps.getStepStartDate());
-		stepMap.put("ScheduledProcedureStepStartTime", steps.getStepStartTime());
-		stepMap.put("ScheduledPerformingPhysicianName", steps.getScheduledReferringPhysician());
-		stepMap.put("ScheduledProcedureStepDescription", steps.getRequestedProcedureDescription());
-		stepMap.put("ScheduledProcedureStepID", steps.getId().toString());
-		stepMap.put("ScheduledStationName", steps.getStationName());
-		stepMap.put("ScheduledProcedureStepLocation", steps.getProcedureStepLocation());
+		stepMap.put("Modality", step.getModality());
+		stepMap.put("ScheduledStationAETitle", step.getAetTitle());
+		stepMap.put("ScheduledProcedureStepStartDate", step.getStepStartDate());
+		stepMap.put("ScheduledProcedureStepStartTime", step.getStepStartTime());
+		stepMap.put("ScheduledPerformingPhysicianName", step.getScheduledReferringPhysician());
+		stepMap.put("PerformedProcedureStepStatus", step.getPerformedProcedureStepStatus());
+		stepMap.put("ScheduledProcedureStepDescription", step.getRequestedProcedureDescription());
+		stepMap.put("ScheduledProcedureStepID", step.getId().toString());
+		stepMap.put("ScheduledStationName", step.getStationName());
+		stepMap.put("ScheduledProcedureStepLocation", step.getProcedureStepLocation());
 		stepMap.put("CommentsOnTheScheduledProcedureStep", "no value available");
 		stepList.add(stepMap);
 	}
-
+	
 	/**
 	 * @param studyInstanceUID The dicom study instance UID
-	 * */
+	 */
 	@RequestMapping(value = "/updatestatus", method = RequestMethod.POST,
 	// consumes = MediaType.APPLICATION_JSON_VALUE,
 	produces = MediaType.APPLICATION_JSON_VALUE)
 	@Transactional
 	public void updateRequestStatus(HttpServletRequest request, HttpServletResponse response,
-	        @RequestParam(value = "studyInstanceUID") String studyInstanceUID) {
+	        @RequestParam(value = "studyInstanceUID") String studyInstanceUID,
+	        @RequestParam(value = "performedProcedureStepID") String performedProcedureStepID) throws IOException {
+		
 		RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
-		List<RequestProcedure> requestProcedures = requestProcedureService.getAllByStudyInstanceUID(studyInstanceUID);
-		for (RequestProcedure requestProcedure : requestProcedures) {
-			requestProcedure.setStatus("Complete");
-			requestProcedureService.updateRequstStatus(requestProcedure);
+		RequestProcedureStepService requestProcedureStepService = Context.getService(RequestProcedureStepService.class);
+		System.out.println("Study instances UID: " + studyInstanceUID);
+		System.out.println("PerformedProcedureStepID: " + performedProcedureStepID);
+		
+		String testData = "3";
+		
+		if (!testData.isEmpty()) {
+			try {
+				RequestProcedureStep step = requestProcedureStepService.getProcedureStep(Integer.parseInt(testData));
+				if (step != null && step.getRequestProcedure() != null) {
+					// Update the perform procedure step status
+					step.setPerformedProcedureStepStatus("COMPLETED");
+					// Set the study instance UID created by modality device
+					step.getRequestProcedure().setStudyInstanceUID(studyInstanceUID);
+					try {
+						requestProcedureStepService.updateProcedureStep(step);
+					}
+					catch (Exception e) {
+						throw new RuntimeException("Error updating procedure step: " + e.getMessage());
+					}
+					
+					// Check all procedure step perform status of the request
+					RequestProcedure requestProcedure = step.getRequestProcedure();
+					List<RequestProcedureStep> stepList = requestProcedureStepService
+					        .getAllStepByRequestProcedure(requestProcedure);
+					
+					if (!stepList.isEmpty()) {
+						boolean allComplete = stepList.stream().
+								allMatch(item -> "COMPLETED".equalsIgnoreCase(item.getPerformedProcedureStepStatus().trim()));
+
+						System.out.println("+++++++ all status of the step: " + allComplete);
+						if (allComplete) {
+							requestProcedure.setStatus("COMPLETED");
+							requestProcedureService.updateRequstStatus(requestProcedure);
+						}
+					}
+				}
+			}
+			catch (NumberFormatException e) {
+				throw new NumberFormatException(e.getMessage());
+			}
+			catch (NullPointerException e) {
+				throw new NullPointerException(e.getMessage());
+			}
 		}
 	}
 }

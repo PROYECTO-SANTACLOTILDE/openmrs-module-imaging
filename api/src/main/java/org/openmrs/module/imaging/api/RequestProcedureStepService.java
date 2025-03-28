@@ -15,7 +15,7 @@ package org.openmrs.module.imaging.api;
 
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.imaging.api.worklist.RequestProcedure;
-import org.openmrs.module.imaging.api.worklist.RequestProcedureSteps;
+import org.openmrs.module.imaging.api.worklist.RequestProcedureStep;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,13 +24,15 @@ import java.util.List;
 
 @Service
 @Transactional
-public interface RequestProcedureStepsService extends OpenmrsService {
+public interface RequestProcedureStepService extends OpenmrsService {
 	
-	List<RequestProcedureSteps> getAllStepsByRequestProcedure(RequestProcedure requestProcedure);
+	List<RequestProcedureStep> getAllStepByRequestProcedure(RequestProcedure requestProcedure);
 	
-	RequestProcedureSteps getProcedureSteps(int Id);
+	RequestProcedureStep getProcedureStep(int Id);
 	
-	void newProcedureSteps(RequestProcedureSteps requestProcedureSteps) throws IOException;
+	void newProcedureStep(RequestProcedureStep requestProcedureStep) throws IOException;
 	
-	void deleteProcedureSteps(RequestProcedureSteps requestProcedureSteps) throws IOException;
+	void deleteProcedureStep(RequestProcedureStep requestProcedureStep) throws IOException;
+	
+	void updateProcedureStep(RequestProcedureStep requestProcedureStep);
 }

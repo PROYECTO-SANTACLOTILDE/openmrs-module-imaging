@@ -13,7 +13,7 @@
         for a list of supported elements and attributes
     -->
 
-    <changeSet id="229" author="weisadre">
+    <changeSet id="245" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_OrthancConfiguration"/>
@@ -36,7 +36,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="230" author="weisadre">
+    <changeSet id="246" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_DicomStudy"/>
@@ -75,7 +75,7 @@
                                  referencedColumnNames="id"/>
     </changeSet>
 
-    <changeSet id="231" author="weisadre">
+    <changeSet id="247" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_RequestProcedure"/>
@@ -120,15 +120,15 @@
                                  referencedTableName="imaging_OrthancConfiguration"
                                  referencedColumnNames="id"/>
     </changeSet>
-    <changeSet id="232" author="weisadre">
+    <changeSet id="248" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="${project.parent.artifactId}_RequestProcedureSteps"/>
+                <tableExists tableName="${project.parent.artifactId}_RequestProcedureStep"/>
             </not>
             <tableExists tableName="${project.parent.artifactId}_RequestProcedure"/>
         </preConditions>
-        <comment>Create the requestProcedureSteps table for imaging</comment>
-        <createTable tableName="${project.parent.artifactId}_RequestProcedureSteps">
+        <comment>Create the requestProcedureStep table for imaging</comment>
+        <createTable tableName="${project.parent.artifactId}_RequestProcedureStep">
             <column autoIncrement="true" name="id" type="int">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -156,12 +156,15 @@
             <column name="stationName" type="varchar(255)">
                 <constraints nullable="true"/>
             </column>
+            <column name="performedProcedureStepStatus" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
             <column name="procedureStepLocation" type="varchar(255)">
                 <constraints nullable="true"/>
             </column>
         </createTable>
-        <addForeignKeyConstraint baseTableName="imaging_RequestProcedureSteps" baseColumnNames="requestProcedureId"
-                                 constraintName="imaging_RequestProcedureSteps_requestProcedureId_fk"
+        <addForeignKeyConstraint baseTableName="imaging_RequestProcedureStep" baseColumnNames="requestProcedureId"
+                                 constraintName="imaging_RequestProcedureStep_requestProcedureId_fk"
                                  referencedTableName="imaging_RequestProcedure"
                                  referencedColumnNames="id"/>
     </changeSet>

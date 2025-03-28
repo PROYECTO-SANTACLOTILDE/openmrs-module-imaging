@@ -34,20 +34,21 @@ public class RequestProcedureServiceImpl extends BaseOpenmrsService implements R
 	protected final Log log = LogFactory.getLog(this.getClass());
 	
 	private RequestProcedureDao dao;
+	
 	/**
 	 * @param dao the dao set
 	 */
 	public void setDao(RequestProcedureDao dao) {
 		this.dao = dao;
 	}
-
+	
 	/**
 	 * @return the dao
 	 */
 	public RequestProcedureDao getDao() {
 		return dao;
 	}
-
+	
 	/**
 	 * Get all request procedures
 	 */
@@ -55,7 +56,7 @@ public class RequestProcedureServiceImpl extends BaseOpenmrsService implements R
 	public List<RequestProcedure> getAllRequestProcedures() {
 		return dao.getAll();
 	}
-
+	
 	/**
 	 * @param studyInstanceUID the study instance UID
 	 */
@@ -63,15 +64,15 @@ public class RequestProcedureServiceImpl extends BaseOpenmrsService implements R
 	public List<RequestProcedure> getAllByStudyInstanceUID(String studyInstanceUID) {
 		return dao.getAllByStudyInstanceUID(studyInstanceUID);
 	}
-
+	
 	/**
 	 * @param pt the openmrs patient object
-	 * */
+	 */
 	@Override
 	public List<RequestProcedure> getRequestProcedureByPatient(Patient pt) {
 		return dao.getByPatient(pt);
 	}
-
+	
 	/**
 	 * @param requestProcedureId the request procedure ID
 	 */
@@ -79,7 +80,12 @@ public class RequestProcedureServiceImpl extends BaseOpenmrsService implements R
 	public RequestProcedure getRequestProcedure(int requestProcedureId) {
 		return dao.get(requestProcedureId);
 	}
-
+	
+	@Override
+	public RequestProcedure getRequestProcedureByAccessionNUmber(String accessionNumber) {
+		return dao.getByAccessionNumber(accessionNumber);
+	}
+	
 	/**
 	 * @param requestProcedure the request procedure object
 	 */
@@ -87,7 +93,7 @@ public class RequestProcedureServiceImpl extends BaseOpenmrsService implements R
 	public void deleteRequestProcedure(RequestProcedure requestProcedure) throws IOException {
 		dao.remove(requestProcedure);
 	}
-
+	
 	/**
 	 * @param requestProcedure The request procedure object
 	 */
@@ -95,7 +101,7 @@ public class RequestProcedureServiceImpl extends BaseOpenmrsService implements R
 	public void newRequest(RequestProcedure requestProcedure) {
 		dao.save(requestProcedure);
 	}
-
+	
 	/**
 	 * @param requestProcedure the request procedure object
 	 */
@@ -103,4 +109,5 @@ public class RequestProcedureServiceImpl extends BaseOpenmrsService implements R
 	public void updateRequstStatus(RequestProcedure requestProcedure) {
 		dao.update(requestProcedure);
 	}
+	
 }

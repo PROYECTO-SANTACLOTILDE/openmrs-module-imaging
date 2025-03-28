@@ -15,7 +15,7 @@ package org.openmrs.module.imaging.api.worklist;
 
 import org.openmrs.BaseOpenmrsData;
 
-public class RequestProcedureSteps extends BaseOpenmrsData implements java.io.Serializable {
+public class RequestProcedureStep extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 1;
 	
@@ -35,16 +35,18 @@ public class RequestProcedureSteps extends BaseOpenmrsData implements java.io.Se
 	
 	private String stepStartTime;
 	
+	private String performedProcedureStepStatus;
+	
 	private String stationName;
 	
 	private String procedureStepLocation;
 	
-	public RequestProcedureSteps() {
+	public RequestProcedureStep() {
 	}
 	
-	public RequestProcedureSteps(RequestProcedure requestProcedure, String modality, String scheduledReferringPhysician,
+	public RequestProcedureStep(RequestProcedure requestProcedure, String modality, String scheduledReferringPhysician,
 	    String requestedProcedureDescription, String aetTitle, String stepStartDate, String stepStartTime,
-	    String stationName, String procedureStepLocation) {
+	    String performedProcedureStepStatus, String stationName, String procedureStepLocation) {
 		this.requestProcedure = requestProcedure;
 		this.modality = modality;
 		this.aetTitle = aetTitle;
@@ -52,6 +54,7 @@ public class RequestProcedureSteps extends BaseOpenmrsData implements java.io.Se
 		this.requestedProcedureDescription = requestedProcedureDescription;
 		this.stepStartDate = stepStartDate;
 		this.stepStartTime = stepStartTime;
+		this.performedProcedureStepStatus = performedProcedureStepStatus;
 		this.stationName = stationName;
 		this.procedureStepLocation = procedureStepLocation;
 	}
@@ -118,6 +121,14 @@ public class RequestProcedureSteps extends BaseOpenmrsData implements java.io.Se
 	
 	public void setStepStartTime(String stepStartTime) {
 		this.stepStartTime = stepStartTime;
+	}
+	
+	public String getPerformedProcedureStepStatus() {
+		return performedProcedureStepStatus;
+	}
+	
+	public void setPerformedProcedureStepStatus(String performedProcedureStepStatus) {
+		this.performedProcedureStepStatus = performedProcedureStepStatus;
 	}
 	
 	public String getStationName() {
