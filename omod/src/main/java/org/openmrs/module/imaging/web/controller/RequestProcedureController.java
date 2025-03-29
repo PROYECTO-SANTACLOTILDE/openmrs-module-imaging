@@ -132,51 +132,36 @@ public class RequestProcedureController extends MainResourceController {
 	public void updateRequestStatus(HttpServletRequest request, HttpServletResponse response,
 	        @RequestParam(value = "studyInstanceUID") String studyInstanceUID,
 	        @RequestParam(value = "performedProcedureStepID") String performedProcedureStepID) throws IOException {
-		
+
 		RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
 		RequestProcedureStepService requestProcedureStepService = Context.getService(RequestProcedureStepService.class);
 		System.out.println("Study instances UID: " + studyInstanceUID);
 		System.out.println("PerformedProcedureStepID: " + performedProcedureStepID);
-		
-		String testData = "3";
-		
-		if (!testData.isEmpty()) {
-			try {
-				RequestProcedureStep step = requestProcedureStepService.getProcedureStep(Integer.parseInt(testData));
-				if (step != null && step.getRequestProcedure() != null) {
-					// Update the perform procedure step status
-					step.setPerformedProcedureStepStatus("COMPLETED");
-					// Set the study instance UID created by modality device
-					step.getRequestProcedure().setStudyInstanceUID(studyInstanceUID);
-					try {
-						requestProcedureStepService.updateProcedureStep(step);
-					}
-					catch (Exception e) {
-						throw new RuntimeException("Error updating procedure step: " + e.getMessage());
-					}
-					
-					// Check all procedure step perform status of the request
-					RequestProcedure requestProcedure = step.getRequestProcedure();
-					List<RequestProcedureStep> stepList = requestProcedureStepService
-					        .getAllStepByRequestProcedure(requestProcedure);
-					
-					if (!stepList.isEmpty()) {
-						boolean allComplete = stepList.stream().
-								allMatch(item -> "COMPLETED".equalsIgnoreCase(item.getPerformedProcedureStepStatus().trim()));
 
-						System.out.println("+++++++ all status of the step: " + allComplete);
-						if (allComplete) {
-							requestProcedure.setStatus("COMPLETED");
-							requestProcedureService.updateRequstStatus(requestProcedure);
-						}
-					}
+		// test data
+		performedProcedureStepID = "3";
+
+		RequestProcedureStep step = requestProcedureStepService.getProcedureStep(Integer.parseInt(performedProcedureStepID));
+		if (step != null && step.getRequestProcedure() != null) {
+			// Update the procedure step status
+			step.setPerformedProcedureStepStatus("COMPLETED");
+
+			// Set the study instance UID created by modality device
+			step.getRequestProcedure().setStudyInstanceUID(studyInstanceUID);
+			requestProcedureStepService.updateProcedureStep(step);
+
+			// Check all procedure step perform status of the request
+			RequestProcedure requestProcedure = step.getRequestProcedure();
+			List<RequestProcedureStep> stepList = requestProcedureStepService.getAllStepByRequestProcedure(requestProcedure);
+			if (!stepList.isEmpty()) {
+				boolean allCompleted = stepList.stream().
+						allMatch(item -> "COMPLETED".equalsIgnoreCase(item.getPerformedProcedureStepStatus().trim()));
+
+				System.out.println("All steps of procedure completed: " + allCompleted);
+				if (allCompleted) {
+					requestProcedure.setStatus("COMPLETED");
+					requestProcedureService.updateRequestStatus(requestProcedure);
 				}
-			}
-			catch (NumberFormatException e) {
-				throw new NumberFormatException(e.getMessage());
-			}
-			catch (NullPointerException e) {
-				throw new NullPointerException(e.getMessage());
 			}
 		}
 	}

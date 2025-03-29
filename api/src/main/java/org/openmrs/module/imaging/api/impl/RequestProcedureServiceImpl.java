@@ -106,7 +106,7 @@ public class RequestProcedureServiceImpl extends BaseOpenmrsService implements R
 	 * @param requestProcedure the request procedure object
 	 */
 	@Override
-	public void updateRequstStatus(RequestProcedure requestProcedure) {
+	public void updateRequestStatus(RequestProcedure requestProcedure) {
 		dao.update(requestProcedure);
 	}
 	

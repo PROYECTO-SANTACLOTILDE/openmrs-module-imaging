@@ -40,6 +40,6 @@ public interface RequestProcedureService extends OpenmrsService {
 	
 	void newRequest(RequestProcedure requestProcedure) throws IOException;
 	
-	void updateRequstStatus(RequestProcedure requestProcedure);
+	void updateRequestStatus(RequestProcedure requestProcedure);
 	
 }
