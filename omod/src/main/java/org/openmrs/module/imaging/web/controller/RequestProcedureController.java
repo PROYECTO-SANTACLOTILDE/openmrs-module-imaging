@@ -139,7 +139,7 @@ public class RequestProcedureController extends MainResourceController {
 		System.out.println("PerformedProcedureStepID: " + performedProcedureStepID);
 
 		// test data
-		performedProcedureStepID = "3";
+//		performedProcedureStepID = "5";
 
 		RequestProcedureStep step = requestProcedureStepService.getProcedureStep(Integer.parseInt(performedProcedureStepID));
 		if (step != null && step.getRequestProcedure() != null) {
