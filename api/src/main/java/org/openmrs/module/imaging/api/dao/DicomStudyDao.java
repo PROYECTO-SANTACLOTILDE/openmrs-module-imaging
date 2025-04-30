@@ -58,6 +58,12 @@ public class DicomStudyDao {
 		return criteria.add(Restrictions.eq("mrsPatient", patient)).list();
 	}
 	
+	@SuppressWarnings("unchecked")
+	public List<DicomStudy> getByConfiguration(OrthancConfiguration config) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(DicomStudy.class);
+		return criteria.add(Restrictions.eq("orthancConfiguration", config)).list();
+	}
+	
 	public DicomStudy getByStudyInstanceUID(OrthancConfiguration config, String studyInstanceUID) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(DicomStudy.class);
 		return (DicomStudy) criteria.add(Restrictions.eq("studyInstanceUID", studyInstanceUID))

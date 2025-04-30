@@ -15,13 +15,18 @@ package org.openmrs.module.imaging.web.controller;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Patient;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.imaging.OrthancConfiguration;
+import org.openmrs.module.imaging.api.OrthancConfigurationService;
 import org.openmrs.module.imaging.api.RequestProcedureService;
 import org.openmrs.module.imaging.api.RequestProcedureStepService;
 import org.openmrs.module.imaging.api.worklist.RequestProcedure;
 import org.openmrs.module.imaging.api.worklist.RequestProcedureStep;
+import org.openmrs.module.imaging.web.controller.ResponseModel.ProcedureStepResponse;
+import org.openmrs.module.imaging.web.controller.ResponseModel.RequestProcedureResponse;
 import org.openmrs.module.webservices.rest.web.RestConstants;
-import org.openmrs.module.webservices.rest.web.v1_0.controller.MainResourceController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,21 +38,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
-@Controller
-@RequestMapping("/rest/" + RestConstants.VERSION_1 + "/imaging")
-public class RequestProcedureController extends MainResourceController {
+@Controller("${rootrootArtifactId}.RequestProcedureController")
+@RequestMapping("/rest/" + RestConstants.VERSION_1 + "/worklist")
+public class RequestProcedureController {
 	
 	protected Log log = LogFactory.getLog(this.getClass());
 	
-	@Override
-	public String getNamespace() {
-		return RestConstants.VERSION_1 + "/imaging";
-	}
-	
-	@RequestMapping(value = "/worklist", method = RequestMethod.GET,
-            // consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+	/**
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "/requests", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
     public ResponseEntity<Object> getRequestProcedures(HttpServletRequest request, HttpServletResponse response) {
         RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
@@ -125,9 +129,7 @@ public class RequestProcedureController extends MainResourceController {
 	/**
 	 * @param studyInstanceUID The dicom study instance UID
 	 */
-	@RequestMapping(value = "/updatestatus", method = RequestMethod.POST,
-	// consumes = MediaType.APPLICATION_JSON_VALUE,
-	produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/updaterequeststatus", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Transactional
 	public void updateRequestStatus(HttpServletRequest request, HttpServletResponse response,
 	        @RequestParam(value = "studyInstanceUID") String studyInstanceUID,
@@ -139,12 +141,12 @@ public class RequestProcedureController extends MainResourceController {
 		System.out.println("PerformedProcedureStepID: " + performedProcedureStepID);
 
 		// test data
-//		performedProcedureStepID = "4";
+//		performedProcedureStepID = "9";
 
 		RequestProcedureStep step = requestProcedureStepService.getProcedureStep(Integer.parseInt(performedProcedureStepID));
 		if (step != null && step.getRequestProcedure() != null) {
 			// Update the procedure step status
-			step.setPerformedProcedureStepStatus("COMPLETED");
+			step.setPerformedProcedureStepStatus("completed");
 
 			// Set the study instance UID created by modality device
 			step.getRequestProcedure().setStudyInstanceUID(studyInstanceUID);
@@ -155,14 +157,155 @@ public class RequestProcedureController extends MainResourceController {
 			List<RequestProcedureStep> stepList = requestProcedureStepService.getAllStepByRequestProcedure(requestProcedure);
 			if (!stepList.isEmpty()) {
 				boolean allCompleted = stepList.stream().
-						allMatch(item -> "COMPLETED".equalsIgnoreCase(item.getPerformedProcedureStepStatus().trim()));
+						allMatch(item -> "completed".equalsIgnoreCase(item.getPerformedProcedureStepStatus().trim()));
 
 				System.out.println("All steps of procedure completed: " + allCompleted);
 				if (allCompleted) {
-					requestProcedure.setStatus("COMPLETED");
+					requestProcedure.setStatus("completed");
 					requestProcedureService.updateRequestStatus(requestProcedure);
 				}
 			}
+		}
+	}
+	
+	/**
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "/saverequest", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@Transactional
+	public ResponseEntity<Object> saveRequestProcedure(@RequestBody Map<String, Object> requestPostData,
+													  HttpServletRequest request, HttpServletResponse response ) {
+
+		RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
+
+		PatientService patientService = Context.getPatientService();
+		String patientUuid = (String) requestPostData.get("patientUuid");
+		Patient patient = patientService.getPatientByUuid(patientUuid);
+
+		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
+		OrthancConfiguration configuration = orthancConfigurationService.getOrthancConfiguration((Integer) requestPostData.get("configurationId"));
+
+		RequestProcedure newReq = new RequestProcedure();
+		newReq.setStatus("scheduled");
+		newReq.setMrsPatient(patient);
+		newReq.setOrthancConfiguration(configuration);
+		newReq.setAccessionNumber((String) requestPostData.get("accessionNumber"));
+		newReq.setStudyInstanceUID(null);
+		newReq.setRequestingPhysician((String) requestPostData.get("requestingPhysician"));
+		newReq.setRequestDescription((String) requestPostData.get("requestDescription"));
+		newReq.setPriority((String) requestPostData.get("priority"));
+		try{
+			requestProcedureService.newRequest(newReq);
+			return new ResponseEntity<>("", HttpStatus.OK);
+		} catch (IOException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	/**
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "/savestep", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@Transactional
+	public ResponseEntity<Object> saveRequestProcedureStep(@RequestBody Map<String, Object> stepPostData,
+													   HttpServletRequest request,
+													   HttpServletResponse response ) {
+		RequestProcedureStepService requestProcedureStepService = Context.getService(RequestProcedureStepService.class);
+		RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
+
+		int requestId = (Integer) stepPostData.get("requestId");
+		RequestProcedure requestProcedure = requestProcedureService.getRequestProcedure(requestId);
+
+		RequestProcedureStep newStep = new RequestProcedureStep();
+		newStep.setRequestProcedure(requestProcedure);
+		newStep.setModality((String) stepPostData.get("modality"));
+		newStep.setAetTitle((String) stepPostData.get("aetTitle"));
+		newStep.setScheduledReferringPhysician((String) stepPostData.get("scheduledReferringPhysician"));
+		newStep.setRequestedProcedureDescription((String) stepPostData.get("requestedProcedureDescription"));
+		newStep.setPerformedProcedureStepStatus("scheduled");
+		newStep.setStepStartDate((String) stepPostData.get("stepStartDate"));
+		newStep.setStepStartTime((String) stepPostData.get("stepStartTime"));
+		newStep.setStationName((String) stepPostData.get("stationName"));
+		newStep.setProcedureStepLocation((String) stepPostData.get("procedureStepLocation"));
+
+		try{
+			requestProcedureStepService.newProcedureStep(newStep);
+			return new ResponseEntity<>("", HttpStatus.OK);
+		} catch (IOException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/patientrequests", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@Transactional
+	public ResponseEntity<Object> getRequestsByPatient(@RequestParam("patient") String patientUuid,
+													   HttpServletRequest request, HttpServletResponse response ) {
+		RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
+		PatientService patientService = Context.getPatientService();
+		Patient patient = patientService.getPatientByUuid(patientUuid);
+
+        List<RequestProcedure> requests = requestProcedureService.getRequestProcedureByPatient(patient);
+		List<RequestProcedureResponse> requestProcedureResponseList = new ArrayList<>();
+        for(RequestProcedure req : requests) {
+            RequestProcedureResponse reqRes = RequestProcedureResponse.createResponse(req);
+            requestProcedureResponseList.add(reqRes);
+        }
+        return new ResponseEntity<>(requestProcedureResponseList, HttpStatus.OK);
+    }
+	
+	/**
+	 * @param requestId
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "/requeststep", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@Transactional
+	public ResponseEntity<Object> getProcedureStep(@RequestParam("requestId") int requestId,
+												 HttpServletRequest request,
+											  HttpServletResponse response ) {
+		RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
+		RequestProcedureStepService requestProcedureStepService = Context.getService(RequestProcedureStepService.class);
+		RequestProcedure req = requestProcedureService.getRequestProcedure(requestId);
+		List<RequestProcedureStep> steps = requestProcedureStepService.getAllStepByRequestProcedure(req);
+
+		List<ProcedureStepResponse> procedureStepResponseList = steps.stream().map(ProcedureStepResponse::createResponse).collect(Collectors.toList());
+		return new ResponseEntity<>(procedureStepResponseList, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/request", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@Transactional
+	public ResponseEntity<Object> deleteRequest(@RequestParam(value="requestId") int requestId,
+											   HttpServletRequest request,
+											   HttpServletResponse response ) {
+		RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
+		RequestProcedure requestProcedure = requestProcedureService.getRequestProcedure(requestId);
+		try {
+			requestProcedureService.deleteRequestProcedure(requestProcedure);
+			return new ResponseEntity<>("", HttpStatus.OK);
+		}catch (IOException e) {
+			return new ResponseEntity<>("", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/requeststep", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@Transactional
+	public ResponseEntity<Object> deleteProcedureStep(@RequestParam(value="stepId") int stepId,
+											   HttpServletRequest request,
+											   HttpServletResponse response ) {
+
+		RequestProcedureStepService requestProcedureStepService = Context.getService(RequestProcedureStepService.class);
+		RequestProcedureStep step = requestProcedureStepService.getProcedureStep(stepId);
+
+		try {
+			requestProcedureStepService.deleteProcedureStep(step);
+			return new ResponseEntity<>("", HttpStatus.OK);
+		}catch (IOException e) {
+			return new ResponseEntity<>("", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 }

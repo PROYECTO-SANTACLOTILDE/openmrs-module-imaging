@@ -188,11 +188,11 @@ public class RequestProcedurePageController {
 				step.setStepStartDate(stepStartDate);
 				step.setStepStartTime(stepStartTime);
 				step.setStationName(stationName);
-				step.setPerformedProcedureStepStatus("SCHEDULED");
+				step.setPerformedProcedureStepStatus("scheduled");
 				step.setProcedureStepLocation(procedureStepLocation);
 				requestProcedureStepService.newProcedureStep(step);
 				
-				requestProcedure.setStatus("IN PROGRESS");
+				requestProcedure.setStatus("in progress");
 				requestProcedureService.updateRequestStatus(requestProcedure);
 				
 				message = "The step of the request procedure are successfully created";

@@ -212,6 +212,10 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		return dao.getByPatient(pt);
 	}
 	
+	public List<DicomStudy> getStudiesByConfiguration(OrthancConfiguration config) {
+		return dao.getByConfiguration(config);
+	}
+	
 	/**
 	 * @return the list dicom studies
 	 */

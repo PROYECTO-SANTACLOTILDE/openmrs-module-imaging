@@ -157,7 +157,7 @@ public class StudiesPageController {
 	 * @param patient the openmrs patient
 	 * @return the redirect url
 	 */
-	@RequestMapping(value = "/module/imaging/deleteRequestProcedure.form", method = RequestMethod.POST)
+	@RequestMapping(value = "/module/imaging/deleteStudy.form", method = RequestMethod.POST)
 	public String deleteStudy(RedirectAttributes redirectAttributes, @RequestParam(value = "studyId") int studyId,
 	        @RequestParam(value = "patientId") Patient patient, @RequestParam(value = "deleteOption") String deleteOption) {
 		
