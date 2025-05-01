@@ -9,6 +9,8 @@ public class DicomInstanceResponse {
 	
 	private String instanceNumber;
 	
+	private String orthancInstanceUID;
+	
 	private String imagePositionPatient;
 	
 	private String numberOfFrames;
@@ -21,6 +23,7 @@ public class DicomInstanceResponse {
 		response.setInstanceNumber(dicomInstance.getInstanceNumber());
 		response.setImagePositionPatient(dicomInstance.getImagePositionPatient());
 		response.setNumberOfFrames(dicomInstance.getNumberOfFrames());
+		response.setOrthancInstanceUID(dicomInstance.getOrthancInstanceUID());
 		response.setOrthancConfiguration(OrthancConfigurationResponse.createResponse(dicomInstance.getOrthancConfiguration()));
 		return response;
 	}
@@ -63,5 +66,13 @@ public class DicomInstanceResponse {
 	
 	public void setOrthancConfiguration(OrthancConfigurationResponse orthancConfiguration) {
 		this.orthancConfiguration = orthancConfiguration;
+	}
+	
+	public String getOrthancInstanceUID() {
+		return orthancInstanceUID;
+	}
+	
+	public void setOrthancInstanceUID(String orthancInstanceUID) {
+		this.orthancInstanceUID = orthancInstanceUID;
 	}
 }

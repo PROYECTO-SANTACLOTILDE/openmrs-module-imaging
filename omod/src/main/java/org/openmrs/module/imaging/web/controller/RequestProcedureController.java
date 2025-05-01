@@ -283,12 +283,24 @@ public class RequestProcedureController {
 											   HttpServletRequest request,
 											   HttpServletResponse response ) {
 		RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
+		RequestProcedureStepService requestProcedureStepService = Context.getService(RequestProcedureStepService.class);
 		RequestProcedure requestProcedure = requestProcedureService.getRequestProcedure(requestId);
+
+		List<RequestProcedureStep> stepList = requestProcedureStepService.getAllStepByRequestProcedure(requestProcedure);
+		if (!stepList.isEmpty()) {
+			try {
+				for (RequestProcedureStep step : stepList) {
+					requestProcedureStepService.deleteProcedureStep(step);
+				}
+			} catch (IOException e) {
+				return new ResponseEntity<>("", HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		}
 		try {
 			requestProcedureService.deleteRequestProcedure(requestProcedure);
 			return new ResponseEntity<>("", HttpStatus.OK);
 		}catch (IOException e) {
-			return new ResponseEntity<>("", HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	

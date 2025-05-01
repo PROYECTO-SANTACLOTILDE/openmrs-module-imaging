@@ -15,6 +15,7 @@ import org.openmrs.module.imaging.api.study.DicomSeries;
 import org.openmrs.module.imaging.api.study.DicomStudy;
 import org.openmrs.module.imaging.web.controller.ResponseModel.*;
 import org.openmrs.module.webservices.rest.web.RestConstants;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -104,8 +105,6 @@ public class DicomStudyController {
         try {
             DicomStudy study = dicomStudyService.getDicomStudy(studyId);
             List<DicomSeries> seriesList = dicomStudyService.fetchSeries(study);
-
-            System.out.println("+++++ seriesList" + seriesList.size());
 
             List<DicomSeriesResponse> seriesResponseList = new ArrayList<>();
             for (DicomSeries ser : seriesList) {
@@ -278,4 +277,22 @@ public class DicomStudyController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+	
+	@RequestMapping(value = "/previewinstance", method = RequestMethod.GET)
+	@Transactional
+	public ResponseEntity previewInstance(@RequestParam(value = "orthancInstanceUID") String orthancInstanceUID,
+	        @RequestParam(value = "studyId") int studyId) {
+		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
+		DicomStudy study = dicomStudyService.getDicomStudy(studyId);
+		try {
+			DicomStudyService.PreviewResult previewResult = dicomStudyService
+			        .fetchInstancePreview(orthancInstanceUID, study);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("Content-type", previewResult.contentType);
+			return new ResponseEntity<byte[]>(previewResult.data, headers, HttpStatus.OK);
+		}
+		catch (IOException e) {
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }
