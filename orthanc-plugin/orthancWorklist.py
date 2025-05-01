@@ -1,11 +1,13 @@
 import json
 import orthanc
 import requests
-import time
 
-# Default API URL
-getWorklistURL = "http://localhost:7070/openmrs/ws/rest/v1/imaging/worklist/requests"
-updateRequestStatusURL = "http://localhost:7070/openmrs/ws/rest/v1/imaging/worklist/updaterequeststatus"
+## Typical configuration:
+# worklistUsername = "admin"
+# worklistPassword =  "Admin123"
+# getWorklistURL = "http://localhost:7070/openmrs/ws/rest/v1/imaging/worklist/requests"
+# updateRequestStatusURL = "http://localhost:7070/openmrs/ws/rest/v1/imaging/worklist/updaterequeststatus"
+
 
 def OnWorkList(answers, query, issuerAet, calledAet):
     # Get query in json format and write it to log
@@ -15,7 +17,7 @@ def OnWorkList(answers, query, issuerAet, calledAet):
     orthanc.LogWarning('C-FIND worklist request: %s' %
                        json.dumps(queryJson, indent = 4))
 
-    response = requests.get(getWorklistURL)
+    response = requests.get(getWorklistURL, auth=(worklistUsername, worklistPassword))
     responseJson = response.json()
 
     orthanc.LogWarning('Response by server: %s' % json.dumps(responseJson))
@@ -48,7 +50,8 @@ def OnChange(changeType, level, resource):
                     orthanc.LogWarning("Step ID of stable series of study " + studyInstanceUID + ": "+str(stepID))
                     if stepID is not None:
                         try:
-                            response = requests.post(updateRequestStatusURL+"?studyInstanceUID=" + studyInstanceUID + "&performedProcedureStepID=" + str(stepID))
+                            postUrl = updateRequestStatusURL+"?studyInstanceUID=" + studyInstanceUID + "&performedProcedureStepID=" + str(stepID)
+                            response = requests.post(postUrl, auth=(worklistUsername, worklistPassword))
                             response.raise_for_status()
                         except requests.RequestException as e:
                             orthanc.LogError(f"Failed to update procedure step status: {str(e)}")
@@ -61,7 +64,6 @@ def getConfigItem(configItemName):
     config = orthanc.GetConfiguration()
     configJson = json.loads(config)
     url = configJson[configItemName]
-    orthanc.LogWarning("Imaging worklist URL: " + url)
     return url
 
 orthanc.RegisterWorklistCallback(OnWorkList)
@@ -70,6 +72,8 @@ orthanc.RegisterOnChangeCallback(OnChange)
 # Read the API URL from the configuration of Orthanc
 getWorklistURL = getConfigItem("ImagingWorklistURL")
 updateRequestStatusURL = getConfigItem("ImagingUpdateRequestStatus")
+worklistUsername = getConfigItem("ImagingWorklistUsername")
+worklistPassword = getConfigItem("ImagingWorklistPassword")
 
 
     

@@ -13,7 +13,7 @@
         for a list of supported elements and attributes
     -->
 
-    <changeSet id="255" author="weisadre">
+    <changeSet id="259" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_OrthancConfiguration"/>
@@ -36,7 +36,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="256" author="weisadre">
+    <changeSet id="260" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_DicomStudy"/>
@@ -75,7 +75,7 @@
                                  referencedColumnNames="id"/>
     </changeSet>
 
-    <changeSet id="257" author="weisadre">
+    <changeSet id="261" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_RequestProcedure"/>
@@ -120,7 +120,7 @@
                                  referencedTableName="imaging_OrthancConfiguration"
                                  referencedColumnNames="id"/>
     </changeSet>
-    <changeSet id="258" author="weisadre">
+    <changeSet id="262" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_RequestProcedureStep"/>
