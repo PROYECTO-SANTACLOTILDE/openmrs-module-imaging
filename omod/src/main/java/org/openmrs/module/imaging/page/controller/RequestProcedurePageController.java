@@ -87,7 +87,7 @@ public class RequestProcedurePageController {
 			        .getOrthancConfiguration(orthancConfigurationId);
 			try {
 				RequestProcedure requestProcedure = new RequestProcedure();
-				requestProcedure.setStatus("SCHEDULED");
+				requestProcedure.setStatus("scheduled");
 				requestProcedure.setMrsPatient(patient);
 				requestProcedure.setOrthancConfiguration(orthancConfiguration);
 				requestProcedure.setAccessionNumber(accessionNumber);

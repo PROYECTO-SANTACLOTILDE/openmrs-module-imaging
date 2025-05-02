@@ -71,7 +71,7 @@ ${param["message"]?.getAt(0) ?: ""}
                     <td>${ui.format(series.seriesDate)}</td>
                     <td>${ui.format(series.modality)}</td>
                      <td>
-                         <% if (privilegeEditImageData) { %>
+                         <% if (privilegeModifyImageData) { %>
                             <a class="delete-series"
                                 onclick="togglePopupDeleteSeries('${series.orthancSeriesUID}', '${studyId}', '${patient.id}')"><i class="icon-remove" delete-action></i>
                             </a>

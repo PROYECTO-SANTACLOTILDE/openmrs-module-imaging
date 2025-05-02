@@ -128,6 +128,7 @@ public class RequestProcedureController {
 	
 	/**
 	 * @param studyInstanceUID The dicom study instance UID
+	 * @param performedProcedureStepID The OpenMRS-generated unique identifier for the part of the procedure that has been performed in this step..
 	 */
 	@RequestMapping(value = "/updaterequeststatus", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Transactional
@@ -169,9 +170,8 @@ public class RequestProcedureController {
 	}
 	
 	/**
-	 * @param request
-	 * @param response
-	 * @return
+	 * @param requestPostData The data for the new request procedure
+	 * @return The response entity resulting from the request processing
 	 */
 	@RequestMapping(value = "/saverequest", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Transactional
@@ -205,9 +205,8 @@ public class RequestProcedureController {
 	}
 	
 	/**
-	 * @param request
-	 * @param response
-	 * @return
+	 * @param stepPostData The data for the procedure step
+	 * @return The response entity resulting from the request processing
 	 */
 	@RequestMapping(value = "/savestep", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Transactional
@@ -234,12 +233,20 @@ public class RequestProcedureController {
 
 		try{
 			requestProcedureStepService.newProcedureStep(newStep);
+			requestProcedure.setStatus("progress");
+			requestProcedureService.updateRequestStatus(requestProcedure);
+
 			return new ResponseEntity<>("", HttpStatus.OK);
 		} catch (IOException e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
+	/**
+	 *
+	 * @param patientUuid The patient unique ID
+	 * @return The response entity resulting from the request processing
+	 */
 	@RequestMapping(value = "/patientrequests", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Transactional
 	public ResponseEntity<Object> getRequestsByPatient(@RequestParam("patient") String patientUuid,
@@ -258,10 +265,8 @@ public class RequestProcedureController {
     }
 	
 	/**
-	 * @param requestId
-	 * @param request
-	 * @param response
-	 * @return
+	 * @param requestId The request procedure ID
+	 * @return The retrieved procedure step list
 	 */
 	@RequestMapping(value = "/requeststep", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Transactional
@@ -276,7 +281,12 @@ public class RequestProcedureController {
 		List<ProcedureStepResponse> procedureStepResponseList = steps.stream().map(ProcedureStepResponse::createResponse).collect(Collectors.toList());
 		return new ResponseEntity<>(procedureStepResponseList, HttpStatus.OK);
 	}
-	
+
+	/**
+	 *
+	 * @param requestId The request procedure ID
+	 * @return The response entity
+	 */
 	@RequestMapping(value = "/request", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Transactional
 	public ResponseEntity<Object> deleteRequest(@RequestParam(value="requestId") int requestId,
@@ -303,7 +313,13 @@ public class RequestProcedureController {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
+	/**
+	 *
+	 * @param stepId The procedure step of the request
+	 * @param request The request of procedure
+	 * @return The response entity
+	 */
 	@RequestMapping(value = "/requeststep", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Transactional
 	public ResponseEntity<Object> deleteProcedureStep(@RequestParam(value="stepId") int stepId,
