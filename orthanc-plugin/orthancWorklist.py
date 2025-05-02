@@ -8,7 +8,6 @@ import requests
 # getWorklistURL = "http://localhost:7070/openmrs/ws/rest/v1/imaging/worklist/requests"
 # updateRequestStatusURL = "http://localhost:7070/openmrs/ws/rest/v1/imaging/worklist/updaterequeststatus"
 
-
 def OnWorkList(answers, query, issuerAet, calledAet):
     # Get query in json format and write it to log
     queryDicom = query.WorklistGetDicomQuery()
@@ -24,8 +23,14 @@ def OnWorkList(answers, query, issuerAet, calledAet):
 
     for dicomJson in responseJson:
         responseDicom = orthanc.CreateDicom(json.dumps(dicomJson), None, orthanc.CreateDicomFlags.NONE)
+
         orthanc.LogWarning(orthanc.DicomBufferToJson(
             responseDicom, orthanc.DicomToJsonFormat.SHORT, orthanc.DicomToJsonFlags.NONE, 0))
+
+        # Thie code only for test:
+        # Save the DICOM buffer to a file
+        # with open("/tmp/worklist_test.wl", 'wb') as f:
+        #     f.write(responseDicom)
 
         if query.WorklistIsMatch(responseDicom):
             answers.WorklistAddAnswer(query, responseDicom)

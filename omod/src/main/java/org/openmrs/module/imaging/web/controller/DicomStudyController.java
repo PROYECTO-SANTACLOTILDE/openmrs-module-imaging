@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.module.imaging.web.controller;
 
 import me.xdrop.fuzzywuzzy.FuzzySearch;
@@ -241,7 +254,15 @@ public class DicomStudyController {
         }
         return new ResponseEntity<>("", HttpStatus.OK);
     }
-	
+
+    /**
+     *
+     * @param studyId
+     * @param deleteOption
+     * @param request
+     * @param response
+     * @return
+     */
 	@RequestMapping(value = "/study", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
     public ResponseEntity<Object> deleteStudy(@RequestParam(value="studyId") int studyId,
@@ -261,7 +282,15 @@ public class DicomStudyController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-	
+
+    /**
+     *
+     * @param orthancSeriesUID
+     * @param studyId
+     * @param request
+     * @param response
+     * @return
+     */
 	@RequestMapping(value = "/series", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
     public ResponseEntity<Object> deleteSeries(@RequestParam(value="orthancSeriesUID") String orthancSeriesUID,
@@ -278,6 +307,11 @@ public class DicomStudyController {
         }
     }
 	
+	/**
+	 * @param orthancInstanceUID
+	 * @param studyId
+	 * @return
+	 */
 	@RequestMapping(value = "/previewinstance", method = RequestMethod.GET)
 	@Transactional
 	public ResponseEntity previewInstance(@RequestParam(value = "orthancInstanceUID") String orthancInstanceUID,

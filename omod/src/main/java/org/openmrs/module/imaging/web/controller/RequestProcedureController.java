@@ -60,7 +60,7 @@ public class RequestProcedureController {
         List<RequestProcedure> rps = requestProcedureService.getAllRequestProcedures();
         List<Map<String,Object>> result = new LinkedList<Map<String,Object>>();
         for (RequestProcedure rp : rps) {
-            if(rp.getStatus().equalsIgnoreCase("Pending")) {
+            if(rp.getStatus().equalsIgnoreCase("scheduled")) {
                 Map<String,Object> map = new HashMap<String,Object>();
                 writeProcedure(rp, map, requestProcedureStepService);
                 result.add(map);

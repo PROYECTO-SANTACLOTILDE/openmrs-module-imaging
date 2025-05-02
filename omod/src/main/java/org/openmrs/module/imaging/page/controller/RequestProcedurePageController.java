@@ -192,7 +192,7 @@ public class RequestProcedurePageController {
 				step.setProcedureStepLocation(procedureStepLocation);
 				requestProcedureStepService.newProcedureStep(step);
 				
-				requestProcedure.setStatus("in progress");
+				requestProcedure.setStatus("progress");
 				requestProcedureService.updateRequestStatus(requestProcedure);
 				
 				message = "The step of the request procedure are successfully created";
