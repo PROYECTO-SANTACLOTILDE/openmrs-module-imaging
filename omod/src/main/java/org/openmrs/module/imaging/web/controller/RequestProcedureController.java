@@ -128,7 +128,8 @@ public class RequestProcedureController {
 	
 	/**
 	 * @param studyInstanceUID The dicom study instance UID
-	 * @param performedProcedureStepID The OpenMRS-generated unique identifier for the part of the procedure that has been performed in this step..
+	 * @param performedProcedureStepID The OpenMRS-generated unique identifier for the part of the
+	 *            procedure that has been performed in this step..
 	 */
 	@RequestMapping(value = "/updaterequeststatus", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Transactional
@@ -241,9 +242,8 @@ public class RequestProcedureController {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-
+	
 	/**
-	 *
 	 * @param patientUuid The patient unique ID
 	 * @return The response entity resulting from the request processing
 	 */
@@ -281,9 +281,8 @@ public class RequestProcedureController {
 		List<ProcedureStepResponse> procedureStepResponseList = steps.stream().map(ProcedureStepResponse::createResponse).collect(Collectors.toList());
 		return new ResponseEntity<>(procedureStepResponseList, HttpStatus.OK);
 	}
-
+	
 	/**
-	 *
 	 * @param requestId The request procedure ID
 	 * @return The response entity
 	 */
@@ -313,9 +312,8 @@ public class RequestProcedureController {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-
+	
 	/**
-	 *
 	 * @param stepId The procedure step of the request
 	 * @param request The request of procedure
 	 * @return The response entity
