@@ -13,10 +13,9 @@ Watch the video demonstration of the module here: [![Watch the video]()](https:/
 
 This diagram illustrates the workflow of the worklist. A radiologist wants to view the worklist generated in OpenMRS via C-FIND Rest API
 URL. The Orthanc server forwards the request to OpenMRS. OpenMRS processes the request and returns the worklist in JSON format. The Orthanc plugin function ``Onworklsit``
-reads the data and generates the worklist in DICOM format. It is not neccessary to generated (.wl) file. The results can be viewed with the command like 
-``findscu -v -W -k "ScheduledProcedureStepSequence[0].Modality=CT" 127.0.0.1 4242``. When the radiologist performs the procedure, a new DICOM study is created and uploaded 
-to the and uploaded to the Orthanc server. The Orthanc plugin observes the new study using the OnChange function, notifies OpenMRS to update the worklist status and marks 
-the associated procedure step as completed.
+reads the data and generates the worklist in DICOM format. The results can be viewed with the command like ``findscu -v -W -k "ScheduledProcedureStepSequence[0].Modality=CT" 127.0.0.1 4242``. 
+When the radiologist performs the procedure, a new DICOM study is created and uploaded to the Orthanc server. The Orthanc plugin observes the new study using the 
+OnChange function, notifies OpenMRS to update the worklist status and marks the associated procedure step as completed.
 
 # Preparing Othanc servers
 
