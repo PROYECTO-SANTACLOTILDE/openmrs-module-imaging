@@ -187,10 +187,10 @@ public class DicomStudyController {
 	 */
 	@RequestMapping(value="/linkstudies", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<Object> useLinkStudies(@RequestParam(value="configurationId") int configurationId,
-                                                        @RequestParam(value="fetchOption") String fetchOption,
-                                                        HttpServletRequest request,
-                                                        HttpServletResponse response ) {
+    public ResponseEntity<Object> getLinkStudies(@RequestParam(value="configurationId") int configurationId,
+                                                 @RequestParam(value="fetchOption") String fetchOption,
+                                                 HttpServletRequest request,
+                                                 HttpServletResponse response ) {
         OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
         OrthancConfiguration configuration = orthancConfigurationService.getOrthancConfiguration(configurationId);
         DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
