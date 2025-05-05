@@ -46,14 +46,9 @@ public class RequestProcedureController {
 	
 	protected Log log = LogFactory.getLog(this.getClass());
 	
-	/**
-	 * @param request
-	 * @param response
-	 * @return
-	 */
 	@RequestMapping(value = "/requests", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<Object> getRequestProcedures(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<Object> useRequestProcedures(HttpServletRequest request, HttpServletResponse response) {
         RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
         RequestProcedureStepService requestProcedureStepService = Context.getService(RequestProcedureStepService.class);
 
@@ -249,7 +244,7 @@ public class RequestProcedureController {
 	 */
 	@RequestMapping(value = "/patientrequests", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Transactional
-	public ResponseEntity<Object> getRequestsByPatient(@RequestParam("patient") String patientUuid,
+	public ResponseEntity<Object> useRequestsByPatient(@RequestParam("patient") String patientUuid,
 													   HttpServletRequest request, HttpServletResponse response ) {
 		RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
 		PatientService patientService = Context.getPatientService();
@@ -270,9 +265,9 @@ public class RequestProcedureController {
 	 */
 	@RequestMapping(value = "/requeststep", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Transactional
-	public ResponseEntity<Object> getProcedureStep(@RequestParam("requestId") int requestId,
-												 HttpServletRequest request,
-											  HttpServletResponse response ) {
+	public ResponseEntity<Object> useProcedureStep(@RequestParam("requestId") int requestId,
+												   HttpServletRequest request,
+												   HttpServletResponse response ) {
 		RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
 		RequestProcedureStepService requestProcedureStepService = Context.getService(RequestProcedureStepService.class);
 		RequestProcedure req = requestProcedureService.getRequestProcedure(requestId);

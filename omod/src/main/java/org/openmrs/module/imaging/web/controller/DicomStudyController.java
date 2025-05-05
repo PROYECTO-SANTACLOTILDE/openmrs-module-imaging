@@ -57,7 +57,7 @@ public class DicomStudyController {
 	 */
 	@RequestMapping(value = "/studies", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<Object> getStudies(@RequestParam(value="patient") String patientUuid, HttpServletRequest request,
+    public ResponseEntity<Object> useStudiesByPatient(@RequestParam(value="patient") String patientUuid, HttpServletRequest request,
                                              HttpServletResponse response ) {
         DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
         PatientService patientService = Context.getPatientService();
@@ -75,7 +75,7 @@ public class DicomStudyController {
 	 */
 	@RequestMapping(value = "/studiesbyconfig", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<Object> getStudiesByConfig(@RequestParam(value="configurationId") int configurationId,
+    public ResponseEntity<Object> useStudiesByConfig(@RequestParam(value="configurationId") int configurationId,
                                                      @RequestParam(value="patient") String patientUuid,
                                                      HttpServletRequest request, HttpServletResponse response ) {
         PatientService patientService = Context.getPatientService();
@@ -106,7 +106,7 @@ public class DicomStudyController {
 	 */
 	@RequestMapping(value = "/studyseries", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<Object> getStudySeries(@RequestParam(value = "studyId") int studyId,
+    public ResponseEntity<Object> useStudySeries(@RequestParam(value = "studyId") int studyId,
                                                      HttpServletRequest request, HttpServletResponse response ) {
         DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
         try {
@@ -131,7 +131,7 @@ public class DicomStudyController {
 	 */
 	@RequestMapping(value = "/studyinstances", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<Object> getStudyInstances(@RequestParam(value="studyId") int studyId,
+    public ResponseEntity<Object> useStudyInstances(@RequestParam(value="studyId") int studyId,
                                                     @RequestParam(value="seriesInstanceUID") String seriesInstanceUID,
                                                     HttpServletRequest request, HttpServletResponse response ) {
 
@@ -156,7 +156,7 @@ public class DicomStudyController {
 	 */
 	@RequestMapping(value = "/configurations", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<Object> getOrthancConfigurations(HttpServletRequest request, HttpServletResponse response ) {
+    public ResponseEntity<Object> useOrthancConfigurations(HttpServletRequest request, HttpServletResponse response ) {
         OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
         List<OrthancConfiguration> configurations = orthancConfigurationService.getAllOrthancConfigurations();
         List<OrthancConfigurationResponse> orthancConfigurationResponseList = OrthancConfigurationResponse.configurationResponseList(configurations);
@@ -187,7 +187,7 @@ public class DicomStudyController {
 	 */
 	@RequestMapping(value="/linkstudies", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<Object> getLinkStudies(@RequestParam(value="configurationId") int configurationId,
+    public ResponseEntity<Object> useLinkStudies(@RequestParam(value="configurationId") int configurationId,
                                                         @RequestParam(value="fetchOption") String fetchOption,
                                                         HttpServletRequest request,
                                                         HttpServletResponse response ) {
