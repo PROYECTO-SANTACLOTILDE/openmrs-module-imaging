@@ -51,7 +51,7 @@
 		OrthancConfiguration.hbm.xml
 		DicomStudy.hbm.xml
 		RequestProcedure.hbm.xml
-		RequestProcedureSteps.hbm.xml
+		RequestProcedureStep.hbm.xml
 	</mappingFiles>
 
 	<privilege>

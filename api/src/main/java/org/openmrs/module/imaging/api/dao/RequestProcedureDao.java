@@ -49,13 +49,24 @@ public class RequestProcedureDao {
 	}
 	
 	@SuppressWarnings("unchecked")
+	public List<RequestProcedure> getAllByStudyInstanceUID(String studyInstanceUID) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(RequestProcedure.class);
+		return criteria.add(Restrictions.eq("studyInstanceUID", studyInstanceUID)).list();
+	}
+	
+	@SuppressWarnings("unchecked")
 	public List<RequestProcedure> getByPatient(Patient patient) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(RequestProcedure.class);
 		return criteria.add(Restrictions.eq("mrsPatient", patient)).list();
 	}
 	
+	public RequestProcedure getByAccessionNumber(String accessionNumber) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(RequestProcedure.class);
+		return (RequestProcedure) criteria.add(Restrictions.eq("accessionNumber", accessionNumber));
+	}
+	
 	public void save(RequestProcedure requestProcedure) {
-		getSession().saveOrUpdate(requestProcedure);
+		getSession().save(requestProcedure);
 	}
 	
 	public void update(RequestProcedure requestProcedure) {

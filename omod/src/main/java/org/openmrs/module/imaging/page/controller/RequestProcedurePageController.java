@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.module.imaging.page.controller;
 
 import org.apache.commons.logging.Log;
@@ -8,9 +21,9 @@ import org.openmrs.module.imaging.ImagingConstants;
 import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.module.imaging.api.OrthancConfigurationService;
 import org.openmrs.module.imaging.api.RequestProcedureService;
-import org.openmrs.module.imaging.api.RequestProcedureStepsService;
+import org.openmrs.module.imaging.api.RequestProcedureStepService;
 import org.openmrs.module.imaging.api.worklist.RequestProcedure;
-import org.openmrs.module.imaging.api.worklist.RequestProcedureSteps;
+import org.openmrs.module.imaging.api.worklist.RequestProcedureStep;
 import org.openmrs.ui.framework.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,18 +41,18 @@ public class RequestProcedurePageController {
 	
 	public void get(Model model, @RequestParam(value = "patientId") Patient patient) {
 		RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
-		RequestProcedureStepsService requestProcedureStepsService = Context.getService(RequestProcedureStepsService.class);
+		RequestProcedureStepService requestProcedureStepService = Context.getService(RequestProcedureStepService.class);
 
 		List<RequestProcedure> requestProcedures = requestProcedureService.getRequestProcedureByPatient(patient);
-		Map<RequestProcedure, List<RequestProcedureSteps>> groupedSteps = new HashMap<>();
+		Map<RequestProcedure, List<RequestProcedureStep>> groupedStep = new HashMap<>();
 
 		for (RequestProcedure requestProcedure : requestProcedures) {
-			List<RequestProcedureSteps> stepsList = requestProcedureStepsService.getAllStepsByRequestProcedure(requestProcedure);
-			groupedSteps.put(requestProcedure, stepsList);
+			List<RequestProcedureStep> stepList = requestProcedureStepService.getAllStepByRequestProcedure(requestProcedure);
+			groupedStep.put(requestProcedure, stepList);
 		}
 
 		// Add to model
-		model.addAttribute("requestProcedureMap", groupedSteps);
+		model.addAttribute("requestProcedureMap", groupedStep);
 
 		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
 		model.addAttribute("orthancConfigurations", orthancConfigurationService.getAllOrthancConfigurations());
@@ -47,6 +60,16 @@ public class RequestProcedurePageController {
 		    Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_EDIT_WORKLIST));
 	}
 	
+	/**
+	 * @param redirectAttributes the redirect attributes
+	 * @param patient the openmrs patient
+	 * @param orthancConfigurationId the orthanc configuration ID
+	 * @param accessionNumber The accession number
+	 * @param studyInstanceUID The DICOM study instance UID
+	 * @param requestingPhysician The physician who creates the request
+	 * @param requestDescription The description of the request
+	 * @param priority The priority of the request
+	 */
 	@RequestMapping(value = "/module/imaging/newRequest.form", method = RequestMethod.POST)
 	public String newRequest(RedirectAttributes redirectAttributes, @RequestParam(value = "patientId") Patient patient,
 	        @RequestParam(value = "orthancConfigurationId") int orthancConfigurationId,
@@ -64,7 +87,7 @@ public class RequestProcedurePageController {
 			        .getOrthancConfiguration(orthancConfigurationId);
 			try {
 				RequestProcedure requestProcedure = new RequestProcedure();
-				requestProcedure.setStatus("Incomplete");
+				requestProcedure.setStatus("scheduled");
 				requestProcedure.setMrsPatient(patient);
 				requestProcedure.setOrthancConfiguration(orthancConfiguration);
 				requestProcedure.setAccessionNumber(accessionNumber);
@@ -88,6 +111,11 @@ public class RequestProcedurePageController {
 		return "redirect:/imaging/requestProcedure.page";
 	}
 	
+	/**
+	 * @param redirectAttributes The redirect attributes
+	 * @param requestProcedureId The request procedure ID
+	 * @param patient The openmrs patient
+	 */
 	@RequestMapping(value = "/module/imaging/deleteRequest.form", method = RequestMethod.POST)
 	public String deleteRequest(RedirectAttributes redirectAttributes,
 	        @RequestParam(value = "requestProcedureId") int requestProcedureId,
@@ -97,12 +125,10 @@ public class RequestProcedurePageController {
 		boolean hasPrivilege = Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_EDIT_WORKLIST);
 		if (hasPrivilege) {
 			RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
-			RequestProcedureStepsService requestProcedureStepsService = Context
-			        .getService(RequestProcedureStepsService.class);
+			RequestProcedureStepService requestProcedureStepService = Context.getService(RequestProcedureStepService.class);
 			RequestProcedure requestProcedure = requestProcedureService.getRequestProcedure(requestProcedureId);
-			List<RequestProcedureSteps> stepsList = requestProcedureStepsService
-			        .getAllStepsByRequestProcedure(requestProcedure);
-			if (stepsList.isEmpty()) {
+			List<RequestProcedureStep> stepList = requestProcedureStepService.getAllStepByRequestProcedure(requestProcedure);
+			if (stepList.isEmpty()) {
 				try {
 					requestProcedureService.deleteRequestProcedure(requestProcedure);
 					message = "Request procedure successfully deleted";
@@ -115,7 +141,7 @@ public class RequestProcedurePageController {
 				message = "Permission denied (you don't have the necessary privileges)";
 			}
 		} else {
-			message = "The request cannot be deleted because there are pending procedural steps.";
+			message = "The request cannot be deleted because there are pending procedural step.";
 		}
 		
 		redirectAttributes.addAttribute("patientId", patient.getId());
@@ -123,8 +149,19 @@ public class RequestProcedurePageController {
 		return "redirect:/imaging/requestProcedure.page";
 	}
 	
-	@RequestMapping(value = "/module/imaging/newProcedureSteps.form", method = RequestMethod.POST)
-	public String newProcedureSteps(RedirectAttributes redirectAttributes,
+	/**
+	 * @param redirectAttributes The redirect attributes
+	 * @param modality The modality of the study
+	 * @param scheduledReferringPhysician The physician who performs the step
+	 * @param requestedProcedureDescription The description of the request procedure
+	 * @param stepStartDate TThe creation date of the step
+	 * @param stepStartTime The creation time of the steps
+	 * @param stationName The station name
+	 * @param procedureStepLocation The location of the procedure step
+	 * @param patient The openmrs patient
+	 */
+	@RequestMapping(value = "/module/imaging/newProcedureStep.form", method = RequestMethod.POST)
+	public String newProcedureStep(RedirectAttributes redirectAttributes,
 	        @RequestParam(value = "requestProcedureId") int requestProcedureId,
 	        @RequestParam(value = "modality") String modality, @RequestParam(value = "aetTitle") String aetTitle,
 	        @RequestParam(value = "scheduledReferringPhysician") String scheduledReferringPhysician,
@@ -139,29 +176,30 @@ public class RequestProcedurePageController {
 		if (hasPrivilege) {
 			RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
 			RequestProcedure requestProcedure = requestProcedureService.getRequestProcedure(requestProcedureId);
-			RequestProcedureStepsService requestProcedureStepsService = Context
-			        .getService(RequestProcedureStepsService.class);
+			RequestProcedureStepService requestProcedureStepService = Context.getService(RequestProcedureStepService.class);
 			
 			try {
-				RequestProcedureSteps steps = new RequestProcedureSteps();
-				steps.setRequestProcedure(requestProcedure);
-				steps.setModality(modality);
-				steps.setAetTitle(aetTitle);
-				steps.setScheduledReferringPhysician(scheduledReferringPhysician);
-				steps.setRequestedProcedureDescription(requestedProcedureDescription);
-				steps.setStepStartDate(stepStartDate);
-				steps.setStepStartTime(stepStartTime);
-				steps.setStationName(stationName);
-				steps.setProcedureStepLocation(procedureStepLocation);
-				requestProcedureStepsService.newProcedureSteps(steps);
+				RequestProcedureStep step = new RequestProcedureStep();
+				step.setRequestProcedure(requestProcedure);
+				step.setModality(modality);
+				step.setAetTitle(aetTitle);
+				step.setScheduledReferringPhysician(scheduledReferringPhysician);
+				step.setRequestedProcedureDescription(requestedProcedureDescription);
+				step.setStepStartDate(stepStartDate);
+				step.setStepStartTime(stepStartTime);
+				step.setStationName(stationName);
+				step.setPerformedProcedureStepStatus("scheduled");
+				step.setProcedureStepLocation(procedureStepLocation);
+				requestProcedureStepService.newProcedureStep(step);
 				
-				requestProcedure.setStatus("Pending");
-				requestProcedureService.updateRequstStatus(requestProcedure);
+				requestProcedure.setStatus("progress");
+				requestProcedureService.updateRequestStatus(requestProcedure);
 				
-				message = "The steps of the request procedure are successfully created";
+				message = "The step of the request procedure are successfully created";
+				
 			}
 			catch (IOException e) {
-				message = "Create the request procedure steps failed. Reason: " + e.getMessage();
+				message = "Create the request procedure step failed. Reason: " + e.getMessage();
 			}
 		} else {
 			message = "Permission denied (you don't have the necessary privileges)";
@@ -172,17 +210,21 @@ public class RequestProcedurePageController {
 		return "redirect:/imaging/requestProcedure.page";
 	}
 	
-	@RequestMapping(value = "/module/imaging/deleteProcedureSteps.form", method = RequestMethod.POST)
-	public String deleteProcedureSteps(RedirectAttributes redirectAttributes, @RequestParam(value = "id") int stepsId,
+	/**
+	 * @param redirectAttributes The redirect attributes
+	 * @param stepId The procedure steps ID
+	 * @param patient The openmrs patient
+	 */
+	@RequestMapping(value = "/module/imaging/deleteProcedureStep.form", method = RequestMethod.POST)
+	public String deleteProcedureStep(RedirectAttributes redirectAttributes, @RequestParam(value = "id") int stepId,
 	        @RequestParam(value = "patientId") Patient patient) {
 		String message;
 		boolean hasPrivilege = Context.getAuthenticatedUser().hasPrivilege(ImagingConstants.PRIVILEGE_EDIT_WORKLIST);
 		if (hasPrivilege) {
-			RequestProcedureStepsService requestProcedureStepsService = Context
-			        .getService(RequestProcedureStepsService.class);
-			RequestProcedureSteps requestProcedureSteps = requestProcedureStepsService.getProcedureSteps(stepsId);
+			RequestProcedureStepService requestProcedureStepService = Context.getService(RequestProcedureStepService.class);
+			RequestProcedureStep requestProcedureStep = requestProcedureStepService.getProcedureStep(stepId);
 			try {
-				requestProcedureStepsService.deleteProcedureSteps(requestProcedureSteps);
+				requestProcedureStepService.deleteProcedureStep(requestProcedureStep);
 				message = "Request procedure successfully deleted";
 			}
 			catch (IOException e) {
@@ -197,5 +239,4 @@ public class RequestProcedurePageController {
 		redirectAttributes.addAttribute("message", message);
 		return "redirect:/imaging/requestProcedure.page";
 	}
-	
 }

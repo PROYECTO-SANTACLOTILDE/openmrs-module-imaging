@@ -212,6 +212,10 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		return dao.getByPatient(pt);
 	}
 	
+	public List<DicomStudy> getStudiesByConfiguration(OrthancConfiguration config) {
+		return dao.getByConfiguration(config);
+	}
+	
 	/**
 	 * @return the list dicom studies
 	 */
@@ -281,7 +285,6 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 	 * @throws IOException the IO exception
 	 */
 	private void fetchNewChangedStudies(OrthancConfiguration config, List<String> orthancStudyIds) throws IOException {
-		// TODO: don't open a new connection for every study
 		for (String orthancStudyId : orthancStudyIds) {
 			HttpURLConnection con = getOrthancConnection("GET", config.getOrthancBaseUrl(), "/studies/" + orthancStudyId,
 			    config.getOrthancUsername(), config.getOrthancPassword());
@@ -466,4 +469,5 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 			        + con.getResponseCode() + " " + con.getResponseMessage());
 		}
 	}
+	
 }

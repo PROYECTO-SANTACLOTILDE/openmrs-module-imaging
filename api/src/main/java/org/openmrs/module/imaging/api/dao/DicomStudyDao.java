@@ -23,7 +23,6 @@ import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.module.imaging.api.study.DicomStudy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -57,6 +56,12 @@ public class DicomStudyDao {
 	public List<DicomStudy> getByPatient(Patient patient) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(DicomStudy.class);
 		return criteria.add(Restrictions.eq("mrsPatient", patient)).list();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<DicomStudy> getByConfiguration(OrthancConfiguration config) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(DicomStudy.class);
+		return criteria.add(Restrictions.eq("orthancConfiguration", config)).list();
 	}
 	
 	public DicomStudy getByStudyInstanceUID(OrthancConfiguration config, String studyInstanceUID) {

@@ -11,23 +11,19 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.imaging.api.worklist;
+package org.openmrs.module.imaging.web.controller.ResponseModel;
 
-import org.openmrs.BaseOpenmrsData;
-import org.openmrs.Patient;
-import org.openmrs.module.imaging.OrthancConfiguration;
+import org.openmrs.module.imaging.api.worklist.RequestProcedure;
 
-public class RequestProcedure extends BaseOpenmrsData implements java.io.Serializable {
-	
-	private static final long serialVersionUID = 1;
+public class RequestProcedureResponse {
 	
 	private Integer id;
 	
 	private String status; //e.g. active, completed
 	
-	private OrthancConfiguration orthancConfiguration;
+	private OrthancConfigurationResponse orthancConfigurationResponse;
 	
-	private Patient mrsPatient;
+	private String mrsPatientUuid;
 	
 	private String accessionNumber;
 	
@@ -39,19 +35,23 @@ public class RequestProcedure extends BaseOpenmrsData implements java.io.Seriali
 	
 	private String priority;
 	
-	public RequestProcedure() {
-	}
-	
-	public RequestProcedure(String status, Patient mrsPatient, OrthancConfiguration config, String accessionNumber,
-	    String studyInstanceUID, String requestingPhysician, String requestDescription, String priority) {
-		this.status = status;
-		this.mrsPatient = mrsPatient;
-		this.orthancConfiguration = config;
-		this.accessionNumber = accessionNumber;
-		this.studyInstanceUID = studyInstanceUID;
-		this.requestingPhysician = requestingPhysician;
-		this.requestDescription = requestDescription;
-		this.priority = priority;
+	/**
+	 * @param requestProcedure
+	 * @return
+	 */
+	public static RequestProcedureResponse createResponse(RequestProcedure requestProcedure) {
+		RequestProcedureResponse response = new RequestProcedureResponse();
+		response.setId(requestProcedure.getId());
+		response.setStatus(requestProcedure.getStatus());
+		response.setMrsPatientUuid(requestProcedure.getMrsPatient().getUuid());
+		response.setAccessionNumber(requestProcedure.getAccessionNumber());
+		response.setStudyInstanceUID(requestProcedure.getStudyInstanceUID());
+		response.setRequestingPhysician(requestProcedure.getRequestingPhysician());
+		response.setRequestDescription(requestProcedure.getRequestingPhysician());
+		response.setPriority(requestProcedure.getPriority());
+		response.setOrthancConfiguration(OrthancConfigurationResponse.createResponse(requestProcedure
+		        .getOrthancConfiguration()));
+		return response;
 	}
 	
 	public Integer getId() {
@@ -70,20 +70,20 @@ public class RequestProcedure extends BaseOpenmrsData implements java.io.Seriali
 		this.status = status;
 	}
 	
-	public OrthancConfiguration getOrthancConfiguration() {
-		return orthancConfiguration;
+	public OrthancConfigurationResponse getOrthancConfiguration() {
+		return this.orthancConfigurationResponse;
 	}
 	
-	public void setOrthancConfiguration(OrthancConfiguration orthancConfiguration) {
-		this.orthancConfiguration = orthancConfiguration;
+	public void setOrthancConfiguration(OrthancConfigurationResponse orthancConfigurationResponse) {
+		this.orthancConfigurationResponse = orthancConfigurationResponse;
 	}
 	
-	public Patient getMrsPatient() {
-		return mrsPatient;
+	public String getMrsPatientUuid() {
+		return mrsPatientUuid;
 	}
 	
-	public void setMrsPatient(Patient mrsPatient) {
-		this.mrsPatient = mrsPatient;
+	public void setMrsPatientUuid(String mrsPatientUuid) {
+		this.mrsPatientUuid = mrsPatientUuid;
 	}
 	
 	public String getAccessionNumber() {
