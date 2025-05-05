@@ -83,7 +83,7 @@ button:hover {
     background-color: #0056b3;
 }
 
-.new-img, .expand-img, .refresh-img{
+.new-img, .expand-img {
     width: 26px;
     margin-left: 12px;
 }
