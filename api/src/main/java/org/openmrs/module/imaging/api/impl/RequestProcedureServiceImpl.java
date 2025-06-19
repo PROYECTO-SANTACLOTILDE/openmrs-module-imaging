@@ -17,6 +17,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.api.impl.BaseOpenmrsService;
+import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.module.imaging.api.RequestProcedureService;
 import org.openmrs.module.imaging.api.dao.RequestProcedureDao;
 import org.openmrs.module.imaging.api.study.DicomStudy;
@@ -110,4 +111,11 @@ public class RequestProcedureServiceImpl extends BaseOpenmrsService implements R
 		dao.update(requestProcedure);
 	}
 	
+	/**
+	 * @param orthancConfiguration the orthanc configuration
+	 */
+	@Override
+	public List<RequestProcedure> getRequestProcedureByConfig(OrthancConfiguration orthancConfiguration) {
+		return dao.getRequestProcedureByConfig(orthancConfiguration);
+	}
 }

@@ -18,6 +18,7 @@ import org.hibernate.criterion.Restrictions;
 import org.openmrs.Patient;
 import org.openmrs.api.db.hibernate.DbSession;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
+import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.module.imaging.api.worklist.RequestProcedure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,5 +76,11 @@ public class RequestProcedureDao {
 	
 	public void remove(RequestProcedure requestProcedure) {
 		getSession().delete(requestProcedure);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<RequestProcedure> getRequestProcedureByConfig(OrthancConfiguration orthancConfiguration) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(RequestProcedure.class);
+		return criteria.add(Restrictions.eq("orthancConfiguration", orthancConfiguration)).list();
 	}
 }

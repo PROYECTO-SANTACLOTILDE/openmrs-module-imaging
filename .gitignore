@@ -27,3 +27,4 @@ omod/target/*
 #############
 
 openmrs-runtime.properties
+velocity.log

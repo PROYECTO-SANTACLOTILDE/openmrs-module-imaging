@@ -77,9 +77,4 @@ public class DicomStudyDao {
 	public void remove(DicomStudy study) {
 		getSession().delete(study);
 	}
-	
-	public boolean hasStudy(OrthancConfiguration config) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(DicomStudy.class);
-		return !criteria.add(Restrictions.eq("orthancConfiguration", config)).list().isEmpty();
-	}
 }

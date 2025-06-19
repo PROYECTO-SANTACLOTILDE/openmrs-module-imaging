@@ -130,15 +130,6 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 	}
 	
 	/**
-	 * @param orthancConfiguration the orthanc configuration
-	 * @return Is there study in the database
-	 */
-	@Override
-	public boolean hasStudy(OrthancConfiguration orthancConfiguration) {
-		return dao.hasStudy(orthancConfiguration);
-	}
-	
-	/**
 	 * @param config the configuration
 	 * @throws IOException the IO exception
 	 */

@@ -44,7 +44,7 @@ ${param["message"]?.getAt(0) ?: ""}
                 <th>${ ui.message("imaging.app.url.label")}</th>
                 <th>${ ui.message("imaging.app.proxyUrl.label")}</th>
                 <th>${ ui.message("imaging.app.username.label")}</th>
-                <th style="width: max-content;">${ ui.message("coreapps.actions") }</th>
+                <th style="width: max-content;">${ ui.message("imaging.delete.action") }</th>
             </tr>
         </thead>
         <tbody>
@@ -62,7 +62,8 @@ ${param["message"]?.getAt(0) ?: ""}
                     <td>
                        <% if (privilegeManagerOrthancConfiguration) { %>
                             <a class="delete-configuration"
-                               onclick="togglePopupDeleteOrthancConfiguration('${orthancConfiguration.id}')"><i class="icon-remove delete-action"></i>
+                               onclick="togglePopupDeleteOrthancConfiguration('${orthancConfiguration.id}')">
+                               <img class="delete-img" alt="Show the procedure step" src="${ ui.resourceLink("imaging", "images/delete.png")}"/></a>
                             </a>
                        <% } %>
                     </td>
