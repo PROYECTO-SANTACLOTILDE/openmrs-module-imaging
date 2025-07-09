@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<dataset>
+    <imaging_OrthancConfiguration
+            orthancBaseUrl="http://localhost:8052"
+            orthancProxyUrl=""
+            orthancUsername="orthanc"
+            orthancPassword="orthanc"
+            lastChangedIndex="1"
+    />
+
+    <!-- RequestProcedure table -->
+    <imaging_RequestProcedure
+            id="1"
+            status="scheduled"
+            patient_id="1"
+            orthancConfigurationId="1"
+            accessionNumber="ACC1001"
+            studyInstanceUID="1.2.3.1001"
+            requestingPhysician="Dr. Imaging"
+            requestDescription="Head MRI"
+            priority="High"/>
+
+    <imaging_RequestProcedure
+            id="2"
+            status="scheduled"
+            patient_id="2"
+            orthancConfigurationId="1"
+            accessionNumber="ACC1002"
+            studyInstanceUID="1.2.3.1002"
+            requestingPhysician="Dr. Imaging"
+            requestDescription="Head MRI"
+            priority="High"/>
+</dataset>

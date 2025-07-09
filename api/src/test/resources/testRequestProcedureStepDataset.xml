@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<dataset>
+    <imaging_RequestProcedureStep
+            requestProcedureId="1"
+            modality="MRI"
+            aetTitle="MRI_AET"
+            scheduledReferringPhysician="Dr. Imaging"
+            requestedProcedureDescription="Head Scan"
+            stepStartDate="2025-07-03"
+            stepStartTime="08:30"
+            performedProcedureStepStatus="scheduled"
+            stationName="MRI Station"
+            procedureStepLocation="Radiology"/>
+</dataset>

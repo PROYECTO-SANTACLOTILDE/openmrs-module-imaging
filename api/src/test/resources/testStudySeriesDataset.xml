@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dateset>
+    <DicomSeries>
+        <SeriesInstanceUID>1.2.840.113619.2.55.3.604688346.807.1599674739.101</SeriesInstanceUID>
+        <OrthancSeriesUID>series-uid-001</OrthancSeriesUID>
+        <OrthancConfiguration>
+            <BaseUrl>http://localhost:8042</BaseUrl>
+            <Username>user1</Username>
+            <Password>pass1</Password>
+        </OrthancConfiguration>
+        <SeriesDescription>Brain MRI T1</SeriesDescription>
+        <SeriesNumber>1</SeriesNumber>
+        <Modality>MR</Modality>
+        <SeriesDate>2025-07-04</SeriesDate>
+        <SeriesTime>09:00:00</SeriesTime>
+    </DicomSeries>
+
+    <DicomSeries>
+    <SeriesInstanceUID>1.2.840.113619.2.55.3.604688346.807.1599674740.202</SeriesInstanceUID>
+    <OrthancSeriesUID>series-uid-002</OrthancSeriesUID>
+    <OrthancConfiguration>
+        <BaseUrl>http://localhost:8042</BaseUrl>
+        <Username>user2</Username>
+        <Password>pass2</Password>
+    </OrthancConfiguration>
+    <SeriesDescription>Chest CT</SeriesDescription>
+    <SeriesNumber>2</SeriesNumber>
+    <Modality>CT</Modality>
+    <SeriesDate>2025-07-04</SeriesDate>
+    <SeriesTime>10:15:00</SeriesTime>
+    </DicomSeries>
+
+    <DicomSeries>
+    <SeriesInstanceUID>1.2.840.113619.2.55.3.604688346.807.1599674741.303</SeriesInstanceUID>
+    <OrthancSeriesUID>series-uid-003</OrthancSeriesUID>
+    <OrthancConfiguration>
+        <BaseUrl>http://localhost:8042</BaseUrl>
+        <Username>user3</Username>
+        <Password>pass3</Password>
+    </OrthancConfiguration>
+    <SeriesDescription>Abdomen Ultrasound</SeriesDescription>
+    <SeriesNumber>3</SeriesNumber>
+    <Modality>US</Modality>
+    <SeriesDate>2025-07-04</SeriesDate>
+    <SeriesTime>11:45:00</SeriesTime>
+    </DicomSeries>
+</dateset>

@@ -17,6 +17,7 @@ package org.openmrs.module.imaging.api;
 import org.openmrs.Patient;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.imaging.OrthancConfiguration;
+import org.openmrs.module.imaging.api.dao.DicomStudyDao;
 import org.openmrs.module.imaging.api.study.DicomInstance;
 import org.openmrs.module.imaging.api.study.DicomSeries;
 import org.openmrs.module.imaging.api.study.DicomStudy;
@@ -41,6 +42,8 @@ import java.util.List;
 @Service
 @Transactional
 public interface DicomStudyService extends OpenmrsService {
+	
+	DicomStudyDao getDao();
 	
 	List<DicomStudy> getStudiesOfPatient(Patient pt);
 	

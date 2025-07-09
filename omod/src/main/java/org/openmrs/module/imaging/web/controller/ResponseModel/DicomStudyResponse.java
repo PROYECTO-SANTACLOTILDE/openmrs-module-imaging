@@ -13,7 +13,6 @@
  */
 package org.openmrs.module.imaging.web.controller.ResponseModel;
 
-import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.module.imaging.api.study.DicomStudy;
 
 import java.util.List;
