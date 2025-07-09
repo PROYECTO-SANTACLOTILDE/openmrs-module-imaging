@@ -75,7 +75,7 @@
                                  referencedColumnNames="id"/>
     </changeSet>
 
-    <changeSet id="289" author="weisadre">
+    <changeSet id="300" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_RequestProcedure"/>
@@ -120,7 +120,7 @@
                                  referencedTableName="imaging_OrthancConfiguration"
                                  referencedColumnNames="id"/>
     </changeSet>
-    <changeSet id="290" author="weisadre">
+    <changeSet id="301" author="weisadre">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="${project.parent.artifactId}_RequestProcedureStep"/>

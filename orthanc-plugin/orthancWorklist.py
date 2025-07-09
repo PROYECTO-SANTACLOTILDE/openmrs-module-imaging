@@ -17,11 +17,6 @@ import json
 import orthanc
 import requests
 
-## Typical configuration:
-# worklistUsername = "admin"
-# worklistPassword =  "Admin123"
-# getWorklistURL = "http://localhost:7070/openmrs/ws/rest/v1/imaging/worklist/requests"
-# updateRequestStatusURL = "http://localhost:7070/openmrs/ws/rest/v1/imaging/worklist/updaterequeststatus"
 
 def OnWorkList(answers, query, issuerAet, calledAet):
     # Get query in json format and write it to log

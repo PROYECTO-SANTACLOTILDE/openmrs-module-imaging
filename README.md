@@ -9,7 +9,7 @@ simplifying the management of imaging data.
 
 Watch the video demonstration of the module here: [![Watch the video]()](https://youtu.be/no3WNaq4Q_M)
 
-![worklist-workflow.png](omod/src/main/webapp/resources/images/worklist-workflow.png)
+![worklist-workflow.png](omod/src/main/webapp/resources/images/worklist_workflow.png)
 
 This diagram illustrates the workflow of the worklist. A radiologist wants to view the worklist generated in OpenMRS via C-FIND Rest API
 URL. The Orthanc server forwards the request to OpenMRS. OpenMRS processes the request and returns the worklist in JSON format. The Orthanc plugin function ``Onworklsit``

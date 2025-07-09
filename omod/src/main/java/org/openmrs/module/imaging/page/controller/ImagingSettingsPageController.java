@@ -20,6 +20,10 @@ import org.openmrs.module.imaging.ImagingConstants;
 import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.module.imaging.api.DicomStudyService;
 import org.openmrs.module.imaging.api.OrthancConfigurationService;
+import org.openmrs.module.imaging.api.RequestProcedureService;
+import org.openmrs.module.imaging.api.RequestProcedureStepService;
+import org.openmrs.module.imaging.api.worklist.RequestProcedure;
+import org.openmrs.module.imaging.api.worklist.RequestProcedureStep;
 import org.openmrs.ui.framework.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
+import java.util.List;
 
 @Controller
 public class ImagingSettingsPageController {
@@ -91,13 +96,29 @@ public class ImagingSettingsPageController {
 	public String deleteConfiguration(RedirectAttributes redirectAttributes, @RequestParam(value = "id") int id) {
 		OrthancConfigurationService orthancConfigureService = Context.getService(OrthancConfigurationService.class);
 		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
+		RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
 		OrthancConfiguration config = orthancConfigureService.getOrthancConfiguration(id);
-		boolean hasStudy = dicomStudyService.hasStudy(config);
-		if (hasStudy) {
-			redirectAttributes.addAttribute("message",
-			    "The configuration can not be deleted because there is at least one study referring to it");
+		
+		if (config == null) {
+			redirectAttributes.addFlashAttribute("error", "Configuration not found.");
+			return "redirect:/imaging/imagingSettings.page";
+		}
+		
+		boolean hasStudy = !dicomStudyService.getStudiesByConfiguration(config).isEmpty();
+		List<RequestProcedure> requestProcedureList = requestProcedureService.getRequestProcedureByConfig(config);
+		if (hasStudy || !requestProcedureList.isEmpty()) {
+			redirectAttributes
+			        .addAttribute("message",
+			            "The configuration can not be deleted because there is at least one study or request procedure referring to it");
 		} else {
-			orthancConfigureService.removeOrthancConfiguration(orthancConfigureService.getOrthancConfiguration(id));
+			try {
+				orthancConfigureService.removeOrthancConfiguration(config);
+				redirectAttributes.addFlashAttribute("message", "Configuration deleted successfully.");
+			}
+			catch (Exception e) {
+				log.error("Failed to delete configuration with ID " + id, e);
+				redirectAttributes.addFlashAttribute("error", "An error occurred while deleting the configuration.");
+			}
 		}
 		return "redirect:/imaging/imagingSettings.page";
 	}

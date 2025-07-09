@@ -57,8 +57,6 @@ public interface DicomStudyService extends OpenmrsService {
 	
 	int testOrthancConnection(String url, String username, String password) throws IOException;
 	
-	boolean hasStudy(OrthancConfiguration orthancConfiguration);
-	
 	void fetchAllStudies() throws IOException;
 	
 	void fetchAllStudies(OrthancConfiguration orthancConfiguration) throws IOException;
