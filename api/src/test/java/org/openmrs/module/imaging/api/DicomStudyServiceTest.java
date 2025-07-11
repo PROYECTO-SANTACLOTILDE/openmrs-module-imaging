@@ -22,19 +22,18 @@ public class DicomStudyServiceTest extends BaseModuleContextSensitiveTest {
 		if (dicomStudyService == null) {
 			dicomStudyService = Context.getService(DicomStudyService.class);
 		}
-		
 		executeDataSet(DICOMSTUDY_TEST_DATASET);
 	}
 	
 	@Test
 	public void getStudiesOfPatient_shouldGetAllStudyByPatient() throws Exception {
-		Patient patient = Context.getPatientService().getPatient(2);
+		Patient patient = Context.getPatientService().getPatient(1);
 		List<DicomStudy> studies = dicomStudyService.getStudiesOfPatient(patient);
 		assertEquals(patient, studies.get(0).getMrsPatient());
 		assertEquals(1, studies.size());
 		
 		// get a patient without dicom study
-		patient = Context.getPatientService().getPatient(3);
+		patient = Context.getPatientService().getPatient(2);
 		studies = dicomStudyService.getStudiesOfPatient(patient);
 		assertEquals(0, studies.size());
 	}

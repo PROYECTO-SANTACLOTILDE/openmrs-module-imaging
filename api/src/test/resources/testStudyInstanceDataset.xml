@@ -1,74 +1,57 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <dataset>
-    <imaging_DicomInstances>
-        <imaging_DicomInstance>
-            <sopInstanceUID>1.2.840.113619.2.55.3.604688346.807.1599674742.001</sopInstanceUID>
-            <orthancInstanceUID>instance-uid-001</orthancInstanceUID>
-            <instanceNumber>1</instanceNumber>
-            <imagePositionPatient>0\0\0</imagePositionPatient>
-            <numberOfFrames>1</numberOfFrames>
-            <orthancConfiguration>
-                <orthancBaseUrl>http://localhost:8042</orthancBaseUrl>
-                <orthancUsername>viewer1</orthancUsername>
-                <orthancPassword>viewerpass1</orthancPassword>
-                <lastChangedIndex>-1</lastChangedIndex>
-            </orthancConfiguration>
-        </imaging_DicomInstance>
+    <imaging_OrthancConfiguration
+            ID="1"
+            orthancBaseUrl="http://localhost:8052"
+            orthancProxyUrl=""
+            orthancUsername="orthanc"
+            orthancPassword="orthanc"
+            lastChangedIndex="-1" />
 
-        <imaging_DicomInstance>
-            <sopInstanceUID>1.2.840.113619.2.55.3.604688346.807.1599674742.002</sopInstanceUID>
-            <orthancInstanceUID>instance-uid-002</orthancInstanceUID>
-            <instanceNumber>2</instanceNumber>
-            <imagePositionPatient>0\0\5</imagePositionPatient>
-            <numberOfFrames>1</numberOfFrames>
-            <orthancConfiguration>
-                <orthancBaseUrl>http://localhost:8042</orthancBaseUrl>
-                <orthancUsername>viewer2</orthancUsername>
-                <orthancPassword>viewerpass2</orthancPassword>
-                <lastChangedIndex>-1</lastChangedIndex>
-            </orthancConfiguration>
-        </imaging_DicomInstance>
+    <imaging_DicomInstance
+            ID="1"
+            sopInstanceUID="SOPinstanceUID111"
+            orthancInstanceUID="instance-uid-001"
+            instanceNumber="1"
+            imagePositionPatient="10\\10\\10"
+            numberOfFrames="10"
+            orthancConfiguration=""
+    />
 
-        <imaging_DicomInstance>
-            <sopInstanceUID>1.2.840.113619.2.55.3.604688346.807.1599674742.003</sopInstanceUID>
-            <orthancInstanceUID>instance-uid-003</orthancInstanceUID>
-            <instanceNumber>3</instanceNumber>
-            <imagePositionPatient>0\0\10</imagePositionPatient>
-            <numberOfFrames>1</numberOfFrames>
-            <orthancConfiguration>
-                <orthancBaseUrl>http://localhost:8042</orthancBaseUrl>
-                <orthancUsername>viewer3</orthancUsername>
-                <orthancPassword>viewerpass3</orthancPassword>
-                <lastChangedIndex>-1</lastChangedIndex>
-            </orthancConfiguration>
-        </imaging_DicomInstance>
+    <imaging_DicomInstance
+            ID="2"
+            sopInstanceUID="SOPinstanceUID222"
+            orthancInstanceUID="instance-uid-002"
+            instanceNumber="2"
+            imagePositionPatient="10\\10\\5"
+            numberOfFrames="10"
+            orthancConfiguration=""
+    />
 
-        <imaging_DicomInstance>
-            <sopInstanceUID>1.2.840.113619.2.55.3.604688346.807.1599674742.004</sopInstanceUID>
-            <orthancInstanceUID>instance-uid-004</orthancInstanceUID>
-            <instanceNumber>4</instanceNumber>
-            <imagePositionPatient>0\0\15</imagePositionPatient>
-            <numberOfFrames>1</numberOfFrames>
-            <orthancConfiguration>
-                <orthancBaseUrl>http://localhost:8042</orthancBaseUrl>
-                <orthancUsername>viewer4</orthancUsername>
-                <orthancPassword>viewerpass4</orthancPassword>
-                <lastChangedIndex>-1</lastChangedIndex>
-            </orthancConfiguration>
-        </imaging_DicomInstance>
+    <imaging_DicomInstance
+            ID = "3"
+            sopInstanceUID="SOPinstanceUID333"
+            instanceNumber="3"
+            imagePositionPatient="10\\10\\10"
+            numberOfFrames="10"
+            orthancConfiguration=""
+    />
 
-        <imaging_DicomInstance>
-            <sopInstanceUID>1.2.840.113619.2.55.3.604688346.807.1599674742.005</sopInstanceUID>
-            <orthancInstanceUID>instance-uid-005</orthancInstanceUID>
-            <instanceNumber>5</instanceNumber>
-            <imagePositionPatient>0\0\20</imagePositionPatient>
-            <numberOfFrames>1</numberOfFrames>
-            <orthancConfiguration>
-                <orthancBaseUrl>http://localhost:8042</orthancBaseUrl>
-                <orthancUsername>viewer5</orthancUsername>
-                <orthancPassword>viewerpass5</orthancPassword>
-                <lastChangedIndex>-1</lastChangedIndex>
-            </orthancConfiguration>
-        </imaging_DicomInstance>
-    </imaging_DicomInstances>
+    <imaging_DicomInstance
+            ID = "4"
+            sopInstanceUID="SOPinstanceUID44"
+            instanceNumber="4"
+            imagePositionPatient="10\\10\\20"
+            numberOfFrames="10"
+            orthancConfiguration=""
+        />
+
+    <imaging_DicomInstance
+            ID = "5"
+            sopInstanceUID="SOPinstanceUID44"
+            instanceNumber="5"
+            imagePositionPatient="10\\10\\40"
+            numberOfFrames="10"
+            orthancConfiguration=""
+    />
 </dataset>

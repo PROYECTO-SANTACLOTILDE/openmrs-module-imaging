@@ -39,20 +39,24 @@
 			<artifactId>openmrs-test</artifactId>
 			<type>pom</type>
 			<scope>test</scope>
-<!--			<exclusions>-->
+			<exclusions>
 <!--				<exclusion>-->
 <!--					<artifactId>commons-logging</artifactId>-->
 <!--					<groupId>commons-logging</groupId>-->
 <!--				</exclusion>-->
-<!--				<exclusion>-->
-<!--					<groupId>org.powermock</groupId>-->
-<!--					<artifactId>powermock-module-junit4</artifactId>-->
-<!--				</exclusion>-->
-<!--				<exclusion>-->
-<!--					<groupId>org.mockito</groupId>-->
-<!--					<artifactId>mockito-all</artifactId>-->
-<!--				</exclusion>-->
-<!--			</exclusions>-->
+				<exclusion>
+					<groupId>org.powermock</groupId>
+					<artifactId>powermock-module-junit4</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.powermock</groupId>
+					<artifactId>powermock-api-mockito2</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.powermock</groupId>
+					<artifactId>powermock-api-mockito</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 <!--		<dependency>-->
 <!--			<groupId>org.mockito</groupId>-->
@@ -67,8 +71,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>9</source>
-					<target>9</target>
+					<source>8</source>
+					<target>8</target>
 				</configuration>
 			</plugin>
 		</plugins>
