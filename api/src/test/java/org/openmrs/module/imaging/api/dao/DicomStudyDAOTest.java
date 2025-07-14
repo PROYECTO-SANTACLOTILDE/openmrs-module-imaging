@@ -46,29 +46,29 @@ public class DicomStudyDAOTest extends BaseModuleContextSensitiveTest {
 		assertFalse(allStudies.isEmpty());
 		assertEquals(2, allStudies.size());
 	}
-
+	
 	@Test
 	public void testGetByConfiguration_shouldReturnStudies() throws Exception {
 		OrthancConfigurationService configService = Context.getService(OrthancConfigurationService.class);
 		OrthancConfiguration config = configService.getOrthancConfiguration(1);
-
+		
 		List<DicomStudy> result = dicomStudyDao.getByConfiguration(config);
 		assertNotNull(result);
 		assertEquals("studyInstanceUID555", result.get(0).getStudyInstanceUID());
 		assertEquals("orthancUID555", result.get(0).getOrthancStudyUID());
 	}
-
+	
 	@Test
 	public void testGetByStudyInstanceUID_shouldReturnCorrectStudy() throws Exception {
 		OrthancConfigurationService configService = Context.getService(OrthancConfigurationService.class);
 		OrthancConfiguration config = configService.getOrthancConfiguration(1);
-
+		
 		DicomStudy study = dicomStudyDao.getByStudyInstanceUID(config, "studyInstanceUID555");
 		assertNotNull(study);
 		assertEquals("studyInstanceUID555", study.getStudyInstanceUID());
 		assertEquals("orthancUID555", study.getOrthancStudyUID());
 		assertEquals("John Doe", study.getPatientName());
-
+		
 		DicomStudy secondStudy = dicomStudyDao.getByStudyInstanceUID(config, "studyInstanceUID444");
 		assertNotNull(secondStudy);
 		assertEquals("studyInstanceUID444", secondStudy.getStudyInstanceUID());
@@ -78,45 +78,43 @@ public class DicomStudyDAOTest extends BaseModuleContextSensitiveTest {
 	
 	@Test
 	public void testSave_shouldPersistStudy() throws Exception {
-		OrthancConfigurationService configService =
-				Context.getService(OrthancConfigurationService.class);
+		OrthancConfigurationService configService = Context.getService(OrthancConfigurationService.class);
 		OrthancConfiguration config = configService.getOrthancConfiguration(1);
-
+		
 		Patient patient = Context.getPatientService().getPatient(1);
-
+		
 		DicomStudy newStudy = new DicomStudy();
 		newStudy.setMrsPatient(patient);
 		newStudy.setStudyInstanceUID("studyInstanceUID777");
 		newStudy.setOrthancStudyUID("orthancUID777");
 		newStudy.setStudyDescription("Test_New_Study");
 		newStudy.setOrthancConfiguration(config);
-
+		
 		dicomStudyDao.save(newStudy);
-
+		
 		DicomStudy retrieved = dicomStudyDao.getByStudyInstanceUID(config, "studyInstanceUID777");
 		assertNotNull(retrieved);
 		assertEquals("Test_New_Study", retrieved.getStudyDescription());
 		assertEquals("orthancUID777", retrieved.getOrthancStudyUID());
-
+		
 		List<DicomStudy> allStudies = dicomStudyDao.getAll();
 		assertEquals(3, allStudies.size());
 	}
 	
 	@Test
 	public void testRemove_shouldDeleteStudy() throws Exception {
-		OrthancConfigurationService configService =
-				Context.getService(OrthancConfigurationService.class);
+		OrthancConfigurationService configService = Context.getService(OrthancConfigurationService.class);
 		OrthancConfiguration config = configService.getOrthancConfiguration(1);
-
+		
 		List<DicomStudy> allStudies = dicomStudyDao.getAll();
 		assertEquals(2, allStudies.size());
-
+		
 		DicomStudy study = dicomStudyDao.getByStudyInstanceUID(config, "studyInstanceUID444");
 		dicomStudyDao.remove(study);
-
+		
 		DicomStudy deleted = dicomStudyDao.getByStudyInstanceUID(config, "studyInstanceUID444");
 		assertNull(deleted);
-
+		
 		List<DicomStudy> studies = dicomStudyDao.getAll();
 		assertEquals(1, studies.size());
 	}

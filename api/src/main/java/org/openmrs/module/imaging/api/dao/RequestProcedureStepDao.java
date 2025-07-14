@@ -29,8 +29,7 @@ import java.util.List;
 public class RequestProcedureStepDao {
 	
 	private static final Logger log = LoggerFactory.getLogger(RequestProcedureStepDao.class);
-	
-	//	@Autowired
+
 	DbSessionFactory sessionFactory;
 	
 	private DbSession getSession() {

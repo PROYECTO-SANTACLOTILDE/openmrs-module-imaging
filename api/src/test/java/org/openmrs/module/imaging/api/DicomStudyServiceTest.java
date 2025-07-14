@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.Patient;
+import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.module.imaging.api.study.DicomStudy;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 
@@ -26,16 +27,20 @@ public class DicomStudyServiceTest extends BaseModuleContextSensitiveTest {
 	}
 	
 	@Test
-	public void getStudiesOfPatient_shouldGetAllStudyByPatient() throws Exception {
+	public void testGetStudiesOfPatient_shouldGetAllStudyByPatient() throws Exception {
 		Patient patient = Context.getPatientService().getPatient(1);
 		List<DicomStudy> studies = dicomStudyService.getStudiesOfPatient(patient);
 		assertEquals(patient, studies.get(0).getMrsPatient());
-		assertEquals(1, studies.size());
+		assertEquals(2, studies.size());
 		
 		// get a patient without dicom study
 		patient = Context.getPatientService().getPatient(2);
 		studies = dicomStudyService.getStudiesOfPatient(patient);
 		assertEquals(0, studies.size());
 	}
-	
+
+//	@Test
+//	public void testGetStudiesByConfiguration_shouldReturnStudiesOfConfiguration(OrthancConfiguration config) {
+//
+//	}
 }

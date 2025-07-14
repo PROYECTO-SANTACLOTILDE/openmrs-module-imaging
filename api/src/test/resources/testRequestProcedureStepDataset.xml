@@ -5,6 +5,10 @@
     <person_name person_name_id="82" preferred="true" person_id="1" prefix="Mr." given_name="Adam" middle_name="Benedict" family_name="Franklin" family_name2="" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" void_reason="" uuid="adbb3485-cbaa-4311-a7b4-d2defa4b9ad1"/>
     <patient patient_id="1" creator="1" date_created="2014-08-28 15:54:48.0" changed_by="1" voided="false" void_reason=""/>
 
+    <person person_id="2" gender="F" birthdate="1990-05-12 10:30:00.0" birthdate_estimated="0" dead="false" creator="1" date_created="2015-01-15 09:45:00.0" voided="false" uuid="f57c3e50-2e92-4e0a-bd9d-9c32224d9589"/>
+    <person_name person_name_id="83" preferred="true" person_id="2" prefix="Ms." given_name="Emily" middle_name="Rose" family_name="Thompson" family_name2="" creator="1" date_created="2015-01-15 09:45:00.0" voided="false" void_reason="" uuid="0c1edb82-66df-4d8c-8a95-b80fdf8720f6"/>
+    <patient patient_id="2" creator="1" date_created="2015-01-15 09:45:00.0" changed_by="1" voided="false" void_reason=""/>
+
     <imaging_OrthancConfiguration
             ID="1"
             orthancBaseUrl="http://localhost:8052"
@@ -13,6 +17,18 @@
             lastChangedIndex="-1"
     />
 
+    <imaging_DicomStudy
+            ID="1"
+            studyInstanceUID="studyUID555"
+            orthancStudyUID="orthancUID555"
+            patientName="UID555_patient"
+            studyDate="2025-07-10"
+            studyTime="14:35:00"
+            orthancConfigurationId="1"
+            patient_id="1"
+            studyDescription="CT Head without contrast"
+            gender="F" />
+
     <!-- RequestProcedure table -->
     <imaging_RequestProcedure
             ID = "1"
@@ -20,18 +36,18 @@
             patient_id="1"
             orthancConfigurationId="1"
             accessionNumber="ACC1001"
-            studyInstanceUID="1.2.3.1001"
+            studyInstanceUID="studyUID555"
             requestingPhysician="Dr. Imaging"
             requestDescription="Head MRI"
             priority="High"/>
 
 <!--  Request procedure step-->
     <imaging_RequestProcedureStep
-            ID = "2"
+            ID = "1"
             requestProcedureId="1"
             modality="CT"
             aetTitle="CT_AET"
-            scheduledReferringPhysician="Dr. Imaging"
+            scheduledReferringPhysician="Dr. Physician1"
             requestedProcedureDescription="Head Scan"
             stepStartDate="2024-07-04"
             stepStartTime="09:30"
@@ -39,11 +55,11 @@
             stationName="CT Station"
             procedureStepLocation="Radiology"/>
     <imaging_RequestProcedureStep
-            ID = "3"
+            ID = "2"
             requestProcedureId="1"
             modality="CT"
-            aetTitle="CT_AET"
-            scheduledReferringPhysician="Dr. Imaging"
+            aetTitle="CT_AET_3"
+            scheduledReferringPhysician="Dr. Physician2"
             requestedProcedureDescription="Head Scan"
             stepStartDate="2024-07-03"
             stepStartTime="09:45"
@@ -51,12 +67,12 @@
             stationName="CT Station"
             procedureStepLocation="Radiology"/>
     <imaging_RequestProcedureStep
-            ID = "1"
+            ID = "3"
             requestProcedureId="1"
             modality="MRI"
             aetTitle="MRI_AET"
-            scheduledReferringPhysician="Dr. Imaging"
-            requestedProcedureDescription="Head Scan"
+            scheduledReferringPhysician="Dr. Physician3"
+            requestedProcedureDescription="Chest Scan"
             stepStartDate="2025-07-03"
             stepStartTime="10:30"
             performedProcedureStepStatus="scheduled"

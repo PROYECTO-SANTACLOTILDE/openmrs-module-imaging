@@ -7,11 +7,11 @@
         orthancPassword="orthanc"
         lastChangedIndex="-1"/>
 
-    <imaging_OrthancConfiguration
-            ID="2"
-            orthancBaseUrl="http://localhost:8062"
-            orthancProxyUrl=""
-            orthancUsername="orthanc"
-            orthancPassword="orthanc"
-            lastChangedIndex="-1"/>
+<!--    <imaging_OrthancConfiguration-->
+<!--            ID="2"-->
+<!--            orthancBaseUrl="http://localhost:8062"-->
+<!--            orthancProxyUrl=""-->
+<!--            orthancUsername="orthanc"-->
+<!--            orthancPassword="orthanc"-->
+<!--            lastChangedIndex="-1"/>-->
 </dataset>

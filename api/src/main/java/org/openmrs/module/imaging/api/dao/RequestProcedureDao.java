@@ -63,7 +63,7 @@ public class RequestProcedureDao {
 	
 	public RequestProcedure getByAccessionNumber(String accessionNumber) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(RequestProcedure.class);
-		return (RequestProcedure) criteria.add(Restrictions.eq("accessionNumber", accessionNumber));
+		return (RequestProcedure) criteria.add(Restrictions.eq("accessionNumber", accessionNumber)).uniqueResult();
 	}
 	
 	public void save(RequestProcedure requestProcedure) {
