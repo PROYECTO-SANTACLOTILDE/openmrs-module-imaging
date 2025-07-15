@@ -23,6 +23,7 @@ import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.module.imaging.api.DicomStudyService;
 import org.openmrs.module.imaging.api.OrthancConfigurationService;
+import org.openmrs.module.imaging.api.client.OrthancHttpClient;
 import org.openmrs.module.imaging.api.dao.DicomStudyDao;
 import org.openmrs.module.imaging.api.study.DicomInstance;
 import org.openmrs.module.imaging.api.study.DicomSeries;
@@ -31,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
 import java.net.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.List;
 
@@ -39,6 +39,8 @@ import java.util.List;
 public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomStudyService {
 	
 	protected final Log log = LogFactory.getLog(this.getClass());
+	
+	private OrthancHttpClient httpClient = new OrthancHttpClient();
 	
 	private DicomStudyDao dao;
 	
@@ -56,67 +58,10 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		return dao;
 	}
 	
-	/**
-	 * @param config the orthanc server configuration
-	 * @param con the http url connection
-	 * @throws IOException the IO exception
-	 */
-	private static void throwConnectionException(OrthancConfiguration config, HttpURLConnection con) throws IOException {
-		throw new IOException("Request to Orthanc server " + config.getOrthancBaseUrl() + " failed with error "
-		        + con.getResponseCode() + " " + con.getResponseMessage());
+	public void setHttpClient(OrthancHttpClient httpClient) {
+		this.httpClient = httpClient;
 	}
-	
-	/**
-	 * @param method the request method
-	 * @param url the url
-	 * @param path the connection path
-	 * @param username the user name
-	 * @param password the user password
-	 * @return The request connection
-	 * @throws IOException IO connection
-	 */
-	private HttpURLConnection getOrthancConnection(String method, String url, String path, String username, String password)
-	        throws IOException {
-		String encoding = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
-		URL serverURL = URI.create(url).resolve(path).toURL();
-		HttpURLConnection con = (HttpURLConnection) serverURL.openConnection();
-		con.setRequestMethod(method);
-		con.setRequestProperty("Authorization", "Basic " + encoding);
-		con.setUseCaches(false);
-		return con;
-	}
-	
-	/**
-	 * @param con http url request connection
-	 * @param query the query string
-	 * @throws IOException IO exception
-	 */
-	private void sendOrthancQuery(HttpURLConnection con, String query) throws IOException {
-		con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-		con.setRequestProperty( "charset", "utf-8");
-		con.setDoOutput(true);
-		byte[] data = query.getBytes(StandardCharsets.UTF_8);
-		con.setRequestProperty( "Content-Length", Integer.toString(data.length));
-		try(DataOutputStream wr = new DataOutputStream(con.getOutputStream())) {
-			wr.write(data);
-		}
-	}
-	
-	/**
-	 * @param url the Url
-	 * @param username the user name
-	 * @param password the password
-	 * @return the response status
-	 * @throws IOException the IO exception
-	 */
-	@Override
-	public int testOrthancConnection(String url, String username, String password) throws IOException {
-		HttpURLConnection con = getOrthancConnection("GET", url, "/system", username, password);
-		int status = con.getResponseCode();
-		con.disconnect();
-		return status;
-	}
-	
+
 	/**
 	 * @throws IOException the IO exception
 	 */
@@ -136,9 +81,9 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 	@Override
 	public void fetchAllStudies(OrthancConfiguration config) throws IOException {
 		log.info("Fetching all studies from orthanc server " + config.getOrthancBaseUrl());
-		HttpURLConnection con = getOrthancConnection("POST", config.getOrthancBaseUrl(), "/tools/find",
+		HttpURLConnection con = httpClient.createConnection("POST", config.getOrthancBaseUrl(), "/tools/find",
 		    config.getOrthancUsername(), config.getOrthancPassword());
-		sendOrthancQuery(con, "{" + "\"Level\": \"Studies\"," + " \"Expand\": true," + " \"Query\": {}" + " }");
+		httpClient.sendOrthancQuery(con, "{" + "\"Level\": \"Studies\"," + " \"Expand\": true," + " \"Query\": {}" + " }");
 		int status = con.getResponseCode();
 		if (status == HttpURLConnection.HTTP_OK) {
 			JsonNode studiesData = new ObjectMapper().readTree(con.getInputStream());
@@ -146,15 +91,15 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 				createOrUpdateStudy(config, studyData);
 			}
 		} else {
-			throwConnectionException(config, con);
+			OrthancHttpClient.throwConnectionException(config, con);
 		}
 	}
-	
+
 	/**
 	 * @param config the orthanc configuration
 	 * @param studyData the patient image study data
 	 */
-	private void createOrUpdateStudy(OrthancConfiguration config, JsonNode studyData) {
+	public void createOrUpdateStudy(OrthancConfiguration config, JsonNode studyData) {
 		String studyInstanceUID = studyData.path("MainDicomTags").path("StudyInstanceUID").getTextValue();
 		String orthancStudyUID = studyData.path("ID").getTextValue();
 		String patientName = studyData.path("PatientMainDicomTags").path("PatientName").getTextValue();
@@ -165,7 +110,7 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		String gender = Optional.ofNullable(studyData.path("PatientMainDicomTags").path("Gender").getTextValue()).orElse("");
 		DicomStudy study = new DicomStudy(studyInstanceUID, orthancStudyUID, null, config, patientName, studyDate,
 		        studyTime, studyDescription, gender);
-		
+
 		DicomStudy existingStudy = dao.getByStudyInstanceUID(config, studyInstanceUID);
 		// new study? -> save new
 		if (existingStudy == null) {
@@ -186,7 +131,7 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 	 */
 	@Override
 	public int uploadFile(OrthancConfiguration config, InputStream is) throws IOException {
-		HttpURLConnection con = getOrthancConnection("POST", config.getOrthancBaseUrl(), "/instances",
+		HttpURLConnection con = httpClient.createConnection("POST", config.getOrthancBaseUrl(), "/instances",
 		    config.getOrthancUsername(), config.getOrthancPassword());
 		con.setRequestProperty("Content-Type", "application/dicom");
 		con.setDoOutput(true);
@@ -240,7 +185,7 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 			if (config.getLastChangedIndex() != -1) {
 				params += "&since=" + config.getLastChangedIndex();
 			}
-			HttpURLConnection con = getOrthancConnection("GET", config.getOrthancBaseUrl(), "/changes" + params,
+			HttpURLConnection con = httpClient.createConnection("GET", config.getOrthancBaseUrl(), "/changes" + params,
 					config.getOrthancUsername(), config.getOrthancPassword());
 			int status = con.getResponseCode();
 			if (status == HttpURLConnection.HTTP_OK) {
@@ -265,7 +210,7 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 					break;
 				}
 			} else {
-				throwConnectionException(config, con);
+				OrthancHttpClient.throwConnectionException(config, con);
 			}
 		}
 	}
@@ -277,8 +222,8 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 	 */
 	private void fetchNewChangedStudies(OrthancConfiguration config, List<String> orthancStudyIds) throws IOException {
 		for (String orthancStudyId : orthancStudyIds) {
-			HttpURLConnection con = getOrthancConnection("GET", config.getOrthancBaseUrl(), "/studies/" + orthancStudyId,
-			    config.getOrthancUsername(), config.getOrthancPassword());
+			HttpURLConnection con = httpClient.createConnection("GET", config.getOrthancBaseUrl(), "/studies/"
+			        + orthancStudyId, config.getOrthancUsername(), config.getOrthancPassword());
 			
 			// Enable connection reuse (Keep-Alive)
 			con.setRequestProperty("Connection", "keep-alive");
@@ -288,7 +233,7 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 				JsonNode studyData = new ObjectMapper().readTree(con.getInputStream());
 				createOrUpdateStudy(config, studyData);
 			} else {
-				throwConnectionException(config, con);
+				OrthancHttpClient.throwConnectionException(config, con);
 			}
 			
 			// Close input stream to free connection for reuse
@@ -329,7 +274,7 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
 		OrthancConfiguration config = orthancConfigurationService.getOrthancConfiguration(dicomStudy
 		        .getOrthancConfiguration().getId());
-		HttpURLConnection con = getOrthancConnection("DELETE", config.getOrthancBaseUrl(),
+		HttpURLConnection con = httpClient.createConnection("DELETE", config.getOrthancBaseUrl(),
 		    "/studies/" + dicomStudy.getOrthancStudyUID(), config.getOrthancUsername(), config.getOrthancPassword());
 		int responseCode = con.getResponseCode();
 		if (responseCode == HttpURLConnection.HTTP_OK || responseCode == 404) {
@@ -354,8 +299,8 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
 		OrthancConfiguration config = orthancConfigurationService.getOrthancConfiguration(seriesStudy
 		        .getOrthancConfiguration().getId());
-		HttpURLConnection con = getOrthancConnection("DELETE", config.getOrthancBaseUrl(), "/series/" + seriesOrthancUID,
-		    config.getOrthancUsername(), config.getOrthancPassword());
+		HttpURLConnection con = httpClient.createConnection("DELETE", config.getOrthancBaseUrl(), "/series/"
+		        + seriesOrthancUID, config.getOrthancUsername(), config.getOrthancPassword());
 		int responseCode = con.getResponseCode();
 		if (responseCode != HttpURLConnection.HTTP_OK) {
 			throw new IOException("Failed to delete DICOM series. Response Code: " + responseCode + ", Series UID: "
@@ -373,9 +318,9 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		List<DicomSeries> seriesList = new ArrayList<>();
 
 		OrthancConfiguration config = study.getOrthancConfiguration();
-		HttpURLConnection con = getOrthancConnection("POST", config.getOrthancBaseUrl(), "/tools/find",
+		HttpURLConnection con = httpClient.createConnection("POST", config.getOrthancBaseUrl(), "/tools/find",
 				config.getOrthancUsername(), config.getOrthancPassword());
-		sendOrthancQuery(con, "{" + "\"Level\": \"Series\"," + " \"Expand\": true," + " \"Query\": {\"StudyInstanceUID\":\"" + study.getStudyInstanceUID() + "\"}" + " }");
+		httpClient.sendOrthancQuery(con, "{" + "\"Level\": \"Series\"," + " \"Expand\": true," + " \"Query\": {\"StudyInstanceUID\":\"" + study.getStudyInstanceUID() + "\"}" + " }");
 		int status = con.getResponseCode();
 		if (status == HttpURLConnection.HTTP_OK) {
 			JsonNode seriesesData = new ObjectMapper().readTree(con.getInputStream());
@@ -407,9 +352,9 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		List<DicomInstance> instanceList = new ArrayList<>();
 
 		OrthancConfiguration config = study.getOrthancConfiguration();
-		HttpURLConnection con = getOrthancConnection("POST", config.getOrthancBaseUrl(), "/tools/find",
+		HttpURLConnection con = httpClient.createConnection("POST", config.getOrthancBaseUrl(), "/tools/find",
 				config.getOrthancUsername(), config.getOrthancPassword());
-		sendOrthancQuery(con, "{" + "\"Level\": \"Instance\"," + " \"Expand\": true," + " \"Query\": {\"SeriesInstanceUID\":\"" + seriesInstanceUID + "\"}" + " }");
+		httpClient.sendOrthancQuery(con, "{" + "\"Level\": \"Instance\"," + " \"Expand\": true," + " \"Query\": {\"SeriesInstanceUID\":\"" + seriesInstanceUID + "\"}" + " }");
 		int status = con.getResponseCode();
 		if (status == HttpURLConnection.HTTP_OK) {
 			JsonNode instancesData = new ObjectMapper().readTree(con.getInputStream());
@@ -438,8 +383,8 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 	@Override
 	public PreviewResult fetchInstancePreview(String orthancInstanceUID, DicomStudy study) throws IOException {
 		OrthancConfiguration config = study.getOrthancConfiguration();
-		HttpURLConnection con = getOrthancConnection("GET", config.getOrthancBaseUrl(), "/instances/" + orthancInstanceUID
-		        + "/preview", config.getOrthancUsername(), config.getOrthancPassword());
+		HttpURLConnection con = httpClient.createConnection("GET", config.getOrthancBaseUrl(), "/instances/"
+		        + orthancInstanceUID + "/preview", config.getOrthancUsername(), config.getOrthancPassword());
 		int responseCode = con.getResponseCode();
 		if (responseCode == HttpURLConnection.HTTP_OK) {
 			// read image
@@ -460,5 +405,4 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 			        + con.getResponseCode() + " " + con.getResponseMessage());
 		}
 	}
-	
 }

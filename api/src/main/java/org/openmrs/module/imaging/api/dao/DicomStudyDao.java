@@ -66,6 +66,7 @@ public class DicomStudyDao {
 	
 	public DicomStudy getByStudyInstanceUID(OrthancConfiguration config, String studyInstanceUID) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(DicomStudy.class);
+		System.out.println(criteria);
 		return (DicomStudy) criteria.add(Restrictions.eq("studyInstanceUID", studyInstanceUID))
 		        .add(Restrictions.eq("orthancConfiguration", config)).uniqueResult();
 	}

@@ -22,6 +22,7 @@ import org.openmrs.module.imaging.api.DicomStudyService;
 import org.openmrs.module.imaging.api.OrthancConfigurationService;
 import org.openmrs.module.imaging.api.RequestProcedureService;
 import org.openmrs.module.imaging.api.RequestProcedureStepService;
+import org.openmrs.module.imaging.api.client.OrthancHttpClient;
 import org.openmrs.module.imaging.api.worklist.RequestProcedure;
 import org.openmrs.module.imaging.api.worklist.RequestProcedureStep;
 import org.openmrs.ui.framework.Model;
@@ -135,10 +136,11 @@ public class ImagingSettingsPageController {
 	        @RequestParam(value = "proxyurl") String proxyurl, @RequestParam(value = "username") String username,
 	        @RequestParam(value = "password") String password) {
 		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
+		OrthancHttpClient httpClient = new OrthancHttpClient();
 		String checkUrl = (proxyurl != null && !proxyurl.isEmpty()) ? proxyurl : url;
 		try {
 			try {
-				int status = dicomStudyService.testOrthancConnection(checkUrl, username, password);
+				int status = httpClient.testOrthancConnection(checkUrl, username, password);
 				if (status == 200) {
 					response.getOutputStream().print("Check successful. The Orthanc server responded correctly.");
 				} else {

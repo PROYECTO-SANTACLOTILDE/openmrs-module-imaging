@@ -43,7 +43,7 @@ public class RequestProcedureStepDAOTest extends BaseModuleContextSensitiveTest 
 		assertEquals("Chest Scan", stepList.get(2).getRequestedProcedureDescription());
 		assertEquals("CT", stepList.get(1).getModality());
 	}
-
+	
 	@Test
 	public void testGetById_shouldReturnCorrectProcedureStep() {
 		RequestProcedureStep step = requestProcedureStepDao.get(1);
@@ -53,56 +53,56 @@ public class RequestProcedureStepDAOTest extends BaseModuleContextSensitiveTest 
 		assertEquals("CT Station", step.getStationName());
 		assertEquals("Dr. Physician1", step.getScheduledReferringPhysician());
 	}
-
-		@Test
-		public void testSave_shouldAddNewStep() {
-
-			RequestProcedure procedure = requestProcedureDao.get(1);
-			RequestProcedureStep newStep = new RequestProcedureStep();
-			newStep.setRequestProcedure(procedure);
-			newStep.setId(4);
-			newStep.setModality("CT");
-			newStep.setScheduledReferringPhysician("Test new step_physician");
-			newStep.setRequestedProcedureDescription("CT Scan Chest New");
-			newStep.setAetTitle("testSave_AET2");
-			newStep.setStepStartDate("2025-07-03");
-			newStep.setStepStartTime("10:00");
-			newStep.setPerformedProcedureStepStatus("scheduled");
-			newStep.setStationName("CT Room");
-			newStep.setProcedureStepLocation("Radiology");
-
-			requestProcedureStepDao.save(newStep);
-
-			List<RequestProcedureStep> stepList = requestProcedureStepDao.getAllStepByRequestProcedure(procedure);
-			assertEquals(4, stepList.size());
-
-			RequestProcedureStep retrieved = requestProcedureStepDao.get(4);
-			assertNotNull(retrieved);
-			assertEquals("CT Scan Chest New", retrieved.getRequestedProcedureDescription());
-		}
-
+	
+	@Test
+	public void testSave_shouldAddNewStep() {
+		
+		RequestProcedure procedure = requestProcedureDao.get(1);
+		RequestProcedureStep newStep = new RequestProcedureStep();
+		newStep.setRequestProcedure(procedure);
+		newStep.setId(4);
+		newStep.setModality("CT");
+		newStep.setScheduledReferringPhysician("Test new step_physician");
+		newStep.setRequestedProcedureDescription("CT Scan Chest New");
+		newStep.setAetTitle("testSave_AET2");
+		newStep.setStepStartDate("2025-07-03");
+		newStep.setStepStartTime("10:00");
+		newStep.setPerformedProcedureStepStatus("scheduled");
+		newStep.setStationName("CT Room");
+		newStep.setProcedureStepLocation("Radiology");
+		
+		requestProcedureStepDao.save(newStep);
+		
+		List<RequestProcedureStep> stepList = requestProcedureStepDao.getAllStepByRequestProcedure(procedure);
+		assertEquals(4, stepList.size());
+		
+		RequestProcedureStep retrieved = requestProcedureStepDao.get(4);
+		assertNotNull(retrieved);
+		assertEquals("CT Scan Chest New", retrieved.getRequestedProcedureDescription());
+	}
+	
 	@Test
 	public void testRemove_shouldDeleteStep() {
 		RequestProcedureStep step = requestProcedureStepDao.get(1);
 		assertNotNull(step);
 		requestProcedureStepDao.remove(step);
-
+		
 		RequestProcedureStep deleted = requestProcedureStepDao.get(1);
 		assertNull(deleted);
-
+		
 		List<RequestProcedureStep> stepList = requestProcedureStepDao.getAll();
 		assertEquals(2, stepList.size());
 	}
-
+	
 	@Test
 	public void testUpdate_shouldUpdateStepData() {
 		RequestProcedureStep step = requestProcedureStepDao.get(1);
 		assertNotNull(step);
-
+		
 		step.setScheduledReferringPhysician("Physician in station");
 		step.setPerformedProcedureStepStatus("completed");
 		requestProcedureStepDao.update(step);
-
+		
 		RequestProcedureStep updtedStep = requestProcedureStepDao.get(1);
 		assertNotNull(updtedStep);
 		assertEquals("Physician in station", updtedStep.getScheduledReferringPhysician());

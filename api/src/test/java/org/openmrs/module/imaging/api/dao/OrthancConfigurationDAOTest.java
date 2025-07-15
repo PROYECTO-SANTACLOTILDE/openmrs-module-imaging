@@ -44,7 +44,7 @@ public class OrthancConfigurationDAOTest extends BaseModuleContextSensitiveTest 
 		config.setOrthancBaseUrl("http://localhost:8062");
 		config.setOrthancUsername("orthanc");
 		config.setOrthancPassword("orthanc");
-
+		
 		orthancConfigurationDao.saveNew(config);
 		List<OrthancConfiguration> all = orthancConfigurationDao.getAll();
 		assertEquals(2, all.size());
@@ -84,5 +84,5 @@ public class OrthancConfigurationDAOTest extends BaseModuleContextSensitiveTest 
 		assertNull(orthancConfigurationDao.get(1));
 		assertEquals(0, orthancConfigurationDao.getAll().size());
 	}
-
+	
 }

@@ -18,17 +18,15 @@ import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.module.imaging.api.OrthancConfigurationService;
 import org.openmrs.module.imaging.api.dao.OrthancConfigurationDao;
+import org.openmrs.module.imaging.api.client.OrthancHttpClient;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.List;
 
 public class OrthancConfigurationServiceImpl extends BaseOpenmrsService implements OrthancConfigurationService {
 	
 	protected Log log = LogFactory.getLog(this.getClass());
+	
+	private final OrthancHttpClient httpClient = new OrthancHttpClient();
 	
 	private OrthancConfigurationDao dao;
 	
@@ -52,7 +50,7 @@ public class OrthancConfigurationServiceImpl extends BaseOpenmrsService implemen
 	
 	@Override
 	public void saveOrthancConfiguration(OrthancConfiguration config) {
-		if (isOrthancReachable(config)) {
+		if (httpClient.isOrthancReachable(config)) {
 			dao.saveNew(config);
 		} else {
 			throw new IllegalArgumentException("The Orthanc instance is not reachable or credentials are invalid");
@@ -68,29 +66,5 @@ public class OrthancConfigurationServiceImpl extends BaseOpenmrsService implemen
 	public void updateOrthancConfiguration(OrthancConfiguration orthancConfiguration) {
 		dao.updateExisting(orthancConfiguration);
 	}
-
-	/**
-	 *
-	 * @param config
-	 * @return
-	 */
-	private boolean isOrthancReachable (OrthancConfiguration config) {
-		try {
-			URL url = new URL(config.getOrthancBaseUrl() + "/system"); // `/system` is a common endpoint in Orthanc
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("GET");
-			connection.setConnectTimeout(3000); // 3 seconds timeout
-			connection.setReadTimeout(3000);
-
-			String auth = config.getOrthancUsername() + ":" + config.getOrthancPassword();
-			String encodeAuth = Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));
-			connection.setRequestProperty("Authorization", "Basic " + encodeAuth);
-
-			int responseCode = connection.getResponseCode();
-			return responseCode == 200;
-		}
-		catch (IOException e) {
-			return false;
-		}
-	}
+	
 }
