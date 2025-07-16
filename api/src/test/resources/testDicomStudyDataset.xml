@@ -17,6 +17,13 @@
             orthancPassword="orthanc"
             lastChangedIndex="-1" />
 
+    <imaging_OrthancConfiguration
+            ID="2"
+            orthancBaseUrl="http://localhost:8062"
+            orthancUsername="orthanc"
+            orthancPassword="orthanc"
+            lastChangedIndex="-1" />
+
     <imaging_DicomStudy
             ID = "1"
             studyInstanceUID="studyInstanceUID555"

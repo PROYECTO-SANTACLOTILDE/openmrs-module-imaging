@@ -1,5 +1,6 @@
 package org.openmrs.module.imaging.api.client;
 
+import org.apache.commons.io.IOUtils;
 import org.openmrs.module.imaging.OrthancConfiguration;
 
 import java.io.*;
@@ -42,8 +43,19 @@ public class OrthancHttpClient {
 	 * @throws IOException the IO exception
 	 */
 	public static void throwConnectionException(OrthancConfiguration config, HttpURLConnection con) throws IOException {
-		throw new IOException("Request to Orthanc server " + config.getOrthancBaseUrl() + " failed with error "
-		        + con.getResponseCode() + " " + con.getResponseMessage());
+		String errorMessage;
+		try{
+			InputStream errorStream = con.getErrorStream();
+			if (errorStream != null) {
+				errorMessage = IOUtils.toString(errorStream, StandardCharsets.UTF_8);
+			} else {
+				errorMessage = "Unknown error";
+			}
+		} catch (IOException e) {
+			errorMessage = "Failed to read error stream: " + e.getMessage();
+		}
+
+		throw new IOException("Request to Orthanc server " + config.getOrthancBaseUrl() + " failed with error: " + errorMessage);
 	}
 	
 	/**
@@ -69,7 +81,7 @@ public class OrthancHttpClient {
 			return false;
 		}
 	}
-
+	
 	/**
 	 * @param url the Url
 	 * @param username the user name

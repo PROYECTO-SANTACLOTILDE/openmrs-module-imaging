@@ -14,9 +14,11 @@
 
 package org.openmrs.module.imaging.api;
 
+import org.codehaus.jackson.JsonNode;
 import org.openmrs.Patient;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.imaging.OrthancConfiguration;
+import org.openmrs.module.imaging.api.client.OrthancHttpClient;
 import org.openmrs.module.imaging.api.dao.DicomStudyDao;
 import org.openmrs.module.imaging.api.study.DicomInstance;
 import org.openmrs.module.imaging.api.study.DicomSeries;
@@ -42,6 +44,7 @@ import java.util.List;
 @Service
 @Transactional
 public interface DicomStudyService extends OpenmrsService {
+
 	
 	DicomStudyDao getDao();
 	
@@ -54,10 +57,12 @@ public interface DicomStudyService extends OpenmrsService {
 	DicomStudy getDicomStudy(int id);
 	
 	DicomStudy getDicomStudy(OrthancConfiguration config, String studyInstanceUID);
-
+	
 	void fetchAllStudies() throws IOException;
 	
 	void fetchAllStudies(OrthancConfiguration orthancConfiguration) throws IOException;
+
+	void createOrUpdateStudy(OrthancConfiguration orthancConfiguration, JsonNode studyData);
 	
 	void fetchNewChangedStudies() throws IOException;
 	
@@ -76,7 +81,9 @@ public interface DicomStudyService extends OpenmrsService {
 	List<DicomSeries> fetchSeries(DicomStudy study) throws IOException;
 	
 	List<DicomInstance> fetchInstances(String sopInstanceUID, DicomStudy study) throws IOException;
-	
+
+	void setHttpClient(OrthancHttpClient client);
+
 	class PreviewResult {
 		
 		public byte[] data;

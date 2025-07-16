@@ -61,7 +61,7 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 	public void setHttpClient(OrthancHttpClient httpClient) {
 		this.httpClient = httpClient;
 	}
-
+	
 	/**
 	 * @throws IOException the IO exception
 	 */
@@ -94,7 +94,7 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 			OrthancHttpClient.throwConnectionException(config, con);
 		}
 	}
-
+	
 	/**
 	 * @param config the orthanc configuration
 	 * @param studyData the patient image study data
@@ -110,7 +110,7 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		String gender = Optional.ofNullable(studyData.path("PatientMainDicomTags").path("Gender").getTextValue()).orElse("");
 		DicomStudy study = new DicomStudy(studyInstanceUID, orthancStudyUID, null, config, patientName, studyDate,
 		        studyTime, studyDescription, gender);
-
+		
 		DicomStudy existingStudy = dao.getByStudyInstanceUID(config, studyInstanceUID);
 		// new study? -> save new
 		if (existingStudy == null) {
