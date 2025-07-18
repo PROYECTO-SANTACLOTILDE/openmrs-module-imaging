@@ -137,7 +137,7 @@ public class StudiesPageController {
 				if (fetchOption.equals("all")) {
 					dicomStudyService.fetchAllStudies(config);
 				} else {
-					dicomStudyService.fetchNewChangedStudies(config);
+					dicomStudyService.fetchNewChangedStudiesByConfiguration(config);
 				}
 			}
 			message = "Studies successfully fetched";

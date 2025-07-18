@@ -199,7 +199,7 @@ public class DicomStudyController {
             if (fetchOption.equals("all")) {
                 dicomStudyService.fetchAllStudies(configuration);
             } else {
-                dicomStudyService.fetchNewChangedStudies(configuration);
+                dicomStudyService.fetchNewChangedStudiesByConfiguration(configuration);
             }
             return new ResponseEntity<>("", HttpStatus.OK);
         } catch (IOException e) {

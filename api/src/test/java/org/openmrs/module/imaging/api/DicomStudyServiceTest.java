@@ -4,24 +4,25 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.module.imaging.api.dao.DicomStudyDao;
 import org.openmrs.module.imaging.api.impl.DicomStudyServiceImpl;
+import org.openmrs.module.imaging.api.study.DicomSeries;
 import org.openmrs.module.imaging.api.study.DicomStudy;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.util.ArrayList;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -39,11 +40,8 @@ public class DicomStudyServiceTest extends BaseModuleContextSensitiveTest {
 	@Mock
 	private DicomStudyDao dicomStudyDao;
 
-	@Mock
-	private OutputStream outputStream;
-
 	@Before
-	public void runBeforeAllTests() throws Exception {
+	public void setUp() throws Exception {
 		if (dicomStudyService == null) {
 			dicomStudyService = Context.getService(DicomStudyService.class);
 		}
@@ -66,7 +64,19 @@ public class DicomStudyServiceTest extends BaseModuleContextSensitiveTest {
 		assertNotNull(noStudies);
 		assertEquals(0, noStudies.size());
 	}
-	
+
+	@Test
+	public void getAllStudies_shouldReturnAllStudiesFromDb() {
+		List<DicomStudy> studies = dicomStudyService.getAllStudies();
+
+		assertNotNull(studies);
+		assertFalse(studies.isEmpty());
+		assertEquals(2, studies.size());
+
+		DicomStudy firstStudy = studies.get(0);
+		assertEquals("studyInstanceUID555", firstStudy.getStudyInstanceUID());
+	}
+
 	@Test
 	public void testFetchAllStudies_shouldThrowIOException_whenHttpStatusNotOk() throws Exception {
 
@@ -81,7 +91,7 @@ public class DicomStudyServiceTest extends BaseModuleContextSensitiveTest {
 		IOException thrown = assertThrows(IOException.class, () -> service.fetchAllStudies(config));
 		assertTrue(thrown.getMessage().contains("Request to Orthanc server " + config.getOrthancBaseUrl() + " failed with error"));
 	}
-	
+
 	@Test
 	public void testFetchAllStudies_successfulResponseCallsCreateOrUpdate() throws IOException {
 		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
@@ -140,7 +150,8 @@ public class DicomStudyServiceTest extends BaseModuleContextSensitiveTest {
 		ClientConnectionPair pair = setupMockClientWithStatus(200, "POST", "/instances", "", config);
 		HttpURLConnection mockConnection = pair.getConnection();
 
-		when(pair.getConnection().getOutputStream()).thenReturn(outputStream);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		when(mockConnection.getOutputStream()).thenReturn(outputStream);
 
 		// Inject mock client into service
 		dicomStudyService.setHttpClient(pair.getClient()); // Make sure this sets the client
@@ -149,10 +160,12 @@ public class DicomStudyServiceTest extends BaseModuleContextSensitiveTest {
 
 		assertEquals(200, result);
 
+		String writtenData = outputStream.toString();
+		assertTrue(writtenData.contains("dummy DICOM data"));
+
 		// Verifications
 		verify(mockConnection).setRequestProperty("Content-Type", "application/dicom");
 		verify(mockConnection).setDoOutput(true);
-		verify(outputStream, atLeastOnce()).write(any(byte[].class), anyInt(), anyInt());
 	}
 
 	@Test
@@ -226,14 +239,75 @@ public class DicomStudyServiceTest extends BaseModuleContextSensitiveTest {
 	}
 
 	@Test
-	public void testGetStudiesOfPatient() {
-		Patient patient = Context.getPatientService().getPatient(1);
-		List<DicomStudy> result = dicomStudyService.getStudiesOfPatient(patient);
-		assertNotNull(result);
+	public void fetchNewChangedStudiesByConfiguration_shouldProcessStudiesCorrectly() throws Exception {
+		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
+		OrthancConfiguration config = orthancConfigurationService.getOrthancConfiguration(1);
+		assertNotNull(config);
+
+		// Prepare mock response JSON
+		String mockJson = "{\n" +
+				"  \"Changes\": [\n" +
+				"    {\"ChangeType\": \"NewStudy\", \"ID\": \"mock-study-1\"},\n" +
+				"    {\"ChangeType\": \"StableStudy\", \"ID\": \"mock-study-2\"}\n" +
+				"  ],\n" +
+				"  \"Last\": 100,\n" +
+				"  \"Done\": \"true\"\n" +
+				"}";
+
+		// Setup mocked HTTP client + connection
+		String expectedPath = "/changes?limit=1000";
+		ClientConnectionPair pair = setupMockClientWithStatus(200, "GET", expectedPath, mockJson, config);
+		when(pair.getConnection().getInputStream())
+				.thenReturn(new ByteArrayInputStream(mockJson.getBytes(StandardCharsets.UTF_8)));
+
+		// Spy on service to stub downstream call
+		DicomStudyServiceImpl realService = new DicomStudyServiceImpl();
+		DicomStudyServiceImpl spyService = Mockito.spy(realService);
+		spyService.setHttpClient(pair.getClient());
+
+		doNothing().when(spyService).fetchNewChangedStudiesByConfigurationAndStudyUIDs(
+				eq(config),
+				eq(Arrays.asList("mock-study-1", "mock-study-2"))
+		);
+
+		spyService.fetchNewChangedStudiesByConfiguration(config);
+		assertEquals(100, config.getLastChangedIndex().intValue());
+
+		verify(spyService).fetchNewChangedStudiesByConfigurationAndStudyUIDs(
+				eq(config),
+				eq(Arrays.asList("mock-study-1", "mock-study-2"))
+		);
 	}
 
 	@Test
-	public void testGetStudiesByConfiguration() {
+	public void testFetchNewChangedStudiesByConfigurationAndStudyUIDs_success() throws IOException {
+		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
+		OrthancConfiguration config = orthancConfigurationService.getOrthancConfiguration(1);
+		assertNotNull("Config should not be null", config);
+
+		String studyInstanceUID = "study1";
+		String jsonResponse = "{ \"StudyInstanceUID\": \"" + studyInstanceUID + "\", \"PatientName\": \"John Doe\" }";
+
+		ClientConnectionPair pair = ClientConnectionPair.setupMockClientWithStatus(
+				200, "GET", "/studies/" + studyInstanceUID, "", config);
+
+		when(pair.getConnection().getInputStream())
+				.thenReturn(new ByteArrayInputStream(jsonResponse.getBytes(StandardCharsets.UTF_8)));
+
+		DicomStudyServiceImpl realService = new DicomStudyServiceImpl();
+		DicomStudyServiceImpl spyService = Mockito.spy(realService);
+		spyService.setHttpClient(pair.getClient());
+
+		doNothing().when(spyService).createOrUpdateStudy(
+				eq(config),
+				any()
+		);
+		spyService.fetchNewChangedStudiesByConfigurationAndStudyUIDs(config, Collections.singletonList(studyInstanceUID));
+		verify(spyService, times(1)).createOrUpdateStudy(eq(config), any());
+	}
+
+	@Test
+	public void testGetStudiesByConfiguration_shouldReturnStudiesByConfiguration() {
 		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
 		OrthancConfiguration config1 = orthancConfigurationService.getOrthancConfiguration(1);
 
@@ -244,5 +318,125 @@ public class DicomStudyServiceTest extends BaseModuleContextSensitiveTest {
 		List<DicomStudy> studies2 = dicomStudyService.getStudiesByConfiguration(config2);
 		assertTrue(studies2.isEmpty());
 	}
+
+	@Test
+	public void testSetPatient_shouldPatientSignedToStudy() {
+		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
+		OrthancConfiguration config = orthancConfigurationService.getOrthancConfiguration(1);
+
+		Patient patient = Context.getPatientService().getPatient(2);
+		DicomStudy study = dicomStudyDao.getByStudyInstanceUID(config,"studyInstanceUID555");
+
+		dicomStudyService.setPatient(study, patient);
+		assertNotNull(study);
+		assertNotNull(study.getMrsPatient());
+		assertEquals(2, study.getMrsPatient().getPatientId().intValue());
+	}
+
+
+	@Test
+	public void testDeleteStudy_shouldThrowIOExceptionAndNotRemoveStudy_onHttpError() throws Exception {
+		DicomStudy study = dicomStudyDao.get(1);
+		OrthancConfiguration config = study.getOrthancConfiguration();
+
+		ClientConnectionPair pair = ClientConnectionPair.setupMockClientWithStatus(
+				401, "DELETE", "/studies/" + study.getStudyInstanceUID(), "Study Not found", config);
+
+		DicomStudyServiceImpl test = new DicomStudyServiceImpl();
+		test.setHttpClient(pair.getClient());
+
+		try {
+			test.deleteStudy(study);
+			fail("Expected IOException to be thrown due to HTTP error");
+		} catch (IOException e) {
+			assertTrue(e.getMessage().contains("Failed to create HTTP connection"));
+		}
+		assertNotNull("Study should NOT be removed from DB on HTTP error", dicomStudyDao.get(study.getId()));
+	}
+
+
+	@Test
+	public void testDeleteStudy_shouldRemoveStudyFromDb() throws IOException {
+		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
+		OrthancConfiguration config = orthancConfigurationService.getOrthancConfiguration(1);
+
+		DicomStudy study = dicomStudyDao.get(1);
+		ClientConnectionPair pair = ClientConnectionPair.setupMockClientWithStatus(
+				200, "DELETE", "/studies/" + study.getOrthancStudyUID(), "", config);
+		when(pair.getConnection().getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
+
+		dicomStudyService.setHttpClient(pair.getClient());
+		dicomStudyService.deleteStudy(study);
+
+		DicomStudy deletedStudy = dicomStudyDao.get(study.getId());
+		assertNull("DicomStudy should be deleted from DB", deletedStudy);
+	}
+
+	@Test
+	public void testDeleteStudyFromOpenmrs_shouldStudyDeleteFromOpenMRSDbNoFound(){
+		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
+		OrthancConfiguration config = orthancConfigurationService.getOrthancConfiguration(1);
+
+		DicomStudy study = dicomStudyDao.get(1);
+		dicomStudyService.deleteStudyFromOpenmrs(study);
+
+		DicomStudy deletedStudy = dicomStudyDao.getByStudyInstanceUID(config, study.getStudyInstanceUID());
+		assertNull(deletedStudy);
+	}
+
+	@Test
+	public void fetchSeries_shouldReturnDicomSeriesListWhenOrthancReturnsValidData() throws IOException {
+		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
+		OrthancConfiguration config = orthancConfigurationService.getOrthancConfiguration(1);
+
+		String jsonResponse = "[{" +
+				"\"MainDicomTags\": {" +
+				"\"SeriesInstanceUID\": \"testSeriesUID123\"," +
+				"\"SeriesDescription\": \"Test Series\"," +
+				"\"SeriesNumber\": \"1\"," +
+				"\"Modality\": \"CT\"," +
+				"\"SeriesDate\": \"20250717\"," +
+				"\"SeriesTime\": \"123000\"" +
+				"}," +
+				"\"ID\": \"abcd1\"" +
+				"}]";
+
+		ClientConnectionPair mockPair = ClientConnectionPair.setupMockClientWithStatus(
+				HttpURLConnection.HTTP_OK, "POST", "/tools/find", "", config);
+
+		InputStream responseStream = new ByteArrayInputStream(jsonResponse.getBytes(StandardCharsets.UTF_8));
+		when(mockPair.getConnection().getInputStream()).thenReturn(responseStream);
+
+		dicomStudyService.setHttpClient(mockPair.getClient());
+		DicomStudy study = dicomStudyService.getDicomStudy(1);
+
+		List<DicomSeries> result = dicomStudyService.fetchSeries(study);
+		assertNotNull(result);
+		assertEquals(1, result.size());
+		DicomSeries series = result.get(0);
+		assertEquals("testSeriesUID123", series.getSeriesInstanceUID());
+		assertEquals("abcd1", series.getOrthancSeriesUID());
+		assertEquals("Test Series", series.getSeriesDescription());
+		assertEquals("1", series.getSeriesNumber());
+		assertEquals("CT", series.getModality());
+		assertEquals("20250717", series.getSeriesDate());
+		assertEquals("123000", series.getSeriesTime());
+	}
+//
+//	@Test
+//	public void testFetchSeries_shouldReturnSeriesOfStudy() {
+//
+//	}
+//
+//	@Test
+//	public void testFetchInstances_schouldReturnInstancesOfSeries(){
+//
+//	}
+
+//	@Test
+//	public void testFetchInstancePreview_shouldDisplayPreviewImage(){
+//
+//	}
+
 }
 

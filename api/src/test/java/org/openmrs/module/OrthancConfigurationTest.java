@@ -1,4 +1,4 @@
-package org.openmrs.module.imaging.api;
+package org.openmrs.module;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.module.imaging.OrthancConfiguration;
