@@ -44,7 +44,6 @@ import java.util.List;
 @Service
 @Transactional
 public interface DicomStudyService extends OpenmrsService {
-
 	
 	DicomStudyDao getDao();
 	
@@ -61,7 +60,7 @@ public interface DicomStudyService extends OpenmrsService {
 	void fetchAllStudies() throws IOException;
 	
 	void fetchAllStudies(OrthancConfiguration orthancConfiguration) throws IOException;
-
+	
 	void createOrUpdateStudy(OrthancConfiguration orthancConfiguration, JsonNode studyData);
 	
 	void fetchNewChangedStudies() throws IOException;
@@ -80,10 +79,10 @@ public interface DicomStudyService extends OpenmrsService {
 	
 	List<DicomSeries> fetchSeries(DicomStudy study) throws IOException;
 	
-	List<DicomInstance> fetchInstances(String sopInstanceUID, DicomStudy study) throws IOException;
-
+	List<DicomInstance> fetchInstances(String seriesInstanceUID, DicomStudy study) throws IOException;
+	
 	void setHttpClient(OrthancHttpClient client);
-
+	
 	class PreviewResult {
 		
 		public byte[] data;

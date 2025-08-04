@@ -44,18 +44,20 @@ public class OrthancHttpClient {
 	 */
 	public static void throwConnectionException(OrthancConfiguration config, HttpURLConnection con) throws IOException {
 		String errorMessage;
-		try{
+		try {
 			InputStream errorStream = con.getErrorStream();
 			if (errorStream != null) {
 				errorMessage = IOUtils.toString(errorStream, StandardCharsets.UTF_8);
 			} else {
 				errorMessage = "Unknown error";
 			}
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			errorMessage = "Failed to read error stream: " + e.getMessage();
 		}
-
-		throw new IOException("Request to Orthanc server " + config.getOrthancBaseUrl() + " failed with error: " + errorMessage);
+		
+		throw new IOException("Request to Orthanc server " + config.getOrthancBaseUrl() + " failed with error: "
+		        + errorMessage);
 	}
 	
 	/**

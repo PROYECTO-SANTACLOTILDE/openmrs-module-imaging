@@ -222,13 +222,14 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 			}
 		}
 	}
-
+	
 	/**
 	 * @param config the orthanc configuration
 	 * @param orthancStudyIds the study instance UIDs
 	 * @throws IOException the IO exception
 	 */
-	public void fetchNewChangedStudiesByConfigurationAndStudyUIDs(OrthancConfiguration config, List<String> orthancStudyIds) throws IOException {
+	public void fetchNewChangedStudiesByConfigurationAndStudyUIDs(OrthancConfiguration config, List<String> orthancStudyIds)
+	        throws IOException {
 		for (String orthancStudyId : orthancStudyIds) {
 			HttpURLConnection con = httpClient.createConnection("GET", config.getOrthancBaseUrl(), "/studies/"
 			        + orthancStudyId, config.getOrthancUsername(), config.getOrthancPassword());

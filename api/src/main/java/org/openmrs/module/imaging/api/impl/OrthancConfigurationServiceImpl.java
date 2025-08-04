@@ -26,14 +26,18 @@ public class OrthancConfigurationServiceImpl extends BaseOpenmrsService implemen
 	
 	protected Log log = LogFactory.getLog(this.getClass());
 	
-	private final OrthancHttpClient httpClient = new OrthancHttpClient();
-	
+	private OrthancHttpClient httpClient = new OrthancHttpClient();
+
 	private OrthancConfigurationDao dao;
 	
 	public void setDao(OrthancConfigurationDao dao) {
 		this.dao = dao;
 	}
-	
+
+	public void setHttpClient(OrthancHttpClient httpClient) {
+		this.httpClient = httpClient;
+	}
+
 	public OrthancConfigurationDao getDao() {
 		return dao;
 	}

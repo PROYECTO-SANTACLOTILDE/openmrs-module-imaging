@@ -31,6 +31,18 @@
 
     <imaging_DicomStudy
             ID="2"
+            studyInstanceUID="testInstanceUID999"
+            orthancStudyUID="orthancUID999"
+            patientName="UID999_patient"
+            studyDate="2025-07-17"
+            studyTime="18:35:00"
+            orthancConfigurationId="1"
+            patient_id="1"
+            studyDescription="CT Head"
+            gender="F" />
+
+    <imaging_DicomStudy
+            ID="3"
             studyInstanceUID="testInstanceUID333"
             orthancStudyUID="orthancUID333"
             patientName="UID333_requestProcedure"
@@ -44,7 +56,7 @@
     <!-- RequestProcedure table -->
     <imaging_RequestProcedure
             ID = "1"
-            status="scheduled"
+            status="complete"
             patient_id="1"
             orthancConfigurationId="1"
             accessionNumber="ACC1001"
@@ -55,10 +67,21 @@
 
     <imaging_RequestProcedure
             ID = "2"
-            status="scheduled"
+            status="complete"
             patient_id="1"
             orthancConfigurationId="1"
             accessionNumber="ACC1002"
+            studyInstanceUID="testInstanceUID999"
+            requestingPhysician="Dr. Thomas"
+            requestDescription="Head CT"
+            priority="High"/>
+
+    <imaging_RequestProcedure
+            ID = "3"
+            status="scheduled"
+            patient_id="1"
+            orthancConfigurationId="1"
+            accessionNumber="ACC1003"
             studyInstanceUID="testInstanceUID333"
             requestingPhysician="Dr. Anne"
             requestDescription="Head MRI"

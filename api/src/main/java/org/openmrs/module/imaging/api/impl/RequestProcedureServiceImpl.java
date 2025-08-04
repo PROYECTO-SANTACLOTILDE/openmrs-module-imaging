@@ -20,7 +20,6 @@ import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.module.imaging.api.RequestProcedureService;
 import org.openmrs.module.imaging.api.dao.RequestProcedureDao;
-import org.openmrs.module.imaging.api.study.DicomStudy;
 import org.openmrs.module.imaging.api.worklist.RequestProcedure;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
