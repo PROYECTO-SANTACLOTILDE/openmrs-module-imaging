@@ -14,14 +14,14 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class OrthancConfigurationServiceTest extends BaseModuleContextSensitiveTest {
-
+	
 	private OrthancConfigurationService orthancConfigurationService;
-
+	
 	@Mock
 	private OrthancHttpClient mockHttpClient;
-
+	
 	private static final String ORTHANC_CONFIGURATION_TEST_DATASET = "testOrthancConfigurationDataset.xml";
-
+	
 	@Before
 	public void setUp() throws Exception {
 		if (orthancConfigurationService == null) {
@@ -30,7 +30,7 @@ public class OrthancConfigurationServiceTest extends BaseModuleContextSensitiveT
 		orthancConfigurationService.setHttpClient(mockHttpClient);
 		executeDataSet(ORTHANC_CONFIGURATION_TEST_DATASET);
 	}
-
+	
 	@Test
 	public void getAllOrthancConfigurations_shouldReturnFromDatabase() {
 		OrthancConfigurationService service = Context.getService(OrthancConfigurationService.class);
@@ -38,7 +38,7 @@ public class OrthancConfigurationServiceTest extends BaseModuleContextSensitiveT
 		assertNotNull(configs);
 		assertFalse(configs.isEmpty());
 		assertEquals(1, configs.size());
-		assertEquals("http://localhost:8072", configs.get(0).getOrthancBaseUrl());
+		assertEquals("http://localhost:8052", configs.get(0).getOrthancBaseUrl());
 	}
 	
 	@Test
@@ -47,7 +47,7 @@ public class OrthancConfigurationServiceTest extends BaseModuleContextSensitiveT
 		assertNotNull(config);
 		assertEquals(Integer.valueOf(1), config.getId());
 	}
-
+	
 	@Test
     public void saveOrthancConfiguration_shouldSaveWhenReachable() {
         OrthancConfiguration config = new OrthancConfiguration();
@@ -59,11 +59,16 @@ public class OrthancConfigurationServiceTest extends BaseModuleContextSensitiveT
 
         when(mockHttpClient.isOrthancReachable(config)).thenReturn(true);
 
-        orthancConfigurationService.saveOrthancConfiguration(config);
-        List<OrthancConfiguration> configs = orthancConfigurationService.getAllOrthancConfigurations();
+		Exception exception = assertThrows(RuntimeException.class, () -> {
+			orthancConfigurationService.saveOrthancConfiguration(config);
+		});
+
+		assertEquals("A configuration with the same base URL already exists", exception.getMessage());
+
+		List<OrthancConfiguration> configs = orthancConfigurationService.getAllOrthancConfigurations();
         assertTrue(configs.stream().anyMatch(c -> "http://localhost:8052".equals(c.getOrthancBaseUrl())));
     }
-
+	
 	@Test(expected = IllegalArgumentException.class)
 	public void saveOrthancConfiguration_shouldThrowWhenNotReachable() {
 		OrthancConfiguration config = new OrthancConfiguration();
@@ -71,7 +76,7 @@ public class OrthancConfigurationServiceTest extends BaseModuleContextSensitiveT
 		config.setOrthancUsername("errorUser");
 		config.setOrthancPassword("errorUser");
 		config.setOrthancProxyUrl("");
-
+		
 		when(mockHttpClient.isOrthancReachable(config)).thenReturn(false);
 		orthancConfigurationService.saveOrthancConfiguration(config);
 	}

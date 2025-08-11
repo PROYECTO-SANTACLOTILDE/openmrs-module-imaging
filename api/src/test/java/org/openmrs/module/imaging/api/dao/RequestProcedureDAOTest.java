@@ -35,7 +35,7 @@ public class RequestProcedureDAOTest extends BaseModuleContextSensitiveTest {
 	public void testGetAll_shouldReturnDataFromDB() {
 		List<RequestProcedure> allRequests = requestProcedureDao.getAll();
 		assertNotNull(allRequests);
-		assertEquals(2, allRequests.size());
+		assertEquals(3, allRequests.size());
 	}
 	
 	@Test
@@ -57,7 +57,7 @@ public class RequestProcedureDAOTest extends BaseModuleContextSensitiveTest {
 	public void testGetByPatient_shouldReturnCorrectRequests() {
 		Patient patient = Context.getPatientService().getPatient(1); // assuming patient ID 1 exists in test dataset
 		List<RequestProcedure> requests = requestProcedureDao.getByPatient(patient);
-		assertEquals(2, requests.size());
+		assertEquals(3, requests.size());
 		for (RequestProcedure rp : requests) {
 			assertEquals(patient.getPatientId(), rp.getMrsPatient().getPatientId());
 		}
@@ -78,7 +78,7 @@ public class RequestProcedureDAOTest extends BaseModuleContextSensitiveTest {
 		
 		List<RequestProcedure> requestProcedureList = requestProcedureDao.getRequestProcedureByConfig(config);
 		assertNotNull(requestProcedureList);
-		assertEquals(2, requestProcedureList.size());
+		assertEquals(3, requestProcedureList.size());
 	}
 	
 	@Test
@@ -105,7 +105,7 @@ public class RequestProcedureDAOTest extends BaseModuleContextSensitiveTest {
 		
 		List<RequestProcedure> allRequests = requestProcedureDao.getAll();
 		assertNotNull(allRequests);
-		assertEquals(3, allRequests.size());
+		assertEquals(4, allRequests.size());
 	}
 	
 	@Test

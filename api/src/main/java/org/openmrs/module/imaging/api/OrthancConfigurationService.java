@@ -33,12 +33,12 @@ public interface OrthancConfigurationService extends OpenmrsService {
 	
 	@Transactional(readOnly = true)
 	List<OrthancConfiguration> getAllOrthancConfigurations();
-
+	
 	@Transactional(readOnly = true)
 	OrthancConfiguration getOrthancConfiguration(int id);
-
+	
 	void setHttpClient(OrthancHttpClient client);
-
+	
 	void saveOrthancConfiguration(OrthancConfiguration orthancConfiguration);
 	
 	void removeOrthancConfiguration(OrthancConfiguration orthancConfiguration);
