@@ -1,76 +1,120 @@
 package org.openmrs.module.imaging.page.controller;
 
-import static org.mockito.Mockito.*;
-
-import java.util.Collections;
-
-import javax.servlet.http.HttpServletResponse;
-
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.*;
 import org.openmrs.Patient;
-import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.imaging.OrthancConfiguration;
+import org.openmrs.module.imaging.ImagingConstants;
 import org.openmrs.module.imaging.api.DicomStudyService;
 import org.openmrs.module.imaging.api.OrthancConfigurationService;
-import org.openmrs.module.imaging.api.study.DicomStudy;
-import org.openmrs.module.imaging.ImagingProperties;
+import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.ui.framework.Model;
 import org.openmrs.ui.framework.page.PageModel;
-import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
+import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
-@RunWith(MockitoJUnitRunner.class)
+import java.io.IOException;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.verify;
+
 public class StudiesPageControllerTest extends BaseModuleWebContextSensitiveTest {
 	
-	@InjectMocks
 	private StudiesPageController controller;
 	
-	@Mock
-	private PageModel model;
-	
-	@Mock
-	private HttpServletResponse response;
-	
-	@Mock
-	private MultipartFile multipartFile1;
-	
-	@Mock
-	private MultipartFile multipartFile2;
-	
-	@Mock
+	private Patient testPatient;
+
 	private DicomStudyService dicomStudyService;
-	
-	@Mock
+
 	private OrthancConfigurationService orthancConfigurationService;
-	
-	@Mock
-	private OrthancConfiguration orthancConfiguration;
-	
-	@Mock
-	private DicomStudy dicomStudy;
-	
-	Patient patient;
-	
+
+	private OrthancConfiguration config;
+
 	@Before
-	public void setUp() {
+	public void setUp() throws Exception {
 		executeDataSet("testDicomStudyDataset.xml");
-		patient = Context.getPatientService().getPatient(1);
-		when(orthancConfigurationService.getAllOrthancConfigurations()).thenReturn(
-		    Collections.singletonList(orthancConfiguration));
-		when(dicomStudyService.getStudiesOfPatient(patient)).thenReturn(Collections.singletonList(dicomStudy));
+		testPatient = Context.getPatientService().getPatient(1);
+
+		Context.getAdministrationService().setGlobalProperty(ImagingConstants.GP_MAX_UPLOAD_IMAGEDATA_SIZE, "200000000");
+		controller = (StudiesPageController) applicationContext.getBean("studiesPageController");
 	}
 	
 	@Test
-	public void get_shouldAddAttributesToModel() {
-		controller.get(model, patient);
-		verify(model).addAttribute(eq("studies"), anyList());
-		verify(model).addAttribute(eq("orthancConfigurations"), anyList());
-		verify(model).addAttribute(eq("privilegeModifyImageData"), anyBoolean());
-		verify(model).addAttribute(eq("maxUploadImageDataSize"), eq(10L));
+	public void testGet_shouldPopulateModelOnGet() {
+		Model model = new PageModel();
+		controller.get(model, testPatient);
+		
+		assertNotNull(model.getAttribute("studies"));
+		assertNotNull(model.getAttribute("orthancConfigurations"));
+		assertTrue((Boolean) model.getAttribute("privilegeModifyImageData"));
+		assertNotNull(model.getAttribute("maxUploadImageDataSize"));
+	}
+	
+	@Test
+    public void testHandleMaxSizeException_shouldRedirectWithMessage() {
+        RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
+        MaxUploadSizeExceededException ex = new MaxUploadSizeExceededException(200_000_000);
+
+        String redirectUrl = controller.handleMaxSizeException(ex, redirectAttributes, testPatient);
+
+        assertEquals("redirect:/imaging/studies.page", redirectUrl);
+        assertEquals(testPatient.getId().toString(), redirectAttributes.getAttribute("patientId"));
+        assertEquals("File size exceeds maximum upload limit. Please upload a smaller file.", redirectAttributes.getAttribute("message"));
+    }
+	
+	@Test
+	public void testUploadStudy_shouldUploadFilesAndRedirect() throws Exception {
+
+		OrthancConfigurationService orthancService = Context.getService(OrthancConfigurationService.class);
+		OrthancConfiguration config = orthancService.getOrthancConfiguration(1);
+		
+		MultipartFile file = new org.springframework.mock.web.MockMultipartFile("file", "dummy.dcm", "application/dicom",
+		        "dummy data".getBytes());
+		
+		RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
+		// Todo: Add more detailed tests. Currently only verifying that the function is called.
+		String redirectUrl = controller.uploadStudy(redirectAttributes, null, config.getId(), new MultipartFile[] { file },
+		    testPatient);
+		assertEquals("redirect:/imaging/studies.page", redirectUrl);
+		assertEquals(testPatient.getId().toString(), redirectAttributes.getAttribute("patientId"));
+		assertNotNull(redirectAttributes.getAttribute("message"));
+	}
+
+	@Test
+	public void syncStudy_allStudiesWithNoConfig_shouldFetchAll() throws IOException {
+
+		RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
+		String view = controller.syncStudy(redirectAttributes, -1, "all", testPatient);
+
+		// Assert redirect URL
+		assertEquals("redirect:/imaging/syncStudies.page", view);
+		assertEquals(testPatient.getId().toString(), redirectAttributes.getAttribute("patientId"));
+		assertEquals("Not all studies could be downloaded successfully. The server might be unavailable.",
+				redirectAttributes.getAttribute("message"));
+	}
+
+	@Test
+	public void syncStudy_mixedServers_shouldHandleBothCases() {
+
+		RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
+
+		// --- Case 1: Valid server (8052) ---
+		String viewValid = controller.syncStudy(redirectAttributes, 1, "all", testPatient);
+
+		assertEquals("redirect:/imaging/syncStudies.page", viewValid);
+		assertEquals(testPatient.getId().toString(), redirectAttributes.getAttribute("patientId"));
+		assertEquals("Studies successfully fetched", redirectAttributes.getAttribute("message"));
+
+		// --- Case 2: Invalid server (8062) ---
+		redirectAttributes = new RedirectAttributesModelMap(); // resets
+		String viewInvalid = controller.syncStudy(redirectAttributes, 2, "all", testPatient);
+
+		assertEquals("redirect:/imaging/syncStudies.page", viewInvalid);
+		assertEquals(testPatient.getId().toString(), redirectAttributes.getAttribute("patientId"));
+		assertEquals("Not all studies could be downloaded successfully. The server might be unavailable.",
+				redirectAttributes.getAttribute("message"));
 	}
 }
