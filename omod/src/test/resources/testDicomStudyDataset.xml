@@ -8,7 +8,16 @@
     <person_name person_name_id="83" preferred="true" person_id="1" prefix="Mr." given_name="Test" middle_name="imaging" family_name="Imaging" family_name2="" creator="1" date_created="2015-01-09 00:00:00.0" voided="false" void_reason="" uuid="adbb3485-cbaa-4311-a7b4-d2defa4b9ad3"/>
     <patient patient_id="2" creator="1" date_created="2015-08-28 15:54:48.0" changed_by="1" voided="false" void_reason=""/>
 
+    <role role="Task: Modify Image Data" description="Full system access"/>
+    <role role="NoImagingPrivileges" description="Limited access"/>
 
+    <!-- User without imaging privileges -->
+    <person person_id="3" gender="F" birthdate="2000-01-01 00:00:00.0" birthdate_estimated="0" dead="false" creator="1" date_created="2025-01-01 00:00:00.0" voided="false" uuid="person-uuid-3"/>
+    <person_name person_name_id="84" preferred="true" person_id="3" prefix="Ms." given_name="Test" middle_name="" family_name="User" family_name2="" creator="1" date_created="2025-01-01 00:00:00.0" voided="false" void_reason="" uuid="personname-uuid-3"/>
+    <users user_id="3" system_id="testuser" username="testuser" password="hello"
+           creator="1" date_created="2025-01-01 00:00:00.0" person_id="3"
+           retired="false" retire_reason="" salt="randomSalt123" uuid="user-uuid-3"/>
+    <user_role user_id="3" role="NoImagingPrivileges"/>
 
     <imaging_OrthancConfiguration
             ID="1"
