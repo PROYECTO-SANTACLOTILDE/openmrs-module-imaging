@@ -2,8 +2,8 @@ package org.openmrs.module.imaging.page.controller;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.imaging.ImagingConstants;
 import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.module.imaging.api.DicomStudyService;
 import org.openmrs.module.imaging.api.OrthancConfigurationService;
@@ -12,6 +12,8 @@ import org.openmrs.module.imaging.api.study.DicomStudy;
 import org.openmrs.ui.framework.Model;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -30,18 +32,22 @@ public class SeriesPageControllerTest extends BaseModuleWebContextSensitiveTest 
 	private SeriesPageController controller;
 	
 	private OrthancConfigurationService orthancConfigurationService;
+
+	private Patient patient;
 	
 	@Before
 	public void setUp() throws Exception {
 		executeDataSet("testDicomStudyDataset.xml");
 		controller = (SeriesPageController) applicationContext.getBean("seriesPageController");
+
+		patient = Context.getPatientService().getPatient(1);
+		dicomStudyService = Context.getService(DicomStudyService.class);
+		orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
 	}
 	
 	@Test
 	public void testGet_shouldPopulateModelWithSeriesList() throws IOException {
-		
-		SeriesPageController controller = new SeriesPageController();
-		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
+
 		OrthancConfiguration config = orthancConfigurationService.getOrthancConfiguration(1);
 
 		dicomStudyService = Context.getService(DicomStudyService.class);
@@ -67,7 +73,6 @@ public class SeriesPageControllerTest extends BaseModuleWebContextSensitiveTest 
 		assertNotNull(model.getAttribute("studyInstanceUID"));
 		assertNotNull(model.getAttribute("privilegeModifyImageData"));
 
-
 		// Verify serieses list has exactly 1 item
 		Object seriesObj = model.getAttribute("serieses");
 		assertTrue(seriesObj instanceof List<?>);
@@ -81,4 +86,45 @@ public class SeriesPageControllerTest extends BaseModuleWebContextSensitiveTest 
 			assertEquals("testSeriesUID123", series.getSeriesInstanceUID());
 		}
 	}
+
+	@Test
+	public void testDeleteSeries_shouldRedirectWithSuccessMessage() throws Exception {
+
+		OrthancConfiguration config = orthancConfigurationService.getOrthancConfiguration(1);
+
+		// Prepare a DicomStudy object
+		DicomStudy study = dicomStudyService.getDicomStudy(1);
+
+		// Mock the HTTP DELETE request to return HTTP_OK
+		ClientConnectionPair mockPair = ClientConnectionPair.setupMockClientWithStatus(
+				HttpURLConnection.HTTP_OK,
+				"DELETE",
+				"/series/MOCK-SERIES-UID",
+				"",
+				config
+		);
+
+		HttpURLConnection mockConnection = mockPair.getConnection();
+		when(mockConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
+
+		// Set the mock client in the service
+		dicomStudyService.setHttpClient(mockPair.getClient());
+
+		RedirectAttributes redirectAttrs = new RedirectAttributesModelMap();
+
+		// Call the controller
+		String view = controller.deleteSeries(
+				redirectAttrs,
+				"MOCK-SERIES-UID",
+				study.getId(),
+				patient
+		);
+
+		// Verify redirect view and attributes
+		assertEquals("redirect:/imaging/series.page", view);
+		assertEquals(patient.getId().toString(), redirectAttrs.getAttribute("patientId"));
+		assertEquals(study.getId().toString(), redirectAttrs.getAttribute("studyId"));
+		assertEquals("Series successfully deleted", redirectAttrs.getAttribute("message"));
+	}
+
 }
