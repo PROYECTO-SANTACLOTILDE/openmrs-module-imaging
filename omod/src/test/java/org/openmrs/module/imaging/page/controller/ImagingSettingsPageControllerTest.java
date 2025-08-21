@@ -1,6 +1,5 @@
 package org.openmrs.module.imaging.page.controller;
 
-
 import org.directwebremoting.util.DelegatingServletOutputStream;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,30 +21,33 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class ImagingSettingsPageControllerTest extends BaseModuleWebContextSensitiveTest {
-
-    private ImagingSettingsPageController controller;
-    private OrthancConfigurationService orthancConfigurationService;
-    private DicomStudyService dicomStudyService;
-    private RequestProcedureService requestProcedureService;
-
-    @Before
-    public void setUp() throws Exception {
-        controller = (ImagingSettingsPageController) applicationContext.getBean("imagingSettingsPageController");
-        orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
-        dicomStudyService = Context.getService(DicomStudyService.class);
-        requestProcedureService = Context.getService(RequestProcedureService.class);
-    }
-
-    @Test
-    public void testGet_shouldPopulateModel() {
-        Model model = new PageModel();
-        controller.get(model);
-
-        assertNotNull(model.getAttribute("orthancConfigurations"));
-        assertNotNull(model.getAttribute("privilegeManagerOrthancConfiguration"));
-    }
-
-    @Test
+	
+	private ImagingSettingsPageController controller;
+	
+	private OrthancConfigurationService orthancConfigurationService;
+	
+	private DicomStudyService dicomStudyService;
+	
+	private RequestProcedureService requestProcedureService;
+	
+	@Before
+	public void setUp() throws Exception {
+		controller = (ImagingSettingsPageController) applicationContext.getBean("imagingSettingsPageController");
+		orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
+		dicomStudyService = Context.getService(DicomStudyService.class);
+		requestProcedureService = Context.getService(RequestProcedureService.class);
+	}
+	
+	@Test
+	public void testGet_shouldPopulateModel() {
+		Model model = new PageModel();
+		controller.get(model);
+		
+		assertNotNull(model.getAttribute("orthancConfigurations"));
+		assertNotNull(model.getAttribute("privilegeManagerOrthancConfiguration"));
+	}
+	
+	@Test
     public void testStoreConfiguration_shouldSaveConfiguration() {
         RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
         String orthancBaseUrl = "http://localhost:8052";
@@ -65,43 +67,43 @@ public class ImagingSettingsPageControllerTest extends BaseModuleWebContextSensi
         assertNotNull(config);
         assertEquals(orthancUsername, config.getOrthancUsername());
     }
-
-    @Test
-    public void testDeleteConfiguration_shouldDeleteIfNoStudyOrProcedure() {
-        OrthancConfiguration config = new OrthancConfiguration();
-        config.setOrthancBaseUrl("http://localhost:8052");
-        config.setOrthancProxyUrl("");
-        config.setOrthancUsername("orthanc");
-        config.setOrthancPassword("orthanc");
-        orthancConfigurationService.saveOrthancConfiguration(config);
-
-        RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
-        String redirect = controller.deleteConfiguration(redirectAttributes, config.getId());
-
-        assertEquals("redirect:/imaging/imagingSettings.page", redirect);
-        assertTrue(redirectAttributes.getFlashAttributes().containsKey("message"));
-    }
-
-    @Test
-    public void testCheckConfiguration_shouldReturnMessage() throws Exception{
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        when(response.getOutputStream()).thenReturn(new DelegatingServletOutputStream(outputStream));
-
-        controller.checkConfiguration(response, "http://localhost:8052", "", "orthanc", "orthanc");
-
-        String responseText = outputStream.toString();
-        assertTrue(responseText.contains("Check successful"));
-    }
-
-    @Test
-    public void testCheckConfiguration_shouldReturnInvalidMessage() throws Exception{
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        when(response.getOutputStream()).thenReturn(new DelegatingServletOutputStream(outputStream));
-
-        controller.checkConfiguration(response, "http://localhost:8062", "", "orthanc", "orthanc");
-        String invalidResponseText = outputStream.toString();
-        assertTrue(invalidResponseText.contains("Connection refused"));
-    }
+	
+	@Test
+	public void testDeleteConfiguration_shouldDeleteIfNoStudyOrProcedure() {
+		OrthancConfiguration config = new OrthancConfiguration();
+		config.setOrthancBaseUrl("http://localhost:8052");
+		config.setOrthancProxyUrl("");
+		config.setOrthancUsername("orthanc");
+		config.setOrthancPassword("orthanc");
+		orthancConfigurationService.saveOrthancConfiguration(config);
+		
+		RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
+		String redirect = controller.deleteConfiguration(redirectAttributes, config.getId());
+		
+		assertEquals("redirect:/imaging/imagingSettings.page", redirect);
+		assertTrue(redirectAttributes.getFlashAttributes().containsKey("message"));
+	}
+	
+	@Test
+	public void testCheckConfiguration_shouldReturnMessage() throws Exception {
+		HttpServletResponse response = mock(HttpServletResponse.class);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		when(response.getOutputStream()).thenReturn(new DelegatingServletOutputStream(outputStream));
+		
+		controller.checkConfiguration(response, "http://localhost:8052", "", "orthanc", "orthanc");
+		
+		String responseText = outputStream.toString();
+		assertTrue(responseText.contains("Check successful"));
+	}
+	
+	@Test
+	public void testCheckConfiguration_shouldReturnInvalidMessage() throws Exception {
+		HttpServletResponse response = mock(HttpServletResponse.class);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		when(response.getOutputStream()).thenReturn(new DelegatingServletOutputStream(outputStream));
+		
+		controller.checkConfiguration(response, "http://localhost:8062", "", "orthanc", "orthanc");
+		String invalidResponseText = outputStream.toString();
+		assertTrue(invalidResponseText.contains("Connection refused"));
+	}
 }

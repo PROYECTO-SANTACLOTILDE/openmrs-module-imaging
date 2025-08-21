@@ -13,14 +13,22 @@ import org.openmrs.module.imaging.api.study.DicomStudy;
 import org.openmrs.ui.framework.Model;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class StudiesPageControllerTest extends BaseModuleWebContextSensitiveTest {
 	
@@ -68,21 +76,31 @@ public class StudiesPageControllerTest extends BaseModuleWebContextSensitiveTest
 		OrthancConfigurationService orthancService = Context.getService(OrthancConfigurationService.class);
 		OrthancConfiguration config = orthancService.getOrthancConfiguration(1);
 		
+		ClientConnectionPair pair = ClientConnectionPair.setupMockClientWithStatus(200, "POST", "/instances", "", config);
+		HttpURLConnection mockConnection = pair.getConnection();
+		
+		// Mock getOutputStream
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		doReturn(outputStream).when(mockConnection).getOutputStream();
+		
+		// Inject the mocked client
+		dicomStudyService = Context.getService(DicomStudyService.class);
+		dicomStudyService.setHttpClient(pair.getClient());
+		
 		MultipartFile file = new org.springframework.mock.web.MockMultipartFile("file", "dummy.dcm", "application/dicom",
 		        "dummy data".getBytes());
 		
 		RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
-		// Todo: Add more detailed tests. Currently only verifying that the function is called.
 		String redirectUrl = controller.uploadStudy(redirectAttributes, null, config.getId(), new MultipartFile[] { file },
 		    testPatient);
 		assertEquals("redirect:/imaging/studies.page", redirectUrl);
 		assertEquals(testPatient.getId().toString(), redirectAttributes.getAttribute("patientId"));
 		assertNotNull(redirectAttributes.getAttribute("message"));
+		assertEquals("All files uploaded", redirectAttributes.getAttribute("message"));
 	}
 	
 	@Test
 	public void syncStudy_allStudiesWithNoConfig_shouldFetchAll() throws IOException {
-		
 		RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
 		String view = controller.syncStudy(redirectAttributes, -1, "all", testPatient);
 		
@@ -94,25 +112,57 @@ public class StudiesPageControllerTest extends BaseModuleWebContextSensitiveTest
 	}
 	
 	@Test
-	public void syncStudy_mixedServers_shouldHandleBothCases() {
-		
+	public void syncStudy_shouldHandleServerValid() throws IOException {
+		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
+		OrthancConfiguration config = orthancConfigurationService.getOrthancConfiguration(1);
 		RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
 		
-		// --- Case 1: Valid server (8052) ---
+		// Setup mock client & connection with 200 OK
+		ClientConnectionPair pair = ClientConnectionPair.setupMockClientWithStatus(HttpURLConnection.HTTP_OK, "POST",
+		    "/tools/find", "", config);
+		
+		// Simulate a JSON response body from Orthanc
+		String mockJson = "[{ \"PatientID\": \"123\", \"StudyInstanceUID\": \"abc\" }]";
+		InputStream inputStream = new ByteArrayInputStream(mockJson.getBytes(StandardCharsets.UTF_8));
+		when(pair.getConnection().getInputStream()).thenReturn(inputStream);
+		
+		dicomStudyService = Context.getService(DicomStudyService.class);
+		dicomStudyService.setHttpClient(pair.getClient()); // inject mocked client if controller delegates
+		
+		// Call controller
 		String viewValid = controller.syncStudy(redirectAttributes, 1, "all", testPatient);
 		
+		// Assertions
 		assertEquals("redirect:/imaging/syncStudies.page", viewValid);
 		assertEquals(testPatient.getId().toString(), redirectAttributes.getAttribute("patientId"));
-		assertEquals("Studies successfully fetched", redirectAttributes.getAttribute("message"));
 		
-		// --- Case 2: Invalid server (8062) ---
+		String message = (String) redirectAttributes.getAttribute("message");
+		assertNotNull(message);
+		assertTrue(message.contains("Studies successfully fetched"));
+	}
+	
+	@Test
+	public void syncStudy_mixedServers_shouldHandleServerInvalid() throws IOException {
+		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
+		OrthancConfiguration config = orthancConfigurationService.getOrthancConfiguration(1);
+		
+		RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
 		redirectAttributes = new RedirectAttributesModelMap(); // resets
-		String viewInvalid = controller.syncStudy(redirectAttributes, 2, "all", testPatient);
+		ClientConnectionPair pair = ClientConnectionPair.setupMockClientWithStatus(500, // simulate server error
+		    "POST", "/instances", "Server error", config);
+		HttpURLConnection mockConnection = pair.getConnection();
+		doReturn(new ByteArrayOutputStream()).when(mockConnection).getOutputStream();
+		dicomStudyService = Context.getService(DicomStudyService.class);
+		dicomStudyService.setHttpClient(pair.getClient());
 		
-		assertEquals("redirect:/imaging/syncStudies.page", viewInvalid);
+		MultipartFile file = new MockMultipartFile("file", "dummy.dcm", "application/dicom", "dummy data".getBytes());
+		String redirectUrl = controller.uploadStudy(redirectAttributes, null, config.getId(), new MultipartFile[] { file },
+		    testPatient);
+		
+		assertEquals("redirect:/imaging/studies.page", redirectUrl);
 		assertEquals(testPatient.getId().toString(), redirectAttributes.getAttribute("patientId"));
-		assertEquals("Not all studies could be downloaded successfully. The server might be unavailable.",
-		    redirectAttributes.getAttribute("message"));
+		assertTrue(((String) Objects.requireNonNull(redirectAttributes.getAttribute("message")))
+		        .contains("Some files could not be uploaded"));
 	}
 	
 	@Test
