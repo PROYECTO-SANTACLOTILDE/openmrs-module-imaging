@@ -56,4 +56,16 @@
             patient_id="1"
             studyDescription="CT Head without contrast"
             gender="F" />
+
+    <imaging_DicomStudy
+            ID = "3"
+            studyInstanceUID="studyInstanceUID777"
+            orthancStudyUID="orthancUID777"
+            patientName="Test Imaging"
+            studyDate="2025-08-22"
+            studyTime="16:35:00"
+            orthancConfigurationId="1"
+            patient_id="2"
+            studyDescription="MRI image"
+            gender="F" />
 </dataset>

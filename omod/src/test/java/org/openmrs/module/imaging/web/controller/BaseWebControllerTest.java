@@ -101,7 +101,7 @@ public class BaseWebControllerTest extends BaseModuleWebContextSensitiveTest {
 		}
 		return request;
 	}
-
+	
 	public MockHttpServletRequest newPostRequest(String requestURI, MultipartFile file, int configurationId) {
 		MockHttpServletRequest request = request(RequestMethod.POST, requestURI);
 		request.setMethod("POST");
@@ -126,27 +126,44 @@ public class BaseWebControllerTest extends BaseModuleWebContextSensitiveTest {
 	public MockHttpServletResponse handle(HttpServletRequest request) throws Exception {
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		
-		HandlerExecutionChain chain = null;
-		for (RequestMappingHandlerMapping mapping : handlerMappings) {
-			chain = mapping.getHandler(request);
-			if (chain != null) {
+		HandlerExecutionChain handlerExecutionChain = null;
+		for (RequestMappingHandlerMapping handlerMapping : handlerMappings) {
+			handlerExecutionChain = handlerMapping.getHandler(request);
+			if (handlerExecutionChain != null) {
 				break;
 			}
 		}
-		Assert.assertNotNull("Handler not found for URI: " + request.getRequestURI(), chain);
+		Assert.assertNotNull("The request URI does not exist", handlerExecutionChain);
 		
-		handlerAdapter.handle(request, response, chain.getHandler());
-		Object controller = chain.getHandler();
-		if (controller instanceof DicomStudyController) {
-			Object result = ((DicomStudyController) controller).useStudiesByPatient(request.getParameter("patient"),
-			    (MockHttpServletRequest) request, response);
-			if (result != null) {
-				response.setContentType("application/json");
-				response.getWriter().write(new ObjectMapper().writeValueAsString(result));
-			}
-		}
+		handlerAdapter.handle(request, response, handlerExecutionChain.getHandler());
+		
 		return response;
 	}
+	
+	//	public MockHttpServletResponse handle(HttpServletRequest request) throws Exception {
+	//		MockHttpServletResponse response = new MockHttpServletResponse();
+	//
+	//		HandlerExecutionChain chain = null;
+	//		for (RequestMappingHandlerMapping mapping : handlerMappings) {
+	//			chain = mapping.getHandler(request);
+	//			if (chain != null) {
+	//				break;
+	//			}
+	//		}
+	//		Assert.assertNotNull("Handler not found for URI: " + request.getRequestURI(), chain);
+	//
+	//		handlerAdapter.handle(request, response, chain.getHandler());
+	//		Object controller = chain.getHandler();
+	//		if (controller instanceof DicomStudyController) {
+	//			Object result = ((DicomStudyController) controller).useStudiesByPatient(request.getParameter("patient"),
+	//			    (MockHttpServletRequest) request, response);
+	//			if (result != null) {
+	//				response.setContentType("application/json");
+	//				response.getWriter().write(new ObjectMapper().writeValueAsString(result));
+	//			}
+	//		}
+	//		return response;
+	//	}
 	
 	public <T> T deserialize(MockHttpServletResponse response, Class<T> type) throws Exception {
 		String content = response.getContentAsString();
