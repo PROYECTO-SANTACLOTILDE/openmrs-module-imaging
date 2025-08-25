@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.imaging.ClientConnectionPair;
 import org.openmrs.module.imaging.ImagingConstants;
 import org.openmrs.module.imaging.api.DicomStudyService;
 import org.openmrs.module.imaging.api.OrthancConfigurationService;

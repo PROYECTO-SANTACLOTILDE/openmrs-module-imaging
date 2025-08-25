@@ -72,10 +72,12 @@ public class RequestProcedureController {
 	private static void writeProcedure(RequestProcedure rp, Map<String, Object> map,
 	        RequestProcedureStepService requestProcedureStepService) {
 
+		map.put("status", rp.getStatus());
 		map.put("SpecificCharacterSet", "ISO_IR 100");
 		map.put("AccessionNumber", rp.getAccessionNumber());
 		map.put("PatientName", rp.getMrsPatient().getPersonName().getFullName());
-		map.put("PatientID", rp.getMrsPatient().getPatientIdentifier().getUuid());
+//		map.put("PatientID", rp.getMrsPatient().getPatientIdentifier().getUuid());
+		map.put("PatientID", rp.getMrsPatient().getUuid());
 		String birthDate = rp.getMrsPatient().getBirthdate().toString();
 		String birthAge = rp.getMrsPatient().getAge().toString();
 		if (birthDate == null || birthDate.trim().isEmpty()) {

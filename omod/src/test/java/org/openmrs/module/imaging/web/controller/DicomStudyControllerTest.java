@@ -10,11 +10,9 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.module.imaging.api.DicomStudyService;
 import org.openmrs.module.imaging.api.OrthancConfigurationService;
-import org.openmrs.module.imaging.api.client.OrthancHttpClient;
 import org.openmrs.module.imaging.api.study.DicomStudy;
-import org.openmrs.module.imaging.page.controller.ClientConnectionPair;
+import org.openmrs.module.imaging.ClientConnectionPair;
 import org.openmrs.module.imaging.web.controller.ResponseModel.*;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -32,7 +30,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.openmrs.module.imaging.page.controller.ClientConnectionPair.setupMockClientWithStatus;
+import static org.openmrs.module.imaging.ClientConnectionPair.setupMockClientWithStatus;
 
 public class DicomStudyControllerTest extends BaseWebControllerTest {
 	
@@ -201,7 +199,6 @@ public class DicomStudyControllerTest extends BaseWebControllerTest {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		when(mockConnection.getOutputStream()).thenReturn(outputStream);
 		
-		// Inject mock client into service
 		dicomStudyService.setHttpClient(pair.getClient()); // Make sure this sets the client
 		
 		MockHttpServletRequest request = newPostRequest("/rest/v1/imaging/instances", file, config.getId());

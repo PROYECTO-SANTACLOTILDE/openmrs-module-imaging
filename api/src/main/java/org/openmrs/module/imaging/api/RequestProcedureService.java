@@ -16,6 +16,7 @@ package org.openmrs.module.imaging.api;
 import org.openmrs.Patient;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.imaging.OrthancConfiguration;
+import org.openmrs.module.imaging.api.dao.RequestProcedureDao;
 import org.openmrs.module.imaging.api.worklist.RequestProcedure;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

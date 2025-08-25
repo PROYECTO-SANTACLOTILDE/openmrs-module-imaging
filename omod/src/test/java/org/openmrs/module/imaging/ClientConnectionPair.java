@@ -1,6 +1,5 @@
-package org.openmrs.module.imaging.page.controller;
+package org.openmrs.module.imaging;
 
-import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.module.imaging.api.client.OrthancHttpClient;
 
 import java.io.ByteArrayInputStream;
