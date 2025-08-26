@@ -4,6 +4,7 @@ import junit.framework.Assert;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.junit.Ignore;
+import org.openmrs.module.webservices.rest.SimpleObject;
 import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -26,8 +27,6 @@ public class BaseWebControllerTest extends BaseModuleWebContextSensitiveTest {
 	
 	@Autowired
 	protected List<RequestMappingHandlerMapping> handlerMappings;
-	
-	private ObjectMapper objectMapper = new ObjectMapper();
 	
 	public MockHttpServletRequest request(RequestMethod method, String requestURI) {
 		MockHttpServletRequest request = new MockHttpServletRequest(method.toString(), requestURI);
@@ -140,40 +139,10 @@ public class BaseWebControllerTest extends BaseModuleWebContextSensitiveTest {
 		return response;
 	}
 	
-	//	public MockHttpServletResponse handle(HttpServletRequest request) throws Exception {
-	//		MockHttpServletResponse response = new MockHttpServletResponse();
-	//
-	//		HandlerExecutionChain chain = null;
-	//		for (RequestMappingHandlerMapping mapping : handlerMappings) {
-	//			chain = mapping.getHandler(request);
-	//			if (chain != null) {
-	//				break;
-	//			}
-	//		}
-	//		Assert.assertNotNull("Handler not found for URI: " + request.getRequestURI(), chain);
-	//
-	//		handlerAdapter.handle(request, response, chain.getHandler());
-	//		Object controller = chain.getHandler();
-	//		if (controller instanceof DicomStudyController) {
-	//			Object result = ((DicomStudyController) controller).useStudiesByPatient(request.getParameter("patient"),
-	//			    (MockHttpServletRequest) request, response);
-	//			if (result != null) {
-	//				response.setContentType("application/json");
-	//				response.getWriter().write(new ObjectMapper().writeValueAsString(result));
-	//			}
-	//		}
-	//		return response;
-	//	}
-	
-	public <T> T deserialize(MockHttpServletResponse response, Class<T> type) throws Exception {
+	public SimpleObject deserialize(MockHttpServletResponse response) throws Exception {
 		String content = response.getContentAsString();
 		Assert.assertFalse("Response is empty", content.isEmpty());
-		return objectMapper.readValue(response.getContentAsString(), type);
+		return new ObjectMapper().readValue(response.getContentAsString(), SimpleObject.class);
 	}
-	
-	public <T> T deserialize(MockHttpServletResponse response, final TypeReference<T> typeReference) throws Exception {
-		String content = response.getContentAsString();
-		Assert.assertFalse("Response is empty", content.isEmpty());
-		return objectMapper.readValue(response.getContentAsString(), typeReference);
-	}
+
 }

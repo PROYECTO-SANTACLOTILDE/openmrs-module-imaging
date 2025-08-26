@@ -40,11 +40,12 @@ public class RequestProcedureControllerTest extends BaseWebControllerTest {
 		MockHttpServletRequest request = newGetRequest("/rest/v1/worklist/requests");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 
-        var result = controller.useRequestProcedures(request, response);
+		ResponseEntity<Object> result = controller.useRequestProcedures(request, response);
 
         assertEquals(200, result.getStatusCodeValue());
         List<Map<String, Object>> body = (List<Map<String, Object>>) result.getBody();
         //Todo Wei: here need to check why it returns only schedule
+        assertNotNull(body);
         assertEquals(1, body.size());
         assertTrue(
                 body.stream().allMatch(map ->
@@ -105,9 +106,7 @@ public class RequestProcedureControllerTest extends BaseWebControllerTest {
 
 		// Simulate POST request with helper
 		MockHttpServletRequest request = newPostRequest(
-				"/rest/v1/worklist/saverequest",  // endpoint path
-				requestPostData                   // body content
-		);
+				"/rest/v1/worklist/saverequest", requestPostData);
 		MockHttpServletResponse response = new MockHttpServletResponse();
 
 		ResponseEntity<Object> result = controller.saveRequestProcedure(requestPostData, request, response);
