@@ -297,9 +297,9 @@
     </pluginRepositories>
 
     <properties>
-        <openmrsPlatformVersion>2.6.0</openmrsPlatformVersion>
+        <openmrsPlatformVersion>2.5.9</openmrsPlatformVersion>
         <webservicesRestModuleVersion>2.48.0</webservicesRestModuleVersion>
-        <openMRSVersion>2.6.0</openMRSVersion>
+        <openMRSVersion>2.5.9</openMRSVersion>
         <junitVersion>4.13.2</junitVersion>
         <hamcrestVersion>3.0</hamcrestVersion>
 <!--        <mockitoVersion>2.23.4</mockitoVersion>-->

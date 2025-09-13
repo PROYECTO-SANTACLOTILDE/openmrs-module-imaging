@@ -144,5 +144,5 @@ public class BaseWebControllerTest extends BaseModuleWebContextSensitiveTest {
 		Assert.assertFalse("Response is empty", content.isEmpty());
 		return new ObjectMapper().readValue(response.getContentAsString(), SimpleObject.class);
 	}
-
+	
 }
