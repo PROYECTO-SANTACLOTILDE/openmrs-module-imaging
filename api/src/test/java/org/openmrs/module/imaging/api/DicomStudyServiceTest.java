@@ -99,20 +99,22 @@ public class DicomStudyServiceTest extends BaseModuleContextSensitiveTest {
 		OrthancConfiguration config = orthancConfigurationService.getOrthancConfiguration(1);
 		
 		ClientConnectionPair pair = setupMockClientWithStatus(200, "POST", "/tools/find", "", config);
-		
 		doNothing().when(pair.getClient()).sendOrthancQuery(any(), anyString());
 		when(pair.getConnection().getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
 		
-		String mockJson = "[{ \"PatientID\": \"123\", \"StudyInstanceUID\": \"abc\" }]";
+		String mockJson = "[{" + "\"ID\": \"orthanc123\", " + "\"MainDicomTags\": {\"StudyInstanceUID\": \"abc\"}, "
+		        + "\"PatientMainDicomTags\": {\"PatientName\": \"John Doe\", \"Gender\": \"M\"}" + "}]";
+		
 		InputStream inputStream = new ByteArrayInputStream(mockJson.getBytes());
 		when(pair.getConnection().getInputStream()).thenReturn(inputStream);
 		
 		DicomStudyServiceImpl serverImpl = new DicomStudyServiceImpl();
 		DicomStudyServiceImpl spyService = Mockito.spy(serverImpl);
-		doNothing().when(spyService).createOrUpdateStudy(any(), anyObject());
+		spyService.setHttpClient(pair.getClient());
+		doNothing().when(spyService).createOrUpdateStudy(any(), any());
 		
 		spyService.fetchAllStudies(config);
-		verify(spyService, times(5)).createOrUpdateStudy(eq(config), anyObject());
+		verify(spyService, times(1)).createOrUpdateStudy(eq(config), any());
 	}
 	
 	@Test
