@@ -137,7 +137,7 @@ public class ImagingSettingsPageController {
 	        @RequestParam(value = "password") String password) {
 		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
 		OrthancHttpClient httpClient = new OrthancHttpClient();
-		String checkUrl = (proxyurl != null && !proxyurl.isEmpty()) ? proxyurl : url;
+		String checkUrl = url; // (proxyurl != null && !proxyurl.isEmpty()) ? proxyurl : url;
 		try {
 			try {
 				int status = httpClient.testOrthancConnection(checkUrl, username, password);

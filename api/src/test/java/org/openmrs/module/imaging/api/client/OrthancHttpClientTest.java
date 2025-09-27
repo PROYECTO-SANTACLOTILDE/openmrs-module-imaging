@@ -73,7 +73,7 @@ public class OrthancHttpClientTest {
 	public void testIsOrthancReachable_success() throws IOException {
 		OrthancConfiguration config = mock(OrthancConfiguration.class);
 		when(config.getOrthancBaseUrl()).thenReturn("http://localhost:8052");
-		//        when(config.getOrthancBaseUrl()).thenReturn("http://localhost:8042"); // False
+		when(config.getOrthancProxyUrl()).thenReturn("");
 		when(config.getOrthancPassword()).thenReturn("orthanc");
 		when(config.getOrthancUsername()).thenReturn("orthanc");
 		
@@ -85,11 +85,7 @@ public class OrthancHttpClientTest {
 		realConnection.disconnect();
 		
 		boolean reachable = httpClient.isOrthancReachable(config);
-		// Can't inject the mock httpURLConnection directly in this method
-		// Use this only as a basic test or wrap URL logic in testable units
 		assertTrue(reachable);
-		//assertFalse(reachable); // "http://localhost:8042"
-		
 	}
 	
 	@Test

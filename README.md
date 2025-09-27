@@ -110,3 +110,7 @@ If you want to generate a `.wl` file, uncomment the following lines from the pyt
   # with open("/tmp/worklist_test.wl", 'wb') as f:
   # f.write(responseDicom)`
 ```
+
+## Docker Project for This Module
+The Docker setup for this module, including the microfrontend for OpenMRS 3.x, is available here: 
+https://github.com/sadrezhao/openmrs-imaging-docker
