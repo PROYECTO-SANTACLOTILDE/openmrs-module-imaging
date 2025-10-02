@@ -32,7 +32,7 @@
     <!-- RequestProcedure table -->
     <imaging_RequestProcedure
             ID = "1"
-            status="scheduled"
+            status="in progress"
             patient_id="1"
             orthancConfigurationId="1"
             accessionNumber="ACC1001"

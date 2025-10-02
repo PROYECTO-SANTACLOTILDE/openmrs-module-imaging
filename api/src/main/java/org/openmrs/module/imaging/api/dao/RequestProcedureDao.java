@@ -56,6 +56,12 @@ public class RequestProcedureDao {
 	}
 	
 	@SuppressWarnings("unchecked")
+	public List<RequestProcedure> getAllByProcedureStatus(String status) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(RequestProcedure.class);
+		return criteria.add(Restrictions.eq("status", status)).list();
+	}
+	
+	@SuppressWarnings("unchecked")
 	public List<RequestProcedure> getByPatient(Patient patient) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(RequestProcedure.class);
 		return criteria.add(Restrictions.eq("mrsPatient", patient)).list();

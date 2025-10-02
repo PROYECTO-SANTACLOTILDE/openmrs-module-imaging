@@ -36,11 +36,20 @@ public class RequestProcedureServiceTest extends BaseModuleContextSensitiveTest 
 	}
 	
 	@Test
+	public void getAllRequestProceduresByStatus_shouldProceduresFromDatabase() {
+		List<RequestProcedure> requestProcedureList = requestProcedureService.getRequestProceduresByStatus("in progress");
+		
+		assertNotNull(requestProcedureList);
+		assertEquals(1, requestProcedureList.size());
+	}
+	
+	@Test
 	public void getRequestProcedureByPatient_shouldReturnProceduresForPatient() {
 		Patient patient = Context.getPatientService().getPatient(1);
 		
 		List<RequestProcedure> requestProcedureList = requestProcedureService.getRequestProcedureByPatient(patient);
 		assertNotNull(requestProcedureList);
+		assertEquals(3, requestProcedureList.size());
 		assertEquals(3, requestProcedureList.size());
 	}
 	
@@ -62,7 +71,7 @@ public class RequestProcedureServiceTest extends BaseModuleContextSensitiveTest 
 		List<RequestProcedure> procedureList = requestProcedureService.getAllByStudyInstanceUID(study.getStudyInstanceUID());
 		assertNotNull(procedureList);
 		assertEquals("ACC1001", procedureList.get(0).getAccessionNumber());
-		assertEquals("complete", procedureList.get(0).getStatus());
+		assertEquals("in progress", procedureList.get(0).getStatus());
 		assertEquals("testInstanceUID888", procedureList.get(0).getStudyInstanceUID());
 	}
 	

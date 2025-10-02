@@ -30,6 +30,8 @@ public interface RequestProcedureService extends OpenmrsService {
 	
 	List<RequestProcedure> getAllRequestProcedures();
 	
+	List<RequestProcedure> getRequestProceduresByStatus(String status);
+	
 	List<RequestProcedure> getAllByStudyInstanceUID(String studyInstanceUID);
 	
 	List<RequestProcedure> getRequestProcedureByPatient(Patient pt);

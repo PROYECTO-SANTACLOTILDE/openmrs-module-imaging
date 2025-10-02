@@ -14,10 +14,10 @@ public class RequestProcedureTest {
 		Patient patient = new Patient();
 		OrthancConfiguration config = new OrthancConfiguration();
 		
-		RequestProcedure requestProcedure = new RequestProcedure("In progress", patient, config, "ACC12345", "UID456",
+		RequestProcedure requestProcedure = new RequestProcedure("in progress", patient, config, "ACC12345", "UID456",
 		        "Dr. Smith", "Chest X-ray", "High");
 		
-		assertEquals("In progress", requestProcedure.getStatus());
+		assertEquals("in progress", requestProcedure.getStatus());
 		assertEquals(patient, requestProcedure.getMrsPatient());
 		assertEquals(config, requestProcedure.getOrthancConfiguration());
 		assertEquals("ACC12345", requestProcedure.getAccessionNumber());

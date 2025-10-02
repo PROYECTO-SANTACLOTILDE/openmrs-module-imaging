@@ -57,6 +57,11 @@ public class RequestProcedureServiceImpl extends BaseOpenmrsService implements R
 		return dao.getAll();
 	}
 	
+	@Override
+	public List<RequestProcedure> getRequestProceduresByStatus(String status) {
+		return dao.getAllByProcedureStatus(status);
+	}
+	
 	/**
 	 * @param studyInstanceUID the study instance UID
 	 */

@@ -44,12 +44,29 @@ public class RequestProcedureControllerTest extends BaseWebControllerTest {
 
         assertEquals(200, result.getStatusCodeValue());
         List<Map<String, Object>> body = (List<Map<String, Object>>) result.getBody();
-        //Todo Wei: here need to check why it returns only schedule
         assertNotNull(body);
         assertEquals(1, body.size());
         assertTrue(
                 body.stream().allMatch(map ->
                         map.get("status") != null && "scheduled".equalsIgnoreCase((String) map.get("status"))
+                )
+        );
+    }
+	
+	@Test
+    @Transactional
+    public void testUseRequestProcedureByStatus_shouldRetrunProcedureByStatus() throws Exception {
+        MockHttpServletRequest request = newGetRequest("/rest/v1/worklist/requests");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        ResponseEntity<Object> result = controller.useRequestProceduresByStatus("in progress", request, response);
+
+        assertEquals(200, result.getStatusCodeValue());
+        List<Map<String, Object>> body = (List<Map<String, Object>>) result.getBody();
+        assertEquals(1, body.size());
+        assertTrue(
+                body.stream().allMatch(map ->
+                        map.get("status") != null && "in progress".equalsIgnoreCase((String) map.get("status"))
                 )
         );
     }
@@ -188,7 +205,7 @@ public class RequestProcedureControllerTest extends BaseWebControllerTest {
 
 		assertEquals(3, requestList.size());
 
-		assertEquals("complete", requestList.get(0).getStatus());
+		assertEquals("in progress", requestList.get(0).getStatus());
 		assertEquals("testInstanceUID888", requestList.get(0).getStudyInstanceUID());
 
 		assertEquals("complete", requestList.get(1).getStatus());

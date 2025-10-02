@@ -65,6 +65,28 @@ public class RequestProcedureController {
     }
 	
 	/**
+	 * @param status The request procedure status 'in progress, scheduled, completed',
+	 * @return Retrieved request procedures are conditional on status values
+	 */
+	@RequestMapping(value = "/requestsByStatus", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<Object> useRequestProceduresByStatus(@RequestParam("status") String status,
+                                                               HttpServletRequest request, HttpServletResponse response ) {
+        RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
+        RequestProcedureStepService requestProcedureStepService = Context.getService(RequestProcedureStepService.class);
+        List<RequestProcedure> rps = requestProcedureService.getRequestProceduresByStatus(status);
+        List<Map<String,Object>> result = new LinkedList<Map<String,Object>>();
+        for (RequestProcedure rp : rps) {
+            if(rp.getStatus().equalsIgnoreCase(status)) {
+                Map<String,Object> map = new HashMap<String,Object>();
+                writeProcedure(rp, map, requestProcedureStepService);
+                result.add(map);
+            }
+        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+	
+	/**
 	 * @param rp The request procedure object
 	 * @param map The worklist data map
 	 * @param requestProcedureStepService The request procedure step service
@@ -76,7 +98,6 @@ public class RequestProcedureController {
 		map.put("SpecificCharacterSet", "ISO_IR 100");
 		map.put("AccessionNumber", rp.getAccessionNumber());
 		map.put("PatientName", rp.getMrsPatient().getPersonName().getFullName());
-//		map.put("PatientID", rp.getMrsPatient().getPatientIdentifier().getUuid());
 		map.put("PatientID", rp.getMrsPatient().getUuid());
 		String birthDate = rp.getMrsPatient().getBirthdate().toString();
 		String birthAge = rp.getMrsPatient().getAge().toString();
@@ -248,13 +269,13 @@ public class RequestProcedureController {
 	@Transactional
 	public ResponseEntity<Object> useRequestsByPatient(@RequestParam("patient") String patientUuid,
 													   HttpServletRequest request, HttpServletResponse response ) {
-		RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
-		PatientService patientService = Context.getPatientService();
-		Patient patient = patientService.getPatientByUuid(patientUuid);
+        RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
+        PatientService patientService = Context.getPatientService();
+        Patient patient = patientService.getPatientByUuid(patientUuid);
 
         List<RequestProcedure> requests = requestProcedureService.getRequestProcedureByPatient(patient);
-		List<RequestProcedureResponse> requestProcedureResponseList = new ArrayList<>();
-        for(RequestProcedure req : requests) {
+        List<RequestProcedureResponse> requestProcedureResponseList = new ArrayList<>();
+        for (RequestProcedure req : requests) {
             RequestProcedureResponse reqRes = RequestProcedureResponse.createResponse(req);
             requestProcedureResponseList.add(reqRes);
         }
