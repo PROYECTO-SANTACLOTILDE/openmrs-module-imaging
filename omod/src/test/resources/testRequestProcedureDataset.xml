@@ -67,7 +67,7 @@
 
     <imaging_RequestProcedure
             ID = "2"
-            status="complete"
+            status="completed"
             patient_id="1"
             orthancConfigurationId="1"
             accessionNumber="ACC1002"

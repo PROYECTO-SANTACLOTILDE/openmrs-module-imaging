@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -48,42 +49,37 @@ public class RequestProcedureController {
 	
 	@RequestMapping(value = "/requests", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<Object> useRequestProcedures(HttpServletRequest request, HttpServletResponse response) {
-        RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
-        RequestProcedureStepService requestProcedureStepService = Context.getService(RequestProcedureStepService.class);
+    public ResponseEntity<Object> useRequestProcedures(
+            @RequestParam(value = "status", required = false, defaultValue = "all") String status,
+            HttpServletRequest request, HttpServletResponse response) {
 
-        List<RequestProcedure> rps = requestProcedureService.getAllRequestProcedures();
-        List<Map<String,Object>> result = new LinkedList<Map<String,Object>>();
-        for (RequestProcedure rp : rps) {
-            if(rp.getStatus().equalsIgnoreCase("scheduled")) {
-                Map<String,Object> map = new HashMap<String,Object>();
-                writeProcedure(rp, map, requestProcedureStepService);
-                result.add(map);
-            }
-        }
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-	
-	/**
-	 * @param status The request procedure status 'in progress, scheduled, completed',
-	 * @return Retrieved request procedures are conditional on status values
-	 */
-	@RequestMapping(value = "/requestsByStatus", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @Transactional
-    public ResponseEntity<Object> useRequestProceduresByStatus(@RequestParam("status") String status,
-                                                               HttpServletRequest request, HttpServletResponse response ) {
         RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
-        RequestProcedureStepService requestProcedureStepService = Context.getService(RequestProcedureStepService.class);
-        List<RequestProcedure> rps = requestProcedureService.getRequestProceduresByStatus(status);
-        List<Map<String,Object>> result = new LinkedList<Map<String,Object>>();
-        for (RequestProcedure rp : rps) {
-            if(rp.getStatus().equalsIgnoreCase(status)) {
-                Map<String,Object> map = new HashMap<String,Object>();
-                writeProcedure(rp, map, requestProcedureStepService);
-                result.add(map);
+
+        Map<String, String> statusMapping = new HashMap<>();
+        statusMapping.put("scheduled", "scheduled");
+        statusMapping.put("progress", "in progress");
+        statusMapping.put("completed", "completed");
+
+        boolean filterAll = status == null || status.trim().isEmpty() || status.equalsIgnoreCase("all");
+        String normalizedStatus = filterAll ? "" : status.trim().toLowerCase();
+
+        // Determine the database status to query
+        String dbStatus = filterAll ? "" : statusMapping.getOrDefault(normalizedStatus, status.trim());
+
+        // Fetch requests
+        List<RequestProcedure> requests = filterAll
+                ? requestProcedureService.getAllRequestProcedures()
+                : requestProcedureService.getRequestProceduresByStatus(dbStatus);
+
+        List<RequestProcedureResponse> requestProcedureResponseList = new ArrayList<>();
+        for (RequestProcedure req : requests) {
+            RequestProcedureResponse reqRes = RequestProcedureResponse.createResponse(req);
+            if (filterAll || (req.getStatus() != null &&
+                    req.getStatus().trim().equalsIgnoreCase(dbStatus))) {
+                requestProcedureResponseList.add(reqRes);
             }
         }
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return new ResponseEntity<>(requestProcedureResponseList, HttpStatus.OK);
     }
 	
 	/**

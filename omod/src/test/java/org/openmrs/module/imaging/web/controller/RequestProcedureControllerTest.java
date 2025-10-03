@@ -36,39 +36,18 @@ public class RequestProcedureControllerTest extends BaseWebControllerTest {
 	@Test
     @Transactional
     public void testUseRequestProcedures_shouldReturnOnlyScheduledProcedures() throws Exception {
-
-		MockHttpServletRequest request = newGetRequest("/rest/v1/worklist/requests");
-		MockHttpServletResponse response = new MockHttpServletResponse();
-
-		ResponseEntity<Object> result = controller.useRequestProcedures(request, response);
-
-        assertEquals(200, result.getStatusCodeValue());
-        List<Map<String, Object>> body = (List<Map<String, Object>>) result.getBody();
-        assertNotNull(body);
-        assertEquals(1, body.size());
-        assertTrue(
-                body.stream().allMatch(map ->
-                        map.get("status") != null && "scheduled".equalsIgnoreCase((String) map.get("status"))
-                )
-        );
-    }
-	
-	@Test
-    @Transactional
-    public void testUseRequestProcedureByStatus_shouldRetrunProcedureByStatus() throws Exception {
-        MockHttpServletRequest request = newGetRequest("/rest/v1/worklist/requests");
+        MockHttpServletRequest request = newGetRequest("/rest/v1/worklist/requests?status=scheduled");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        ResponseEntity<Object> result = controller.useRequestProceduresByStatus("in progress", request, response);
+        ResponseEntity<Object> result = controller.useRequestProcedures("scheduled", request, response);
 
         assertEquals(200, result.getStatusCodeValue());
-        List<Map<String, Object>> body = (List<Map<String, Object>>) result.getBody();
-        assertEquals(1, body.size());
-        assertTrue(
-                body.stream().allMatch(map ->
-                        map.get("status") != null && "in progress".equalsIgnoreCase((String) map.get("status"))
-                )
-        );
+
+        List<RequestProcedureResponse> body =
+                (List<RequestProcedureResponse>) result.getBody();
+
+        assertNotNull(body);
+        assertTrue(body.stream().allMatch(r -> "scheduled".equalsIgnoreCase(r.getStatus())));
     }
 	
 	@Test
@@ -208,7 +187,7 @@ public class RequestProcedureControllerTest extends BaseWebControllerTest {
 		assertEquals("in progress", requestList.get(0).getStatus());
 		assertEquals("testInstanceUID888", requestList.get(0).getStudyInstanceUID());
 
-		assertEquals("complete", requestList.get(1).getStatus());
+		assertEquals("completed", requestList.get(1).getStatus());
 		assertEquals("testInstanceUID999", requestList.get(1).getStudyInstanceUID());
 
 		assertEquals("scheduled", requestList.get(2).getStatus());
