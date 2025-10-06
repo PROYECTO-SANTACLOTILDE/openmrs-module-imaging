@@ -36,8 +36,12 @@ Deploy OpenMRS Imaging module from it's directory by cloning the repository, nav
 deploy the module before the server is started. To streamline the process, add the following run configuration to your IDE to efficiently build, deploy and run the project.:
 
 ```bash
-  mvn clean install openmrs-sdk:run -DserverId=myserver
+ mvn clean install openmrs-sdk:run -DserverId=myserver
 ```
+
+## Docker Project for This Module
+The Docker setup for this module, including the microfrontend for OpenMRS 3.x, is available here:
+- Link: https://github.com/sadrezhao/openmrs-imaging-docker
 
 ## Configure the connection to the Orthanc servers
 You must provide connection settings (IP address, username, etc.) in order to allow OpenMRS to reach the Orthanc server(s). If the imaging module 
@@ -110,7 +114,3 @@ If you want to generate a `.wl` file, uncomment the following lines from the pyt
   # with open("/tmp/worklist_test.wl", 'wb') as f:
   # f.write(responseDicom)`
 ```
-
-## Docker Project for This Module
-The Docker setup for this module, including the microfrontend for OpenMRS 3.x, is available here: 
-https://github.com/sadrezhao/openmrs-imaging-docker
