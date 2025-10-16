@@ -99,11 +99,11 @@ ${ ui.includeFragment("uicommons", "infoAndErrorMessage")}
                                 onclick="togglePopupPreview('${instance.orthancInstanceUID}', '${param['studyId'].getAt(0)}')">
                                 <img class="instance-preview" src="${ ui.resourceLink("imaging", "images/preview.png") }"/>
                             </a>
-                            <a href="${baseUrl}instances/${ui.format(instance.orthancInstanceUID)}/preview" title="${ ui.message("imaging.app.instancePreview.label") }">
+                            <a href="${baseUrl}/instances/${ui.format(instance.orthancInstanceUID)}/preview" title="${ ui.message("imaging.app.instancePreview.label") }">
                                 <img class="instance-preview" src="${ ui.resourceLink("imaging", "images/preview.png") }"/>
                             </a>
                         <% } %>
-                        <a href="${baseUrl}ui/app/#/filtered-studies?StudyInstanceUID=${studyInstanceUID}&expand=series" title="${ ui.message("imaging.app.orthancExplorer.label") }">
+                        <a href="${baseUrl}/ui/app/#/filtered-studies?StudyInstanceUID=${studyInstanceUID}&expand=series" title="${ ui.message("imaging.app.orthancExplorer.label") }">
                             <img class="orthanc-img" src="${ ui.resourceLink("imaging", "images/orthanc.png")}"/></a>
                     </td>
                 </tr>
