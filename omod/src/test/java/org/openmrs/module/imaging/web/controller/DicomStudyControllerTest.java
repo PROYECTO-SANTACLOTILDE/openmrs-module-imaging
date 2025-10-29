@@ -338,7 +338,7 @@ public class DicomStudyControllerTest extends BaseWebControllerTest {
 		
 		String orthanceInstanceUID = "instance1";
 		
-		ResponseEntity result = controller.previewInstance(orthanceInstanceUID, study.getId());
+		ResponseEntity<?> result = controller.previewInstance(orthanceInstanceUID, study.getId());
 		
 		assertNotNull(result);
 		assertEquals(200, result.getStatusCodeValue());

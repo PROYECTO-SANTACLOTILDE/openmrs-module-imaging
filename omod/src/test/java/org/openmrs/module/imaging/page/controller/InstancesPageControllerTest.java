@@ -93,7 +93,7 @@ public class InstancesPageControllerTest extends BaseModuleWebContextSensitiveTe
 		
 		dicomStudyService.setHttpClient(mockPair.getClient());
 		
-		ResponseEntity response = controller.previewInstance(orthancInstanceUID, study.getId());
+		ResponseEntity<?> response = controller.previewInstance(orthancInstanceUID, study.getId());
 		
 		// Assert
 		assertNotNull(response);

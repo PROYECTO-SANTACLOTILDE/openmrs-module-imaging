@@ -51,7 +51,7 @@ public class InstancesPageController {
 	 * @return the response entity
 	 */
 	@RequestMapping(value = "/module/imaging/previewInstance.form", method = RequestMethod.GET)
-	public ResponseEntity previewInstance(@RequestParam(value = "orthancInstanceUID") String orthancInstanceUID,
+	public ResponseEntity<?> previewInstance(@RequestParam(value = "orthancInstanceUID") String orthancInstanceUID,
 	        @RequestParam(value = "studyId") int studyId) {
 		
 		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);

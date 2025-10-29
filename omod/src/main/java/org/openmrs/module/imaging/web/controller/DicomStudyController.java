@@ -288,7 +288,7 @@ public class DicomStudyController {
 	 */
 	@RequestMapping(value = "/previewinstance", method = RequestMethod.GET)
 	@Transactional
-	public ResponseEntity previewInstance(@RequestParam(value = "orthancInstanceUID") String orthancInstanceUID,
+	public ResponseEntity<?> previewInstance(@RequestParam(value = "orthancInstanceUID") String orthancInstanceUID,
 	        @RequestParam(value = "studyId") int studyId) {
 		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
 		DicomStudy study = dicomStudyService.getDicomStudy(studyId);
