@@ -21,10 +21,8 @@ import org.openmrs.module.imaging.OrthancConfiguration;
 import org.openmrs.module.imaging.api.DicomStudyService;
 import org.openmrs.module.imaging.api.OrthancConfigurationService;
 import org.openmrs.module.imaging.api.RequestProcedureService;
-import org.openmrs.module.imaging.api.RequestProcedureStepService;
 import org.openmrs.module.imaging.api.client.OrthancHttpClient;
 import org.openmrs.module.imaging.api.worklist.RequestProcedure;
-import org.openmrs.module.imaging.api.worklist.RequestProcedureStep;
 import org.openmrs.ui.framework.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -135,7 +133,6 @@ public class ImagingSettingsPageController {
 	public void checkConfiguration(HttpServletResponse response, @RequestParam(value = "url") String url,
 	        @RequestParam(value = "proxyurl") String proxyurl, @RequestParam(value = "username") String username,
 	        @RequestParam(value = "password") String password) {
-		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
 		OrthancHttpClient httpClient = new OrthancHttpClient();
 		String checkUrl = url; // (proxyurl != null && !proxyurl.isEmpty()) ? proxyurl : url;
 		try {

@@ -338,10 +338,6 @@ public class DicomStudyControllerTest extends BaseWebControllerTest {
 		
 		String orthanceInstanceUID = "instance1";
 		
-		MockHttpServletRequest request = newGetRequest("/rest/v1/imaging/previewinstance?orthancInstanceUID="
-		        + orthanceInstanceUID + "&studyId=" + study.getId());
-		MockHttpServletResponse response = new MockHttpServletResponse();
-		
 		ResponseEntity result = controller.previewInstance(orthanceInstanceUID, study.getId());
 		
 		assertNotNull(result);

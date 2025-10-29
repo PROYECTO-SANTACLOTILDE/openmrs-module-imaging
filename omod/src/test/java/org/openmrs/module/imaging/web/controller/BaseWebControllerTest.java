@@ -2,7 +2,6 @@ package org.openmrs.module.imaging.web.controller;
 
 import junit.framework.Assert;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.junit.Ignore;
 import org.openmrs.module.webservices.rest.SimpleObject;
 import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;

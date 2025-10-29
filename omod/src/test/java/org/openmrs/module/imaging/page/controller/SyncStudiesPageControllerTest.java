@@ -40,10 +40,12 @@ public class SyncStudiesPageControllerTest extends BaseModuleWebContextSensitive
 		controller.get(model, patient, "Test message");
 		
 		// Check that studies are added
+		@SuppressWarnings("unchecked")
 		List<DicomStudy> studies = (List<DicomStudy>) model.getAttribute("studies");
 		assertNotNull(studies);
 		assertFalse(studies.isEmpty());
 		
+		@SuppressWarnings("unchecked")
 		Map<String, Integer> match = (Map<String, Integer>) model.getAttribute("match");
 		assertNotNull(match);
 		assertEquals(studies.size(), match.size());
