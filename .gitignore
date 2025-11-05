@@ -28,3 +28,6 @@ omod/target/*
 
 openmrs-runtime.properties
 velocity.log
+
+integration_test_tool.log
+example_instance.dcm
