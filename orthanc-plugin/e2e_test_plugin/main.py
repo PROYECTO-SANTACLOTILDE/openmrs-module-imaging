@@ -14,7 +14,6 @@ from utils import (
     Study_Instance_UID,
     Request_Description,
     Performed_Procedure_Step_ID,
-    Configuration_ID,
     Given_Name,
     Family_Name,
     Patient_ID,

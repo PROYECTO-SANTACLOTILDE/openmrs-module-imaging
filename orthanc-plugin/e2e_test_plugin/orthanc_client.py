@@ -4,7 +4,6 @@ import shutil
 import tempfile
 import pydicom
 import requests
-import sys
 from datetime import datetime, timezone
 from io import BytesIO
 from typing import Optional, List, Dict

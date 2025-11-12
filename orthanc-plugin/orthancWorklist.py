@@ -39,8 +39,8 @@ def OnWorkList(answers, query, issuerAet, calledAet):
 
         # Thie code only for test:
         # Save the DICOM buffer to a file
-        # with open("/tmp/worklist_test.wl", 'wb') as f:
-        #     f.write(responseDicom)
+        with open("/tmp/worklist_test.wl", 'wb') as f:
+            f.write(responseDicom)
 
         if query.WorklistIsMatch(responseDicom):
             answers.WorklistAddAnswer(query, responseDicom)

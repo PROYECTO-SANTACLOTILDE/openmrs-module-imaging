@@ -43,11 +43,11 @@ public class RequestProcedureControllerTest extends BaseWebControllerTest {
 
         assertEquals(200, result.getStatusCodeValue());
 
-        List<RequestProcedureResponse> body =
-                (List<RequestProcedureResponse>) result.getBody();
+        List<Map<String,Object>> body =
+                (List<Map<String,Object>>) result.getBody();
 
         assertNotNull(body);
-        assertTrue(body.stream().allMatch(r -> "scheduled".equalsIgnoreCase(r.getStatus())));
+        assertTrue(body.stream().allMatch(r -> "scheduled".equalsIgnoreCase((String) r.get("status"))));
     }
 	
 	@Test
