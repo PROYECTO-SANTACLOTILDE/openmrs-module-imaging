@@ -70,15 +70,14 @@ public class RequestProcedureController {
                 ? requestProcedureService.getAllRequestProcedures()
                 : requestProcedureService.getRequestProceduresByStatus(dbStatus);
 
-        List<RequestProcedureResponse> requestProcedureResponseList = new ArrayList<>();
-        for (RequestProcedure req : requests) {
-            RequestProcedureResponse reqRes = RequestProcedureResponse.createResponse(req);
-            if (filterAll || (req.getStatus() != null &&
-                    req.getStatus().trim().equalsIgnoreCase(dbStatus))) {
-                requestProcedureResponseList.add(reqRes);
-            }
+		RequestProcedureStepService requestProcedureStepService = Context.getService(RequestProcedureStepService.class);
+        List<Map<String,Object>> result = new LinkedList<Map<String,Object>>();
+        for (RequestProcedure rp : requests) {
+            Map<String,Object> map = new HashMap<String,Object>();
+            writeProcedure(rp, map, requestProcedureStepService);
+            result.add(map);
         }
-        return new ResponseEntity<>(requestProcedureResponseList, HttpStatus.OK);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 	
 	/**
@@ -89,7 +88,6 @@ public class RequestProcedureController {
 	private static void writeProcedure(RequestProcedure rp, Map<String, Object> map,
 	        RequestProcedureStepService requestProcedureStepService) {
 
-		map.put("status", rp.getStatus());
 		map.put("SpecificCharacterSet", "ISO_IR 100");
 		map.put("AccessionNumber", rp.getAccessionNumber());
 		map.put("PatientName", rp.getMrsPatient().getPersonName().getFullName());
@@ -102,8 +100,6 @@ public class RequestProcedureController {
 			map.put("PatientBirthDate", birthDate);
 		}
 		map.put("PatientSex", rp.getMrsPatient().getGender());
-		map.put("MedicalAlerts", "unknown");
-		map.put("Allergies", "unknown");
 		map.put("StudyInstanceUID", rp.getStudyInstanceUID());
 		map.put("RequestingPhysician", rp.getRequestingPhysician()); // RequestingPhysician
 		map.put("RequestedProcedureDescription", rp.getRequestDescription());
