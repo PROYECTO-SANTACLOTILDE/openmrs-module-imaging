@@ -1,3 +1,18 @@
+# This file is part of [Integration of Orthanc with OpenMRS].
+#
+# Integration of Orthanc with OpenMRS is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Integration of Orthanc with OpenMRS is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with [Integration of Orthanc with OpenMRS]. If not, see <https://www.gnu.org/licenses/>.
+
 import json
 import pydicom
 import requests
@@ -224,9 +239,18 @@ class OpenMRSClient:
             logger.error(f"Failed to get procedures: {resp.text}")
             resp.raise_for_status()
         resp_json = resp.json()
-        logger.info(f"Get procedures by patient response: {resp.status_code}")
         return resp_json
 
+    def get_procedures_by_status(self, status: str = 'all'):
+        url = f"{self.base_url}/worklist/requests?status={status}"
+        logger.info("Get Procedures by status URL %s" % url)
+        resp = requests.get(url, auth=self.auth, headers=self.headers)
+        logger.info(f"Response status code for retrieving procedures by satus = {status}: {resp.status_code}")
+        if resp.status_code >= 400:
+            logger.error(f"Failed to get procedures: {resp.text}")
+            resp.raise_for_status()
+        resp_json = resp.json()
+        return resp_json
 
     def create_requestProcedureStep(self,
                                     request_id: int,

@@ -18,7 +18,6 @@ Series_Description = "Test series description"
 Given_Name = "Test"
 Family_Name = "Patient"
 Gender = "M"
-Patient_ID="1234"
 Modality="CT"
 Priority="High"
 Aet_Title="ORTHANC"
@@ -43,29 +42,31 @@ def setup_logger(name="e2etest", log_file_path="e2e_test_tool.log"):
         os.remove(log_file_path)
 
     # Logger
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.INFO)
+    log = logging.getLogger(name)
+
+    # Set the overall logger level to DEBUG to capture all messages
+    log.setLevel(logging.DEBUG)
 
     # Avoid duplicate handlers if called multiple times
-    if logger.handlers:
-        return logger
+    if log.handlers:
+        return log
 
     # Console handler
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(logging.INFO)
     console_formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
     console_handler.setFormatter(console_formatter)
-    logger.addHandler(console_handler)
+    log.addHandler(console_handler)
 
     # File handler (overwrite)
     file_handler = logging.FileHandler(log_file_path, mode='w')
     file_handler.setLevel(logging.DEBUG)
     file_formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
     file_handler.setFormatter(file_formatter)
-    logger.addHandler(file_handler)
+    log.addHandler(file_handler)
 
-    logger.info("Logger initialized. Logs go to console and '%s'", log_file_path)
-    return logger
+    log.info("Logger initialized. Logs go to console and '%s'", log_file_path)
+    return log
 
 # --------------------------------Shared logger ------------------------------
 logger = setup_logger()
@@ -125,3 +126,12 @@ def openmrs_to_dicom_patient_name(patient: dict) -> str:
 
     # Return DICOM PN format
     return f"{family_name}^{given_name}"
+
+def make_query(patientName: str, patientID: str, level: str):
+    query = {
+        "PatientName": patientName,
+        "PatientID": patientID,
+        "QueryRetrieveLevel": level
+    }
+    return query
+

@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
-# OpenMRS + Orthanc Integration Test Runner
+# OpenMRS + Orthanc end to end test runner
 
 set -e # Exit on first error
 set -o pipefail
 IFS=$'\n\t'
 
 # ----------------- CONFIG --------------
-OPENMRS_BASE_URL=${OPENMRS_BASE_URL:-http://localhost/openmrs}  # OpeMRS server and frontend in Docker
-#OPENMRS_BASE_URL=${OPENMRS_BASE_URL:-http://localhost:3030/openmrs} # for local server
+#OPENMRS_BASE_URL=${OPENMRS_BASE_URL:-http://localhost/openmrs}  # OpeMRS server and frontend in Docker
+OPENMRS_BASE_URL=${OPENMRS_BASE_URL:-http://localhost:3030/openmrs} # for local server
 OPENMRS_USER=${OPENMRS_USER:-admin}
 OPENMRS_PASS=${OPENMRS_PASS:-Admin123}
 
