@@ -4,6 +4,7 @@ import logging
 import random
 import pydicom
 import pydicom.uid
+from pydicom.dataset import Dataset
 import uuid
 
 # -----------------------------Test parameters ------------------------------
@@ -18,7 +19,6 @@ Series_Description = "Test series description"
 Given_Name = "Test"
 Family_Name = "Patient"
 Gender = "M"
-Patient_ID="1234"
 Modality="CT"
 Priority="High"
 Aet_Title="ORTHANC"
@@ -43,29 +43,31 @@ def setup_logger(name="e2etest", log_file_path="e2e_test_tool.log"):
         os.remove(log_file_path)
 
     # Logger
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.INFO)
+    log = logging.getLogger(name)
+
+    # Set the overall logger level to DEBUG to capture all messages
+    log.setLevel(logging.DEBUG)
 
     # Avoid duplicate handlers if called multiple times
-    if logger.handlers:
-        return logger
+    if log.handlers:
+        return log
 
     # Console handler
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(logging.INFO)
     console_formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
     console_handler.setFormatter(console_formatter)
-    logger.addHandler(console_handler)
+    log.addHandler(console_handler)
 
     # File handler (overwrite)
     file_handler = logging.FileHandler(log_file_path, mode='w')
     file_handler.setLevel(logging.DEBUG)
     file_formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
     file_handler.setFormatter(file_formatter)
-    logger.addHandler(file_handler)
+    log.addHandler(file_handler)
 
-    logger.info("Logger initialized. Logs go to console and '%s'", log_file_path)
-    return logger
+    log.info("Logger initialized. Logs go to console and '%s'", log_file_path)
+    return log
 
 # --------------------------------Shared logger ------------------------------
 logger = setup_logger()
@@ -108,8 +110,9 @@ def generate_openmrs_id(prefix=""):
     return f"{prefix}{base}{check_digit}"
 
 def openmrs_to_dicom_patient_name(patient: dict) -> str:
-    person = patient.get('person', {})
+    """ Convert OpenMRS patient dict to DICOM PatientName (PN) format."""
 
+    person = patient.get('person', {})
     given_name = person.get('givenName')
     family_name = person.get('familyName')
 
@@ -125,3 +128,59 @@ def openmrs_to_dicom_patient_name(patient: dict) -> str:
 
     # Return DICOM PN format
     return f"{family_name}^{given_name}"
+
+def make_query_pynetdicom(patientName: str,
+               patientID: str,
+               level: str,
+               studyInstanceUID: str = "",
+               seriesInstanceUID: str = "",
+               sopInstanceUID: str = "",
+               ) -> Dataset:
+        """
+         Build a DICOM C-FIND query for 'pynetdicom' (STUDY, SERIES, or IMAGE level)
+        """
+        level = level.upper()
+        if level not in ("STUDY", "SERIES", "IMAGE"):
+            raise ValueError(f"Invalid QueryRetrieveLevel: {level}")
+        ds = Dataset()
+        ds.QueryRetrieveLevel = level
+        ds.PatientName = patientName
+        ds.PatientID = patientID
+
+        if level in ("SERIES", "IMAGE"):
+            ds.StudyInstanceUID = studyInstanceUID
+
+        if level=="IMAGE":
+            ds.SeriesInstanceUID = seriesInstanceUID
+            ds.SOPInstanceUID = sopInstanceUID
+
+        return ds
+
+def make_query_fs(
+        patient_name: str,
+        patient_id: str,
+        level: str,
+        study_instance_uid: str = "",
+        series_instance_uid: str = "",
+        sop_instance_uid: str = ""
+) -> dict[str, str]:
+    """ Build a C-FIND query dictionary for use with findscu (must be dict with string keys)."""
+    
+    level = level.upper()
+    if level not in ("STUDY", "SERIES", "IMAGE"):
+        raise ValueError(f"Invalid QueryRetrieveLevel: {level}")
+
+    query = {
+        "PatientName": patient_name,
+        "PatientID": patient_id,
+        "QueryRetrieveLevel": level
+    }
+
+    if level in ("SERIES", "IMAGE"):
+        query["StudyInstanceUID"] = study_instance_uid or ""
+
+    if level == "IMAGE":
+        query["SeriesInstanceUID"] = series_instance_uid or ""
+        query["SOPInstanceUID"] = sop_instance_uid or ""
+
+    return query

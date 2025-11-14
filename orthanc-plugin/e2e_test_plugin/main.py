@@ -1,6 +1,22 @@
+# This file is part of [Integration of Orthanc with OpenMRS].
+#
+# Integration of Orthanc with OpenMRS is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Integration of Orthanc with OpenMRS is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with [Integration of Orthanc with OpenMRS]. If not, see <https://www.gnu.org/licenses/>.
+
 import argparse
 import time
-from utils import env_or, logger
+
+from utils import env_or, logger, make_query_pynetdicom, make_query_fs
 from openmrs_client import OpenMRSClient
 from orthanc_client import OrthancClient
 import pydicom
@@ -16,7 +32,6 @@ from utils import (
     Performed_Procedure_Step_ID,
     Given_Name,
     Family_Name,
-    Patient_ID,
     Modality,
     Priority,
     config_baseURL,
@@ -25,26 +40,29 @@ from utils import (
     orthanc_password
 )
 
-# --------------------------------- Main Test Logic -----------------------------------------
-def run_test(args):
+# --------------------------------- Main Test Logic ----------------------------
+def run_test(run_args):
+    """ 
+    Run the end-to-end integration to test data flwow between OpenMRS and Orthanc.
+    """
     logger.info("Starting integration test with OpenMRS (%s) and orthanc (%s)",
-                args.openmrs, args.orthanc_http)
+                run_args.openmrs, run_args.orthanc_http)
     patient_uuid = None
     procedure_id = None
 
-    openmrs = OpenMRSClient(args.openmrs, args.user, args.password)
-    orthanc = OrthancClient(args.orthanc_http,
-                        dicom_ae=args.orthanc_dicom_ae,
-                        dicom_host=args.orthanc_dicom_host,
-                        dicom_port=args.orthanc_dicom_port)
+    openmrs = OpenMRSClient(run_args.openmrs, run_args.user, run_args.password)
+    orthanc = OrthancClient(run_args.orthanc_http,
+                            dicom_ae=run_args.orthanc_dicom_ae,
+                            dicom_host=run_args.orthanc_dicom_host,
+                            dicom_port=run_args.orthanc_dicom_port)
     try:
         # Create only one patient
-        patients = openmrs.search_patient(args.given_name, args.family_name, args.gender)
+        patients = openmrs.search_patient(run_args.given_name, run_args.family_name, run_args.gender)
         for p in patients:
             openmrs.delete_patient(p)
 
         if not patients:
-            patient = openmrs.create_patient(args.given_name, args.family_name, args.gender)
+            patient = openmrs.create_patient(run_args.given_name, run_args.family_name, run_args.gender)
         else:
             # Use the first patient found
             patient = patients[0]
@@ -55,10 +73,12 @@ def run_test(args):
 
         patient_uuid = patient["uuid"]
         person = patient.get("person")
+        patient_id = patient_uuid[:8]  # first 8 chars of OpenMRS UUID
+
         if person:
             patient_name = person.get("display")
         else:
-            patient_name = f"{args.given_name} {args.family_name}"
+            patient_name = f"{run_args.given_name} {run_args.family_name}"
 
         logger.info("Using patient: %s (%s)", patient_name, patient_uuid)
 
@@ -72,7 +92,7 @@ def run_test(args):
         else:
             logger.info("OpenMRS-Orthanc integration configuration confirmed")
 
-        # Create request procedure for worklist
+        # Create request procedure for the patient
         request_procedure = openmrs.create_requestProcedure(
             patient_uuid,
             Accession_Number,
@@ -84,7 +104,20 @@ def run_test(args):
 
         # --- Fetch the newly created request to get its numeric ID ---
         try:
+            # Fetch procedure by status
+            procedure_scheduled_list = openmrs.get_procedures_by_status("scheduled")
+            if procedure_scheduled_list:
+                logger.info(f"Get procedures by status 'scheduled': {procedure_scheduled_list} {len(procedure_scheduled_list)}")
+            procedure_progress_list = openmrs.get_procedures_by_status("progress")
+            if procedure_progress_list:
+                logger.info(f"Get procedures by status 'progress': {procedure_progress_list}")
+            procedure_complete_list = openmrs.get_procedures_by_status()
+            if procedure_complete_list:
+                logger.info(f"Get procedures by status 'progress': {procedure_complete_list}")
+
+            # Fetch procedures by patient
             procedure_list = openmrs.get_procedures_by_patient(patient_uuid)
+            logger.info(f"Get procedures by patient: {procedure_list}")
             if not procedure_list:
                 raise RuntimeError("No request procedures found for this patient after creation.")
 
@@ -113,8 +146,9 @@ def run_test(args):
         # --------------------Orthanc worklist query ----------------------------
         query = Dataset()
         query.PatientName = patient_name
-        # query.PatientID = Patient_ID
         query.AccessionNumber = Accession_Number
+        study_instance_uid = ""
+        series_instance_uid = ""
 
         results = orthanc.find_worklist(query)
         logger.info(f"Found worklist items: {len(results)}")
@@ -125,18 +159,18 @@ def run_test(args):
         logger.info("Generating fake DICOM for patient %s", patient_name)
         study_data = orthanc.create_dicom_study(
             patient_name=patient_name,
-            patient_id=Patient_ID,
+            patient_id=patient_id,
             modality=Modality,
             series_count=2,
             instances_per_series=3,
             performed_procedure_step_id=Performed_Procedure_Step_ID
         )
 
-        # Save one instance as example
+        # --- Save one instance as example ----
         with open("example_instance.dcm", "wb") as f:
             f.write(list(study_data.values())[0][0])
 
-        # Upload each DICOM instance to Orthanc
+        # --- Upload each DICOM instance to Orthanc ---
         for series_name, instances in study_data.items():
             for idx, dicom_bytes in enumerate(instances):
                 try:
@@ -151,8 +185,82 @@ def run_test(args):
                         idx+1, series_name, e_series
                     )
 
-    except Exception as e:
-        logger.exception("Integration test failed with exception: %s", e)
+        #---- Perform C-FIND to check Orthanc has the study -----------------
+        logger.info("Performing C-FIND to verify study existence in Orthanc")
+
+        logger.info("--- STUDY level C-FIND using pynetdicom ----")
+        study_query_pynetdicom=make_query_pynetdicom(patient_name, patient_id, "STUDY")
+        try:
+            studies = orthanc.cfind_study(study_query_pynetdicom, use_findscu=False)
+            for status, identifier in studies:
+                if identifier:
+                    study_instance_uid = getattr(identifier, "StudyInstanceUID", None)
+                    logger.info(f"Study found C-FIND (pynetdicom): {study_instance_uid}")
+        except Exception as e_study:
+            logger.error(f"Study C-FIND (pynetdicom) failed: {e_study}")
+
+        logger.info("--- STUDY Level C-FIND using findscu ----")
+        study_query_fs=make_query_fs(patient_name, patient_id, "STUDY")
+        try:
+            output = orthanc.cfind_study(study_query_fs, use_findscu=True)
+            logger.info(f"Study findscu output: \n{output}")
+        except Exception as e_study_findscu:
+            logger.error(f"Study C-FIND (findscu) failed: {e_study_findscu}")
+
+        # ------------------- SERIES Level C-FIND -------------------
+        logger.info("--- SERIES level C-FIND using pynetdicom ----")
+        series_query_pynetdicom = make_query_pynetdicom(patient_name, patient_id, "SERIES", studyInstanceUID=study_instance_uid)
+        try:
+            series_list = orthanc.cfind_study(series_query_pynetdicom, use_findscu=False)
+            for status, identifier in series_list:
+                if identifier:
+                    series_instance_uid = getattr(identifier, "SeriesInstanceUID", None)
+                    logger.info(f"Series C-FIND (pynetdicom): {series_instance_uid}")
+        except Exception as e_series:
+            logger.error(f"Series C-FIND (pynetdicom) failed: {e_series}")
+
+        logger.info("--- SERIES level C-FIND using findscu ----")
+        series_query_fs = make_query_fs(patient_name, patient_id, "SERIES", study_instance_uid)
+        try:
+            series_output = orthanc.cfind_study(series_query_fs, use_findscu=True)
+            logger.info(f"Series C-FIND (findscu) output:\n{series_output}")
+        except Exception as e_series_fs:
+            logger.error(f"Series C-FIND (findscu) failed: {e_series_fs}")
+
+        # ------------------- INSTANCE Level C-FIND -------------------
+        logger.info("--- INSTANCE Level C-FIND using pynetdicom ---- ")
+        instance_query_pynetdicom= make_query_pynetdicom(
+            patient_name,
+            patient_id,
+            "IMAGE",
+            studyInstanceUID=study_instance_uid,
+            seriesInstanceUID=series_instance_uid
+        )
+        try:
+            instances = orthanc.cfind_study(instance_query_pynetdicom, use_findscu=False)
+            for status, identifier in instances:
+                if identifier:
+                    sop_uid = getattr(identifier, "SOPInstanceUID", None)
+                    logger.info(f"Instances C-FIND (pynetdicom): {sop_uid}")
+        except Exception as e_instance:
+            logger.error(f"Instance C-FIND (pynetdicom) failed: {e_instance}")
+
+        logger.info("--- INSTANCES level C-FIND using findscu ----")
+        instance_query_fs= make_query_fs(
+            patient_name,
+            patient_id,
+            "IMAGE",
+            study_instance_uid,
+            series_instance_uid
+        )
+        try:
+            instance_output = orthanc.cfind_study(instance_query_fs, use_findscu=True)
+            logger.info(f"Instances C-FIND (findscu) output: \n{instance_output}")
+        except Exception as e_instance_fs:
+            logger.error(f"Series C-FIND (findscu) failed: {e_instance_fs}")
+
+    except Exception as e_e2e_test:
+        logger.exception("E2E test failed with exception: %s", e_e2e_test)
         raise
     finally:
         logger.info("Starting cleanup...")
@@ -189,24 +297,26 @@ def run_test(args):
                 except Exception as e_delete_procedure:
                     logger.warning(f"Failed to delete procedures: {e_delete_procedure}")
 
-            # Delete patient
-            try:
-                openmrs.delete_patient(patient_uuid)
-                time.sleep(2)
-                still_exists = openmrs.search_patient(args.given_name, args.family_name, args.gender)
-                if not still_exists:
-                    logger.info("Patient successfully deleted and not found in OpenMRS")
-                else:
-                    logger.warning("Patient still exists after deletion: %s", still_exists)
+                # Delete patient
+                try:
+                    openmrs.delete_patient(patient_uuid)
+                    time.sleep(2)
+                    still_exists = openmrs.search_patient(run_args.given_name, run_args.family_name, run_args.gender)
+                    if not still_exists:
+                        logger.info("Patient successfully deleted and not found in OpenMRS")
+                    else:
+                        logger.warning("Patient still exists after deletion: %s", still_exists)
 
-                logger.info("Cleanup completed successfully.")
-            except Exception as e_deletePatient:
-                logger.warning("Failed to delete patient: %s", e_deletePatient)
+                    logger.info("Cleanup completed successfully.")
+                except Exception as e_deletePatient:
+                    logger.warning("Failed to delete patient: %s", e_deletePatient)
+            else:
+                logger.warning("Cleanup test data: No patient UUID")
 
         except Exception as cleanup_err:
             logger.exception("Error during cleanup: %s", cleanup_err)
 
-# ------------------------------Main / pytest support -------------------
+# -------------Main / pytest support -------------------
 if __name__ == '__main__':
 
     ap = argparse.ArgumentParser(description='OpenMRS-Orthanc test tool with cleanup')

@@ -1,8 +1,25 @@
+# This file is part of [Integration of Orthanc with OpenMRS].
+#
+# Integration of Orthanc with OpenMRS is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Integration of Orthanc with OpenMRS is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with [Integration of Orthanc with OpenMRS]. If not, see <https://www.gnu.org/licenses/>.
+
 import os
 import subprocess
 import shutil
 import tempfile
 import pydicom
+from pydicom.dataset import FileDataset
+import datetime
 import requests
 from datetime import datetime, timezone
 from io import BytesIO
@@ -23,14 +40,10 @@ from utils import (
     Aet_Title,
 )
 
-# -------------------------------Orthanc Client ------------------------------------------------
-# study query: cfind_study, _cfind_with_pynetdicom, _cfind_with_findscu => find studies, series, etc.
-# Modality worklist query: cfind_worklist => find worklist items
-
 logger = get_logger("OrthancClient")
 
 class OrthancClient:
-
+    """ Client for interacting with Orthanc via DICOM services and HTTP APIs. """
     def __init__(self, http_url: str,
                  dicom_ae: str = Aet_Title,
                  dicom_host: str = 'localhost',
@@ -40,26 +53,27 @@ class OrthancClient:
         self.dicom_host = dicom_host
         self.dicom_port = dicom_port
 
-        # logger.info(f"Initialized Orthanc client: HTTP={self.http_url}, "
-        #             f"DICOM AE={self.dicom_ae}, HOST={self.dicom_host}, PORT={self.dicom_port}")
-
     # ----------- DICOM C-FIND Query ------------------------------------------------------------
     def cfind_study(self, query: dict,
                     ae_title: str = Aet_Title,
                     use_findscu: bool = False):
-
+        """
+        Perform a C-FIND query to Orthanc for studies matching the query dataset.
+        """
         logger.info("Performing C-FIND query (method=%s)...",
                     "findscu" if use_findscu else "pynetdicom")
 
-        logger.debug("C-FIND query dataset: %s", query)
+        logger.info("C-FIND query dataset: %s", query)
 
         if use_findscu:
             return self._cfind_with_findscu(query, ae_title)
         return self._cfind_with_pynetdicom(query, ae_title)
 
     def _cfind_with_pynetdicom(self, query: dict, ae_title: str):
-
-        logger.debug("Using pynetdicom C-FIND to %s:%s (AE=%s)",
+        """
+        Perform C-FIND using the pynetdicom library.
+        """
+        logger.info("Using pynetdicom C-FIND to %s:%s (AE=%s)",
                      self.dicom_host, self.dicom_port, self.dicom_ae)
 
         ae = AE(ae_title=ae_title)
@@ -74,9 +88,9 @@ class OrthancClient:
                                          StudyRootQueryRetrieveInformationModelFind)
             for (status, identifier) in response:
                 if status:
-                    logger.debug("C-FIND status: 0x%04x", status.Status)
+                    logger.info("C-FIND status: 0x%04x", status.Status)
                 if identifier:
-                    logger.debug("C-FIND identifier: %s", identifier)
+                    logger.info("C-FIND identifier: %s", identifier)
                 results.append((status, identifier))
             assoc.release()
             logger.info("C-FIND association released normally.")
@@ -88,7 +102,7 @@ class OrthancClient:
 
         return results
 
-    def _cfind_with_findscu(self, query: str, ae_title):
+    def _cfind_with_findscu(self, query: dict, ae_title):
         """
         Perform C-FIND using the external DCMTK findscu binary
         """
@@ -97,23 +111,36 @@ class OrthancClient:
             logger.error("findscu executable not found in PATH.")
             raise FileNotFoundError("findscu executable not found in PATH")
 
-        logger.debug("findscu found at: %s", findscu_path)
+        logger.info("findscu found at: %s", findscu_path)
 
         # Build temporary DICOM dataset for query
         with tempfile.NamedTemporaryFile(suffix='.dcm', delete=False) as tmp:
             tmp_path = tmp.name
             ds = self._make_dicom_query_dataset(query)
-            ds.save_as(tmp_path, write_as_original=False)
-            logger.debug("Temporary query dataset saved ot %s", tmp_path)
+
+            # Create minimal FileMeta
+            file_meta = pydicom.Dataset()
+            file_meta.TransferSyntaxUID = pydicom.uid.ImplicitVRLittleEndian
+
+            # wrap original dataset as FileDataset
+            ds_file = FileDataset(tmp_path, ds, file_meta=file_meta, preamble=b"\0" * 128)
+            ds_file.is_little_endian = True
+            ds_file.is_implicit_VR = True
+
+            # Save to temporary file
+            ds_file.save_as(tmp_path)
+            logger.info("Temporary query dataset saved ot %s", tmp_path)
 
             cmd = [
                 findscu_path,
-                '-p',
+                '-v',
                 '-aec', self.dicom_ae,
                 '-aet', ae_title,
                 self.dicom_host,
                 str(self.dicom_port),
-                tmp_path
+                '-k', f'PatientName={query["PatientName"]}',
+                '-k', f'PatientID={query["PatientID"]}',
+                '-k', f'QueryRetrieveLevel={query["QueryRetrieveLevel"]}'
             ]
             logger.info("Running findscu command: %s", " ".join(cmd))
             process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -132,13 +159,18 @@ class OrthancClient:
             return output
 
     def _make_dicom_query_dataset(self, query: dict):
+        """Construct a DICOM dataset for C-FIND query from a dictionary."""
         ds = pydicom.Dataset()
         for key, value in query.items():
             setattr(ds, key, value)
         logger.debug("Constructed DICOM query dataset with %d elements.", len(query))
         return ds
 
+
     def find_worklist(self, query):
+        """
+        Fetch the created modality worklist
+        """
         ae = AE()
         ae.add_requested_context(ModalityWorklistInformationFind)
 
@@ -155,8 +187,8 @@ class OrthancClient:
         assoc.release()
         return results
 
-    # HTTP UPLOAD
     def upload_instance(self, dcm_bytes: bytes):
+        """ Upload a single DICOM instance to Orthanc"""
         url = f"{self.http_url}/instances"
         headers = {'Content-Type': 'application/dicom'}
         logger.info("Uploading DICOM instace to %s", url)
@@ -171,6 +203,8 @@ class OrthancClient:
         return response.json()
 
     def delete_all_studies_in_orthanc(self):
+        """ Delete all studies from Orthanc """
+
         # 1. Get all study IDs from Orthanc
         url = f"{self.http_url}/studies"
         logger.info("Fetching all studies from Orthanc: %s", url)
@@ -231,8 +265,8 @@ class OrthancClient:
         ds.PatientName = patient_name
         ds.PatientID = patient_id
         ds.StudyInstanceUID = study_instance_uid
-        ds.SeriesInstanceUID = pydicom.uid.generate_uid()
-        ds.SOPInstanceUID = pydicom.uid.generate_uid()
+        ds.SeriesInstanceUID = series_instance_uid
+        ds.SOPInstanceUID = sop_instance_uid
         ds.Modality = modality
         ds.StudyDate = datetime.now(timezone.utc).strftime('%Y%m%d')
         ds.StudyTime = datetime.now(timezone.utc).strftime('%H%M%S')
@@ -250,7 +284,6 @@ class OrthancClient:
             ds.StudyDate,
             ds.StudyTime
         )
-
 
         ds.PerformedProcedureStepID = performed_procedure_step_id
         ds.Rows = 32
@@ -285,7 +318,7 @@ class OrthancClient:
             instances_per_series: int = 3,
             performed_procedure_step_id: Optional[str] = Performed_Procedure_Step_ID
     ) -> Dict[str, List[bytes]]:
-
+        """ Create a complex DICOM study with multiple series and instances."""
         logger.info(
             "Creating complex DICOM study: patient=%s, series=%d, instances/series=%d",
             patient_name, series_count, instances_per_series
