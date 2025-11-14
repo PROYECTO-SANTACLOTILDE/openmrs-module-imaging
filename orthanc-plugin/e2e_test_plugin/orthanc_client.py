@@ -20,7 +20,6 @@ import tempfile
 import pydicom
 from pydicom.dataset import FileDataset
 import datetime
-import time
 import requests
 from datetime import datetime, timezone
 from io import BytesIO
@@ -44,7 +43,7 @@ from utils import (
 logger = get_logger("OrthancClient")
 
 class OrthancClient:
-
+    """ Client for interacting with Orthanc via DICOM services and HTTP APIs. """
     def __init__(self, http_url: str,
                  dicom_ae: str = Aet_Title,
                  dicom_host: str = 'localhost',
@@ -58,7 +57,9 @@ class OrthancClient:
     def cfind_study(self, query: dict,
                     ae_title: str = Aet_Title,
                     use_findscu: bool = False):
-
+        """
+        Perform a C-FIND query to Orthanc for studies matching the query dataset.
+        """
         logger.info("Performing C-FIND query (method=%s)...",
                     "findscu" if use_findscu else "pynetdicom")
 
@@ -69,7 +70,9 @@ class OrthancClient:
         return self._cfind_with_pynetdicom(query, ae_title)
 
     def _cfind_with_pynetdicom(self, query: dict, ae_title: str):
-
+        """
+        Perform C-FIND using the pynetdicom library.
+        """
         logger.info("Using pynetdicom C-FIND to %s:%s (AE=%s)",
                      self.dicom_host, self.dicom_port, self.dicom_ae)
 
@@ -156,6 +159,7 @@ class OrthancClient:
             return output
 
     def _make_dicom_query_dataset(self, query: dict):
+        """Construct a DICOM dataset for C-FIND query from a dictionary."""
         ds = pydicom.Dataset()
         for key, value in query.items():
             setattr(ds, key, value)
@@ -199,6 +203,8 @@ class OrthancClient:
         return response.json()
 
     def delete_all_studies_in_orthanc(self):
+        """ Delete all studies from Orthanc """
+
         # 1. Get all study IDs from Orthanc
         url = f"{self.http_url}/studies"
         logger.info("Fetching all studies from Orthanc: %s", url)
@@ -312,7 +318,7 @@ class OrthancClient:
             instances_per_series: int = 3,
             performed_procedure_step_id: Optional[str] = Performed_Procedure_Step_ID
     ) -> Dict[str, List[bytes]]:
-
+        """ Create a complex DICOM study with multiple series and instances."""
         logger.info(
             "Creating complex DICOM study: patient=%s, series=%d, instances/series=%d",
             patient_name, series_count, instances_per_series

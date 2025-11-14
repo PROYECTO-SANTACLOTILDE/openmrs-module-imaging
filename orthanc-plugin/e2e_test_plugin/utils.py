@@ -110,8 +110,9 @@ def generate_openmrs_id(prefix=""):
     return f"{prefix}{base}{check_digit}"
 
 def openmrs_to_dicom_patient_name(patient: dict) -> str:
-    person = patient.get('person', {})
+    """ Convert OpenMRS patient dict to DICOM PatientName (PN) format."""
 
+    person = patient.get('person', {})
     given_name = person.get('givenName')
     family_name = person.get('familyName')
 
@@ -164,6 +165,7 @@ def make_query_fs(
         sop_instance_uid: str = ""
 ) -> dict[str, str]:
     """ Build a C-FIND query dictionary for use with findscu (must be dict with string keys)."""
+    
     level = level.upper()
     if level not in ("STUDY", "SERIES", "IMAGE"):
         raise ValueError(f"Invalid QueryRetrieveLevel: {level}")

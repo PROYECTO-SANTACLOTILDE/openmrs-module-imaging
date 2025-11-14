@@ -14,7 +14,6 @@
 # along with [Integration of Orthanc with OpenMRS]. If not, see <https://www.gnu.org/licenses/>.
 
 import json
-import pydicom
 import requests
 from datetime import datetime, timezone
 from utils import generate_openmrs_id, get_logger
@@ -149,6 +148,7 @@ class OpenMRSClient:
 
 
     def search_patient(self, given_name=Given_Name, family_name=Family_Name, gender=Gender):
+        """Search for patients in OpenMRS"""
         query = f"{given_name} {family_name}"
         url = f"{self.base_url}/patient"
         params = {"q": query}
@@ -227,6 +227,8 @@ class OpenMRSClient:
         return data
 
     def delete_requestProcedure(self, procedure_id: str):
+        """Delete a request procedure (worklist) from OpenMRS."""
+
         url = f"{self.base_url}/worklist/request"
         params = {"requestId": procedure_id}
         resp = requests.delete(url, auth=self.auth, headers=self.headers,  params=params)
@@ -236,6 +238,8 @@ class OpenMRSClient:
             logger.info(f"Deleted request procedure: {procedure_id}")
 
     def get_procedures_by_patient(self, patient_uuid: str):
+        """Retrieve request procedures for a specific patient from OpenMRS."""
+
         url = f"{self.base_url}/worklist/patientrequests"
         logger.info("Get Procedures URL %s" % url)
         params = {'patient': patient_uuid}
@@ -247,6 +251,8 @@ class OpenMRSClient:
         return resp_json
 
     def get_procedures_by_status(self, status: str = 'all'):
+        """Retrieve request procedures by status from OpenMRS."""
+
         url = f"{self.base_url}/worklist/requests?status={status}"
         logger.info("Get Procedures by status URL %s" % url)
         resp = requests.get(url, auth=self.auth, headers=self.headers)
@@ -287,9 +293,6 @@ class OpenMRSClient:
             "procedureStepLocation": location
         }
 
-        # print("Payload being sent:")
-        # print(json.dumps(payload, indent=2))
-
         try:
             # Send the POST request
             response = requests.post(url, auth=self.auth, headers=self.headers, data=json.dumps(payload))
@@ -324,6 +327,8 @@ class OpenMRSClient:
         return res_json
 
     def get_steps_by_request(self, request_id):
+        """Retrieve procedure steps for a specific request procedure from OpenMRS."""
+
         url = f"{self.base_url}/worklist/requeststep?requestId={request_id}"
         response = requests.get(url, auth=self.auth)
         response.raise_for_status()
@@ -333,6 +338,7 @@ class OpenMRSClient:
 
 
     def update_procedure_step_status(self, step_uuid: str, new_status: str = "COMPLETE"):
+        """Update the status of a procedure step in OpenMRS."""
         url = f"{self.base_url}/worklist/updaterequeststatus"
         payload = {"uuid": step_uuid, "performedProcedureStepStatus": new_status}
         logger.info(f"Updating procedure step {step_uuid} status to {new_status}")
@@ -342,6 +348,7 @@ class OpenMRSClient:
         return resp.json()
 
     def delete_procedure_Step(self, step_id: str):
+        """Delete a procedure step from request procedure of OpenMRS."""
         url = f"{self.base_url}/worklist/requeststep"
         params = {"stepId": step_id}
         resp = requests.delete(url, auth=self.auth, headers=self.headers, params=params)
@@ -351,12 +358,15 @@ class OpenMRSClient:
             logger.info(f"Deleted procedure step: {step_id}")
 
     def get_studies(self, patient_uuid: str):
+        """Retrieve imaging studies for a specific patient from OpenMRS."""
+
         url = f"{self.base_url}/imaging/studies?patient={patient_uuid}"
         resp = requests.get(url, auth=self.auth, headers=self.headers)
         resp.raise_for_status()
         return resp.json()
 
     def get_study_id_by_uid(self, patient_id: str, study_instance_uid: str):
+        """Retrieve the study ID for a specific study instance UID of a patient from OpenMRS."""
         studies = self.get_studies(patient_id)
         for study in studies:
             if study.get("studyInstanceUID") == study_instance_uid:
@@ -364,6 +374,9 @@ class OpenMRSClient:
         return None
 
     def delete_study(self, study_id: int, delete_option: str = "full"):
+        """Delete an imaging study from OpenMRS.
+        delete_option: "full" or "openmrs_only"
+        """
         url = f"{self.base_url}/imaging/study"
         params = {"studyId": study_id, "deleteOption": delete_option}
         resp = requests.delete(url, params=params)
@@ -372,6 +385,7 @@ class OpenMRSClient:
 
 
     def delete_all_studies_for_patient(self, patient_uuid: str, delete_option="full"):
+        """Delete all imaging studies for a specific patient from OpenMRS."""
         try:
             studies = self.get_studies(patient_uuid)
 
