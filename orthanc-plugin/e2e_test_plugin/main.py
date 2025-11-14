@@ -15,7 +15,8 @@
 
 import argparse
 import time
-from utils import env_or, logger, make_query
+
+from utils import env_or, logger, make_query_pynetdicom, make_query_fs
 from openmrs_client import OpenMRSClient
 from orthanc_client import OrthancClient
 import pydicom
@@ -39,8 +40,11 @@ from utils import (
     orthanc_password
 )
 
-# --------------------------------- Main Test Logic -----------------------------------------
+# --------------------------------- Main Test Logic ----------------------------
 def run_test(run_args):
+    """ 
+    Run the end-to-end integration to test data flwow between OpenMRS and Orthanc.
+    """
     logger.info("Starting integration test with OpenMRS (%s) and orthanc (%s)",
                 run_args.openmrs, run_args.orthanc_http)
     patient_uuid = None
@@ -88,7 +92,7 @@ def run_test(run_args):
         else:
             logger.info("OpenMRS-Orthanc integration configuration confirmed")
 
-        # Create request procedure for worklist
+        # Create request procedure for the patient
         request_procedure = openmrs.create_requestProcedure(
             patient_uuid,
             Accession_Number,
@@ -143,6 +147,8 @@ def run_test(run_args):
         query = Dataset()
         query.PatientName = patient_name
         query.AccessionNumber = Accession_Number
+        study_instance_uid = ""
+        series_instance_uid = ""
 
         results = orthanc.find_worklist(query)
         logger.info(f"Found worklist items: {len(results)}")
@@ -183,47 +189,55 @@ def run_test(run_args):
         logger.info("Performing C-FIND to verify study existence in Orthanc")
 
         logger.info("--- STUDY level C-FIND using pynetdicom ----")
-        study_query=make_query(patient_name, patient_id, "STUDY")
+        study_query_pynetdicom=make_query_pynetdicom(patient_name, patient_id, "STUDY")
         try:
-            studies = orthanc.cfind_study(study_query, use_findscu=False)
+            studies = orthanc.cfind_study(study_query_pynetdicom, use_findscu=False)
             for status, identifier in studies:
                 if identifier:
-                    study_uid = getattr(identifier, "StudyInstanceUID", None)
-                    logger.info(f"Study found C-FIND (pynetdicom): {study_uid}")
+                    study_instance_uid = getattr(identifier, "StudyInstanceUID", None)
+                    logger.info(f"Study found C-FIND (pynetdicom): {study_instance_uid}")
         except Exception as e_study:
             logger.error(f"Study C-FIND (pynetdicom) failed: {e_study}")
 
         logger.info("--- STUDY Level C-FIND using findscu ----")
+        study_query_fs=make_query_fs(patient_name, patient_id, "STUDY")
         try:
-            output = orthanc.cfind_study(study_query, use_findscu=True)
+            output = orthanc.cfind_study(study_query_fs, use_findscu=True)
             logger.info(f"Study findscu output: \n{output}")
         except Exception as e_study_findscu:
             logger.error(f"Study C-FIND (findscu) failed: {e_study_findscu}")
 
         # ------------------- SERIES Level C-FIND -------------------
         logger.info("--- SERIES level C-FIND using pynetdicom ----")
-        series_query = make_query(patient_name, patient_id, "SERIES")
+        series_query_pynetdicom = make_query_pynetdicom(patient_name, patient_id, "SERIES", studyInstanceUID=study_instance_uid)
         try:
-            series_list = orthanc.cfind_study(series_query, use_findscu=False)
+            series_list = orthanc.cfind_study(series_query_pynetdicom, use_findscu=False)
             for status, identifier in series_list:
                 if identifier:
-                    series_uid = getattr(identifier, "SeriesInstanceUID", None)
-                    logger.info(f"Series C-FIND (pynetdicom): {series_uid}")
+                    series_instance_uid = getattr(identifier, "SeriesInstanceUID", None)
+                    logger.info(f"Series C-FIND (pynetdicom): {series_instance_uid}")
         except Exception as e_series:
             logger.error(f"Series C-FIND (pynetdicom) failed: {e_series}")
 
         logger.info("--- SERIES level C-FIND using findscu ----")
+        series_query_fs = make_query_fs(patient_name, patient_id, "SERIES", study_instance_uid)
         try:
-            series_output = orthanc.cfind_study(series_query, use_findscu=True)
+            series_output = orthanc.cfind_study(series_query_fs, use_findscu=True)
             logger.info(f"Series C-FIND (findscu) output:\n{series_output}")
         except Exception as e_series_fs:
             logger.error(f"Series C-FIND (findscu) failed: {e_series_fs}")
 
         # ------------------- INSTANCE Level C-FIND -------------------
         logger.info("--- INSTANCE Level C-FIND using pynetdicom ---- ")
-        instance_query = make_query(patient_name, patient_id, "IMAGE")
+        instance_query_pynetdicom= make_query_pynetdicom(
+            patient_name,
+            patient_id,
+            "IMAGE",
+            studyInstanceUID=study_instance_uid,
+            seriesInstanceUID=series_instance_uid
+        )
         try:
-            instances = orthanc.cfind_study(instance_query, use_findscu=False)
+            instances = orthanc.cfind_study(instance_query_pynetdicom, use_findscu=False)
             for status, identifier in instances:
                 if identifier:
                     sop_uid = getattr(identifier, "SOPInstanceUID", None)
@@ -232,8 +246,15 @@ def run_test(run_args):
             logger.error(f"Instance C-FIND (pynetdicom) failed: {e_instance}")
 
         logger.info("--- INSTANCES level C-FIND using findscu ----")
+        instance_query_fs= make_query_fs(
+            patient_name,
+            patient_id,
+            "IMAGE",
+            study_instance_uid,
+            series_instance_uid
+        )
         try:
-            instance_output = orthanc.cfind_study(instance_query, use_findscu=True)
+            instance_output = orthanc.cfind_study(instance_query_fs, use_findscu=True)
             logger.info(f"Instances C-FIND (findscu) output: \n{instance_output}")
         except Exception as e_instance_fs:
             logger.error(f"Series C-FIND (findscu) failed: {e_instance_fs}")
@@ -295,7 +316,7 @@ def run_test(run_args):
         except Exception as cleanup_err:
             logger.exception("Error during cleanup: %s", cleanup_err)
 
-# ------------------------------Main / pytest support -------------------
+# -------------Main / pytest support -------------------
 if __name__ == '__main__':
 
     ap = argparse.ArgumentParser(description='OpenMRS-Orthanc test tool with cleanup')

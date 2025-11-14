@@ -43,12 +43,12 @@ from utils import (
 logger = get_logger("OpenMRSClient")
 
 class OpenMRSClient:
+    """Client for interacting with OpenMRS REST API."""
     def __init__(self, base_url: str, username: str, password: str):
         self.base_url = base_url.rstrip('/') + '/ws/rest/v1'
         self.auth = (username, password)
         self.headers = {'Content-Type': 'application/json'}
 
-        # module endpoints base
         # module endpoints base
         self.module_base = base_url.rstrip('/') + '/module/imaging'
 
@@ -58,8 +58,8 @@ class OpenMRSClient:
         resp.raise_for_status()
         return resp.json()
 
-    # Get PACS configuration
     def get_orthanc_configurations(self):
+        """Retrieve Orthanc PACS configurations from OpenMRS."""
         url = f"{self.base_url}/imaging/configurations"
         logger.info(f"Fetching Orthanc configurations from: {url}")
         try:
@@ -78,7 +78,9 @@ class OpenMRSClient:
             logger.error(f"Failed to retrieve Orthanc configuration: {e}")
         return []
 
+    
     def create_orthanc_configuration(self, url, proxyurl, username, password):
+        """Create a new Orthanc PACS configuration in OpenMRS."""
         data = {
             "url": url,
             "proxyurl": proxyurl,
@@ -98,6 +100,7 @@ class OpenMRSClient:
         return False
 
     def create_patient(self, given_name: str = Given_Name, family_name: str = Family_Name, gender: str = Gender, birthdate: str = None):
+        """Create a new patient in OpenMRS."""
         if birthdate is None:
             birthdate = datetime.now(timezone.utc).strftime('%Y-%m-%dT00:00:00.000%z')
 
@@ -136,6 +139,7 @@ class OpenMRSClient:
         return patient
 
     def delete_patient(self, patient_uuid: str):
+        """Delete a patient from OpenMRS."""
         url = f"{self.base_url}/patient/{patient_uuid}?purge=true"
         resp = requests.delete(url, auth=self.auth, headers=self.headers)
         if resp.status_code in [200, 204]:
@@ -186,7 +190,9 @@ class OpenMRSClient:
                                 priority: str = Priority,
                                 configuration_id: int = Configuration_ID
                                 ):
-
+        """
+        Create a new request procedure in OpenMRS for the given patient for worklist.
+        """
         url_pr = f"{self.base_url}/worklist/saverequest"
         logger.info("Create Request Procedure URL %s" % url_pr)
         payload_pr = {
@@ -209,15 +215,14 @@ class OpenMRSClient:
             logger.error(f"Failed to create RequestProcedure: {resp.status_code} - {resp.text}")
             return {"status": False, "message": f"HTTP error {resp.status_code}"}
 
-        try:
-            data = resp.json() if resp.text else {"status": True, "message": "RequestProcedure created"}
-        except ValueError:
-            logger.error("Failed to parse JSON from response; assuming creation failed")
-            data = {"status": False, "message": "RequestProcedure not created"}
-
-        if resp.status_code >= 400:
-            logger.error(f"Failed to create RequestProcedure: {resp.text}")
-            resp.raise_for_status()
+        if resp.text:
+            try:
+                data = resp.json()
+            except ValueError:
+                logger.warning("Response is not valid JSON: %s", resp.text)
+                data = {"status": True, "message": resp.text}
+        else:
+            data = {"status": True, "message": "RequestProcedure created (empty response)"}
 
         return data
 

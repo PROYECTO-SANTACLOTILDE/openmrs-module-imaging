@@ -4,6 +4,7 @@ import logging
 import random
 import pydicom
 import pydicom.uid
+from pydicom.dataset import Dataset
 import uuid
 
 # -----------------------------Test parameters ------------------------------
@@ -127,11 +128,57 @@ def openmrs_to_dicom_patient_name(patient: dict) -> str:
     # Return DICOM PN format
     return f"{family_name}^{given_name}"
 
-def make_query(patientName: str, patientID: str, level: str):
+def make_query_pynetdicom(patientName: str,
+               patientID: str,
+               level: str,
+               studyInstanceUID: str = "",
+               seriesInstanceUID: str = "",
+               sopInstanceUID: str = "",
+               ) -> Dataset:
+        """
+         Build a DICOM C-FIND query for 'pynetdicom' (STUDY, SERIES, or IMAGE level)
+        """
+        level = level.upper()
+        if level not in ("STUDY", "SERIES", "IMAGE"):
+            raise ValueError(f"Invalid QueryRetrieveLevel: {level}")
+        ds = Dataset()
+        ds.QueryRetrieveLevel = level
+        ds.PatientName = patientName
+        ds.PatientID = patientID
+
+        if level in ("SERIES", "IMAGE"):
+            ds.StudyInstanceUID = studyInstanceUID
+
+        if level=="IMAGE":
+            ds.SeriesInstanceUID = seriesInstanceUID
+            ds.SOPInstanceUID = sopInstanceUID
+
+        return ds
+
+def make_query_fs(
+        patient_name: str,
+        patient_id: str,
+        level: str,
+        study_instance_uid: str = "",
+        series_instance_uid: str = "",
+        sop_instance_uid: str = ""
+) -> dict[str, str]:
+    """ Build a C-FIND query dictionary for use with findscu (must be dict with string keys)."""
+    level = level.upper()
+    if level not in ("STUDY", "SERIES", "IMAGE"):
+        raise ValueError(f"Invalid QueryRetrieveLevel: {level}")
+
     query = {
-        "PatientName": patientName,
-        "PatientID": patientID,
+        "PatientName": patient_name,
+        "PatientID": patient_id,
         "QueryRetrieveLevel": level
     }
-    return query
 
+    if level in ("SERIES", "IMAGE"):
+        query["StudyInstanceUID"] = study_instance_uid or ""
+
+    if level == "IMAGE":
+        query["SeriesInstanceUID"] = series_instance_uid or ""
+        query["SOPInstanceUID"] = sop_instance_uid or ""
+
+    return query

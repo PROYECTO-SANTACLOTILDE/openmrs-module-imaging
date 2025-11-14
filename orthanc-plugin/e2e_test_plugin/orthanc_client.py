@@ -20,6 +20,7 @@ import tempfile
 import pydicom
 from pydicom.dataset import FileDataset
 import datetime
+import time
 import requests
 from datetime import datetime, timezone
 from io import BytesIO
@@ -39,10 +40,6 @@ from utils import (
     Study_Description,
     Aet_Title,
 )
-
-# -------------------------------Orthanc Client ------------------------------------------------
-# study query: cfind_study, _cfind_with_pynetdicom, _cfind_with_findscu => find studies, series, etc.
-# Modality worklist query: cfind_worklist => find worklist items
 
 logger = get_logger("OrthancClient")
 
@@ -169,8 +166,6 @@ class OrthancClient:
     def find_worklist(self, query):
         """
         Fetch the created modality worklist
-        :param query: The query data (patientname, accession number)
-        :return: The worklist according the query
         """
         ae = AE()
         ae.add_requested_context(ModalityWorklistInformationFind)
@@ -188,8 +183,8 @@ class OrthancClient:
         assoc.release()
         return results
 
-    # HTTP UPLOAD
     def upload_instance(self, dcm_bytes: bytes):
+        """ Upload a single DICOM instance to Orthanc"""
         url = f"{self.http_url}/instances"
         headers = {'Content-Type': 'application/dicom'}
         logger.info("Uploading DICOM instace to %s", url)
