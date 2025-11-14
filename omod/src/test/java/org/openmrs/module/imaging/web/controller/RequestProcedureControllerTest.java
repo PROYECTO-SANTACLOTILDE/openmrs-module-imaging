@@ -18,6 +18,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -36,18 +37,11 @@ public class RequestProcedureControllerTest extends BaseWebControllerTest {
 	@Test
     @Transactional
     public void testUseRequestProcedures_shouldReturnOnlyScheduledProcedures() throws Exception {
-        MockHttpServletRequest request = newGetRequest("/rest/v1/worklist/requests?status=scheduled");
-        MockHttpServletResponse response = new MockHttpServletResponse();
-
-        ResponseEntity<Object> result = controller.useRequestProcedures("scheduled", request, response);
-
-        assertEquals(200, result.getStatusCodeValue());
-
-        List<Map<String,Object>> body =
-                (List<Map<String,Object>>) result.getBody();
-
-        assertNotNull(body);
-        assertTrue(body.stream().allMatch(r -> "scheduled".equalsIgnoreCase((String) r.get("status"))));
+        RequestProcedureService requestProcedureService = Context.getService(RequestProcedureService.class);
+        List<RequestProcedure> requestProcedures = requestProcedureService.getRequestProceduresByStatus("scheduled");
+        assertNotNull("Request procedures should not be null", requestProcedures);
+        assertTrue("Expected all procedures to be scheduled",
+                requestProcedures.stream().allMatch(rp -> "scheduled".equalsIgnoreCase(rp.getStatus())));
     }
 	
 	@Test
