@@ -316,7 +316,7 @@
 
     <properties>
         <openmrsPlatformVersion>2.5.9</openmrsPlatformVersion>
-        <webservicesRestModuleVersion>2.48.0</webservicesRestModuleVersion>
+    <webservicesRestModuleVersion>[2.7.0,)</webservicesRestModuleVersion>
         <openMRSVersion>2.5.9</openMRSVersion>
         <junitVersion>4.13.2</junitVersion>
         <hamcrestVersion>3.0</hamcrestVersion>

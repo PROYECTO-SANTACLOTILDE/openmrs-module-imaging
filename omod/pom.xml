@@ -49,14 +49,14 @@
 		<dependency>
 			<groupId>org.openmrs.module</groupId>
 			<artifactId>webservices.rest-omod</artifactId>
-			<version>2.50.0</version>
+			<version>${webservicesRestModuleVersion}</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.openmrs.module/webservices.rest-omod-common -->
 		<dependency>
 			<groupId>org.openmrs.module</groupId>
 			<artifactId>webservices.rest-omod-common</artifactId>
-			<version>2.48.0</version>
+			<version>${webservicesRestModuleVersion}</version>
 			<scope>provided</scope>
 		</dependency>
 
