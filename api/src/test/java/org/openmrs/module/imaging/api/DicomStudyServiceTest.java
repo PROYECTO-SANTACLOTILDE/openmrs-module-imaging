@@ -23,6 +23,7 @@ import org.mockito.Mockito;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.imaging.OrthancConfiguration;
+import org.openmrs.module.imaging.api.client.OrthancHttpClient;
 import org.openmrs.module.imaging.api.dao.DicomStudyDao;
 import org.openmrs.module.imaging.api.impl.DicomStudyServiceImpl;
 import org.openmrs.module.imaging.api.study.DicomInstance;
@@ -169,13 +170,17 @@ public class DicomStudyServiceTest extends BaseModuleContextSensitiveTest {
 		
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		when(mockConnection.getOutputStream()).thenReturn(outputStream);
+		when(mockConnection.getInputStream()).thenReturn(
+		    new ByteArrayInputStream("{\"ID\":\"instance1\"}".getBytes(StandardCharsets.UTF_8)));
 		
 		// Inject mock client into service
 		dicomStudyService.setHttpClient(pair.getClient()); // Make sure this sets the client
 		
-		int result = dicomStudyService.uploadFile(config, inputStream);
+		DicomStudyService.UploadResult result = dicomStudyService.uploadFile(config, inputStream);
 		
-		assertEquals(200, result);
+		assertEquals(200, result.statusCode);
+		assertNull(result.orthancStudyUID);
+		assertNull(result.study);
 		
 		String writtenData = outputStream.toString();
 		assertTrue(writtenData.contains("dummy DICOM data"));
@@ -183,6 +188,52 @@ public class DicomStudyServiceTest extends BaseModuleContextSensitiveTest {
 		// Verifications
 		verify(mockConnection).setRequestProperty("Content-Type", "application/dicom");
 		verify(mockConnection).setDoOutput(true);
+	}
+	
+	@Test
+	public void testUpload_syncsUploadedStudyWhenOrthancReturnsParentStudy() throws IOException {
+		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
+		OrthancConfiguration config = orthancConfigurationService.getOrthancConfiguration(1);
+		
+		OrthancHttpClient mockClient = mock(OrthancHttpClient.class);
+		HttpURLConnection uploadConnection = mock(HttpURLConnection.class);
+		HttpURLConnection studyConnection = mock(HttpURLConnection.class);
+		
+		when(
+		    mockClient.createConnection("POST", config.getOrthancBaseUrl(), "/instances", config.getOrthancUsername(),
+		        config.getOrthancPassword())).thenReturn(uploadConnection);
+		when(
+		    mockClient.createConnection("GET", config.getOrthancBaseUrl(), "/studies/orthanc-study-1",
+		        config.getOrthancUsername(), config.getOrthancPassword())).thenReturn(studyConnection);
+		
+		when(uploadConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
+		when(uploadConnection.getOutputStream()).thenReturn(new ByteArrayOutputStream());
+		when(uploadConnection.getInputStream()).thenReturn(
+		    new ByteArrayInputStream("{\"ID\":\"instance1\",\"ParentStudy\":\"orthanc-study-1\"}"
+		            .getBytes(StandardCharsets.UTF_8)));
+		
+		String studyJson = "{"
+		        + "\"ID\":\"orthanc-study-1\","
+		        + "\"MainDicomTags\":{\"StudyInstanceUID\":\"uploadedStudy123\",\"StudyDate\":\"20250701\",\"StudyTime\":\"123456\",\"StudyDescription\":\"Uploaded Study\"},"
+		        + "\"PatientMainDicomTags\":{\"PatientName\":\"Uploaded Patient\",\"Gender\":\"M\"}" + "}";
+		when(studyConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
+		when(studyConnection.getInputStream()).thenReturn(
+		    new ByteArrayInputStream(studyJson.getBytes(StandardCharsets.UTF_8)));
+		
+		dicomStudyService.setHttpClient(mockClient);
+		DicomStudyService.UploadResult result = dicomStudyService.uploadFile(config, new ByteArrayInputStream(
+		        "dummy DICOM data".getBytes(StandardCharsets.UTF_8)));
+		
+		assertEquals(HttpURLConnection.HTTP_OK, result.statusCode);
+		assertEquals("orthanc-study-1", result.orthancStudyUID);
+		assertEquals("uploadedStudy123", result.studyInstanceUID);
+		assertNotNull(result.study);
+		assertEquals("uploadedStudy123", result.study.getStudyInstanceUID());
+		assertEquals("orthanc-study-1", result.study.getOrthancStudyUID());
+		
+		DicomStudy persistedStudy = dicomStudyService.getDicomStudy(config, "uploadedStudy123");
+		assertNotNull(persistedStudy);
+		assertEquals("Uploaded Patient", persistedStudy.getPatientName());
 	}
 	
 	@Test

@@ -245,6 +245,7 @@ public class DicomStudyController {
     @Transactional
     public ResponseEntity<Object> uploadStudies(    @RequestParam(value="file") MultipartFile file,
                                                     @RequestParam(value="configurationId") int configurationId,
+	                                                @RequestParam(value="patient", required = false) String patientUuid,
                                                     HttpServletRequest request,
                                                     HttpServletResponse response ) throws IOException {
         OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
@@ -255,8 +256,26 @@ public class DicomStudyController {
         if (file == null || file.isEmpty()) {
             return new ResponseEntity<>("DICOM file is missing", HttpStatus.BAD_REQUEST);
         }
+		Patient patient = null;
+		if (patientUuid != null && !patientUuid.trim().isEmpty()) {
+			PatientService patientService = Context.getPatientService();
+			patient = patientService.getPatientByUuid(patientUuid);
+			if (patient == null) {
+				return new ResponseEntity<>("Patient not found", HttpStatus.NOT_FOUND);
+			}
+		}
         DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
-        dicomStudyService.uploadFile(configuration, file.getInputStream());
+		DicomStudyService.UploadResult uploadResult = dicomStudyService.uploadFile(configuration, file.getInputStream());
+		
+		if (patient != null) {
+			if (uploadResult.study == null) {
+				return new ResponseEntity<>("Uploaded study could not be synchronized from Orthanc", HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			dicomStudyService.setPatient(uploadResult.study, patient);
+			dicomStudyService.updateLinkStatus(uploadResult.study, 0);
+			return new ResponseEntity<>(DicomStudyResponse.createResponse(uploadResult.study), HttpStatus.OK);
+		}
+		
         return new ResponseEntity<>("", HttpStatus.OK);
     }
 	

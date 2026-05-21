@@ -246,6 +246,8 @@ public class DicomStudyControllerTest extends BaseWebControllerTest {
 		
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		when(mockConnection.getOutputStream()).thenReturn(outputStream);
+		when(mockConnection.getInputStream()).thenReturn(
+		    new ByteArrayInputStream("{\"ID\":\"instance1\"}".getBytes(StandardCharsets.UTF_8)));
 		
 		dicomStudyService.setHttpClient(pair.getClient()); // Make sure this sets the client
 		
@@ -253,8 +255,57 @@ public class DicomStudyControllerTest extends BaseWebControllerTest {
 		;
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		
-		ResponseEntity<Object> result = controller.uploadStudies(file, config.getId(), request, response);
+		ResponseEntity<Object> result = controller.uploadStudies(file, config.getId(), null, request, response);
 		assertEquals(200, result.getStatusCodeValue());
+	}
+	
+	@Test
+	public void testUploadStudies_ShouldAssignUploadedStudyToPatientWhenPatientProvided() throws Exception {
+		MockMultipartFile file = new MockMultipartFile("file", "test.dcm", "application/dicom",
+		        "dummy dicom content".getBytes(StandardCharsets.UTF_8));
+		
+		OrthancHttpClient mockClient = mock(OrthancHttpClient.class);
+		HttpURLConnection uploadConnection = mock(HttpURLConnection.class);
+		HttpURLConnection studyConnection = mock(HttpURLConnection.class);
+		
+		when(
+		    mockClient.createConnection("POST", config.getOrthancBaseUrl(), "/instances", config.getOrthancUsername(),
+		        config.getOrthancPassword())).thenReturn(uploadConnection);
+		when(
+		    mockClient.createConnection("GET", config.getOrthancBaseUrl(), "/studies/orthanc-study-uploaded",
+		        config.getOrthancUsername(), config.getOrthancPassword())).thenReturn(studyConnection);
+		
+		when(uploadConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
+		when(uploadConnection.getOutputStream()).thenReturn(new ByteArrayOutputStream());
+		when(uploadConnection.getInputStream()).thenReturn(
+		    new ByteArrayInputStream("{\"ID\":\"instance1\",\"ParentStudy\":\"orthanc-study-uploaded\"}"
+		            .getBytes(StandardCharsets.UTF_8)));
+		
+		String studyJson = "{"
+		        + "\"ID\":\"orthanc-study-uploaded\","
+		        + "\"MainDicomTags\":{\"StudyInstanceUID\":\"uploadedStudyController123\",\"StudyDate\":\"20250701\",\"StudyTime\":\"123456\",\"StudyDescription\":\"Uploaded Study\"},"
+		        + "\"PatientMainDicomTags\":{\"PatientName\":\"Uploaded Patient\",\"Gender\":\"M\"}" + "}";
+		when(studyConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
+		when(studyConnection.getInputStream()).thenReturn(
+		    new ByteArrayInputStream(studyJson.getBytes(StandardCharsets.UTF_8)));
+		
+		dicomStudyService.setHttpClient(mockClient);
+		
+		MockHttpServletRequest request = newPostRequest("/rest/v1/imaging/instances", file, config.getId());
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		
+		ResponseEntity<Object> result = controller.uploadStudies(file, config.getId(), patient.getUuid(), request, response);
+		assertEquals(200, result.getStatusCodeValue());
+		
+		DicomStudyResponse body = (DicomStudyResponse) result.getBody();
+		assertNotNull(body);
+		assertEquals(patient.getUuid(), body.getMrsPatientUuid());
+		assertEquals(Integer.valueOf(0), body.getLinkStatus());
+		assertEquals("uploadedStudyController123", body.getStudyInstanceUID());
+		
+		DicomStudy uploadedStudy = dicomStudyService.getDicomStudy(config, "uploadedStudyController123");
+		assertNotNull(uploadedStudy);
+		assertEquals(patient.getUuid(), uploadedStudy.getMrsPatient().getUuid());
 	}
 	
 	@Test

@@ -138,7 +138,7 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 	 * @throws IOException the IO exception
 	 */
 	@Override
-	public int uploadFile(OrthancConfiguration config, InputStream is) throws IOException {
+	public DicomStudyService.UploadResult uploadFile(OrthancConfiguration config, InputStream is) throws IOException {
 		HttpURLConnection con = httpClient.createConnection("POST", config.getOrthancBaseUrl(), "/instances",
 		    config.getOrthancUsername(), config.getOrthancPassword());
 		if (con == null) {
@@ -147,7 +147,32 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		con.setRequestProperty("Content-Type", "application/dicom");
 		con.setDoOutput(true);
 		IOUtils.copy(is, con.getOutputStream());
-		return con.getResponseCode();
+		int status = con.getResponseCode();
+		if (status != HttpURLConnection.HTTP_OK) {
+			OrthancHttpClient.throwConnectionException(config, con);
+		}
+		
+		DicomStudyService.UploadResult result = new DicomStudyService.UploadResult();
+		result.statusCode = status;
+		
+		InputStream responseStream = con.getInputStream();
+		if (responseStream == null) {
+			return result;
+		}
+		
+		JsonNode uploadResponse = new ObjectMapper().readTree(responseStream);
+		String orthancStudyUID = uploadResponse.path("ParentStudy").getTextValue();
+		result.orthancStudyUID = orthancStudyUID;
+		
+		if (orthancStudyUID != null && !orthancStudyUID.trim().isEmpty()) {
+			DicomStudy study = fetchStudyByOrthancStudyUID(config, orthancStudyUID);
+			result.study = study;
+			if (study != null) {
+				result.studyInstanceUID = study.getStudyInstanceUID();
+			}
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -255,6 +280,29 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 			con.getInputStream().close();
 			con.disconnect();
 		}
+	}
+	
+	private DicomStudy fetchStudyByOrthancStudyUID(OrthancConfiguration config, String orthancStudyUID) throws IOException {
+		HttpURLConnection con = httpClient.createConnection("GET", config.getOrthancBaseUrl(),
+		    "/studies/" + orthancStudyUID, config.getOrthancUsername(), config.getOrthancPassword());
+		if (con == null) {
+			throw new IOException("Failed to create HTTP connection");
+		}
+		
+		int status = con.getResponseCode();
+		if (status != HttpURLConnection.HTTP_OK) {
+			OrthancHttpClient.throwConnectionException(config, con);
+		}
+		
+		JsonNode studyData = new ObjectMapper().readTree(con.getInputStream());
+		createOrUpdateStudy(config, studyData);
+		
+		String studyInstanceUID = studyData.path("MainDicomTags").path("StudyInstanceUID").getTextValue();
+		if (studyInstanceUID == null || studyInstanceUID.trim().isEmpty()) {
+			return null;
+		}
+		
+		return dao.getByStudyInstanceUID(config, studyInstanceUID);
 	}
 	
 	@Override
