@@ -49,6 +49,8 @@ public interface DicomStudyService extends OpenmrsService {
 	
 	List<DicomStudy> getStudiesOfPatient(Patient pt);
 	
+	void synchronizeStudiesOfPatient(Patient pt);
+	
 	List<DicomStudy> getStudiesByConfiguration(OrthancConfiguration config);
 	
 	List<DicomStudy> getAllStudies();
