@@ -74,6 +74,7 @@ public class DicomStudyController {
         if (patient == null) {
             return new ResponseEntity<>("Patient not found", HttpStatus.NOT_FOUND);
         }
+        dicomStudyService.synchronizeStudiesOfPatient(patient);
         List<DicomStudy> studies = dicomStudyService.getStudiesOfPatient(patient);
         List<DicomStudyResponse> responseList = DicomStudyResponse.createResponse(studies);
 
@@ -104,6 +105,11 @@ public class DicomStudyController {
         }
 
         DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
+        try {
+            dicomStudyService.fetchNewChangedStudiesByConfiguration(configuration);
+        } catch (IOException e) {
+            log.warn("Unable to refresh studies from Orthanc configuration " + configuration.getOrthancBaseUrl(), e);
+        }
         List<DicomStudy> studies = dicomStudyService.getStudiesByConfiguration(configuration);
 
         StudiesWithScoreResponse studiesWithScore = new StudiesWithScoreResponse();

@@ -292,6 +292,44 @@ public class DicomStudyServiceTest extends BaseModuleContextSensitiveTest {
 		assertEquals("orthancUID123", foundUpdateStudy.getOrthancStudyUID());
 		assertEquals(0, foundUpdateStudy.getLinkStatus());
 		assertEquals("studyInstanceUID444", foundUpdateStudy.getStudyInstanceUID());
+		assertEquals("Test Imaging", foundUpdateStudy.getPatientName());
+		assertEquals("2025-07-11", foundUpdateStudy.getStudyDate());
+		assertEquals("14:35:00", foundUpdateStudy.getStudyTime());
+		assertEquals("CT Head without contrast", foundUpdateStudy.getStudyDescription());
+		assertEquals("F", foundUpdateStudy.getGender());
+	}
+	
+	@Test
+	public void testCreateOrUpdateStudy_updatesExistingStudyWhenStudyInstanceUidChangesButOrthancStudyUidStaysTheSame()
+	        throws IOException {
+		OrthancConfigurationService orthancConfigurationService = Context.getService(OrthancConfigurationService.class);
+		OrthancConfiguration config = orthancConfigurationService.getOrthancConfiguration(1);
+		Patient patient = Context.getPatientService().getPatient(1);
+		
+		String jsonString = "{\n" + "  \"ID\": \"orthancUID444\",\n" + "  \"MainDicomTags\": {\n"
+		        + "    \"StudyInstanceUID\": \"studyInstanceUID444Updated\",\n" + "    \"StudyDate\": \"2026-05-22\",\n"
+		        + "    \"StudyTime\": \"09:10:11\",\n" + "    \"StudyDescription\": \"Updated from Orthanc\"\n" + "  },\n"
+		        + "  \"PatientMainDicomTags\": {\n" + "    \"PatientName\": \"Edited Patient\",\n"
+		        + "    \"Gender\": \"M\"\n" + "  }\n" + "}";
+		JsonNode studyData = objectMapper.readTree(jsonString);
+		
+		DicomStudy existingStudy = dicomStudyDao.getByStudyInstanceUID(config, "studyInstanceUID444");
+		assertNotNull(existingStudy);
+		assertEquals(patient, existingStudy.getMrsPatient());
+		assertEquals("orthancUID444", existingStudy.getOrthancStudyUID());
+		
+		dicomStudyService.createOrUpdateStudy(config, studyData);
+		
+		assertNull(dicomStudyDao.getByStudyInstanceUID(config, "studyInstanceUID444"));
+		DicomStudy updatedStudy = dicomStudyDao.getByStudyInstanceUID(config, "studyInstanceUID444Updated");
+		assertNotNull(updatedStudy);
+		assertEquals(patient, updatedStudy.getMrsPatient());
+		assertEquals("orthancUID444", updatedStudy.getOrthancStudyUID());
+		assertEquals("Edited Patient", updatedStudy.getPatientName());
+		assertEquals("2026-05-22", updatedStudy.getStudyDate());
+		assertEquals("09:10:11", updatedStudy.getStudyTime());
+		assertEquals("Updated from Orthanc", updatedStudy.getStudyDescription());
+		assertEquals("M", updatedStudy.getGender());
 	}
 	
 	@Test

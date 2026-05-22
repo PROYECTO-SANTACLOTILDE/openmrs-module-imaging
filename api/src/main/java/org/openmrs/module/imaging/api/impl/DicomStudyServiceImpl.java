@@ -120,13 +120,21 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 		        null, config, patientName, studyDate, studyTime, studyDescription, gender);
 		
 		DicomStudy existingStudy = dao.getByStudyInstanceUID(config, studyInstanceUID);
+		if (existingStudy == null && orthancStudyUID != null && !orthancStudyUID.trim().isEmpty()) {
+			existingStudy = dao.getByOrthancStudyUID(config, orthancStudyUID);
+		}
 		// new study? -> save new
 		if (existingStudy == null) {
 			dao.save(study);
 		} else {
-			// existing study? -> update
-			// DICOM studies are immutable. Only the Orthanc ID can change.
+			// Keep the patient association and refresh metadata so edits in Orthanc are reflected in SIHSALUS.
+			existingStudy.setStudyInstanceUID(study.getStudyInstanceUID());
 			existingStudy.setOrthancStudyUID(study.getOrthancStudyUID());
+			existingStudy.setPatientName(study.getPatientName());
+			existingStudy.setStudyDate(study.getStudyDate());
+			existingStudy.setStudyTime(study.getStudyTime());
+			existingStudy.setStudyDescription(study.getStudyDescription());
+			existingStudy.setGender(study.getGender());
 			dao.save(existingStudy);
 		}
 	}
@@ -182,6 +190,27 @@ public class DicomStudyServiceImpl extends BaseOpenmrsService implements DicomSt
 	@Override
 	public List<DicomStudy> getStudiesOfPatient(Patient pt) {
 		return dao.getByPatient(pt);
+	}
+	
+	@Override
+	public void synchronizeStudiesOfPatient(Patient pt) {
+		Set<Integer> synchronizedConfigurations = new HashSet<Integer>();
+		for (DicomStudy study : dao.getByPatient(pt)) {
+			OrthancConfiguration configuration = study.getOrthancConfiguration();
+			if (configuration == null || configuration.getId() == null
+			        || synchronizedConfigurations.contains(configuration.getId())) {
+				continue;
+			}
+			
+			synchronizedConfigurations.add(configuration.getId());
+			try {
+				fetchNewChangedStudiesByConfiguration(configuration);
+			}
+			catch (IOException e) {
+				log.warn("Unable to synchronize studies for patient " + pt.getUuid() + " from Orthanc configuration "
+				        + configuration.getOrthancBaseUrl(), e);
+			}
+		}
 	}
 	
 	public List<DicomStudy> getStudiesByConfiguration(OrthancConfiguration config) {

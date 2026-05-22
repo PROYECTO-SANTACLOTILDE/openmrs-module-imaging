@@ -70,6 +70,12 @@ public class DicomStudyDao {
 		        .add(Restrictions.eq("orthancConfiguration", config)).uniqueResult();
 	}
 	
+	public DicomStudy getByOrthancStudyUID(OrthancConfiguration config, String orthancStudyUID) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(DicomStudy.class);
+		return (DicomStudy) criteria.add(Restrictions.eq("orthancStudyUID", orthancStudyUID))
+		        .add(Restrictions.eq("orthancConfiguration", config)).uniqueResult();
+	}
+	
 	public void save(DicomStudy study) {
 		getSession().saveOrUpdate(study);
 	}
