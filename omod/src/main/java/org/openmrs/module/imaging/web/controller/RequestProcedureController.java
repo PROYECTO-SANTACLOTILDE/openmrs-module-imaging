@@ -202,6 +202,9 @@ public class RequestProcedureController {
                     requestProcedureStepService.getProcedureStep(stepId);
 
             if (step != null && step.getRequestProcedure() != null) {
+                RequestProcedure requestProcedure = step.getRequestProcedure();
+                String previousStudyInstanceUID = requestProcedure.getStudyInstanceUID();
+
                 // Update the procedure step status
                 if (!step.getPerformedProcedureStepStatus().equals("rejected")) {
                     requestProcedureStepService.updatePerformedProcedureStepStatus(step, "completed");
@@ -210,11 +213,11 @@ public class RequestProcedureController {
                 }
 
                 // Set the study instance UID created by modality device
-                step.getRequestProcedure().setStudyInstanceUID(studyInstanceUID);
+                requestProcedure.setStudyInstanceUID(studyInstanceUID);
+                requestProcedureService.updateRequestStatus(requestProcedure);
                 requestProcedureStepService.updateProcedureStep(step);
 
                 // Check all procedure step perform status of the request
-                RequestProcedure requestProcedure = step.getRequestProcedure();
                 List<RequestProcedureStep> stepList = requestProcedureStepService.getAllStepByRequestProcedure(requestProcedure);
 
                 if (!stepList.isEmpty()) {
@@ -223,12 +226,12 @@ public class RequestProcedureController {
                                 String status = s.getPerformedProcedureStepStatus().trim();
                                 return "completed".equalsIgnoreCase(status)
                                         || "rejected".equalsIgnoreCase(status);
-                            });
+                    });
                     log.info("All steps of procedure completed: " +  allCompletedOrRejected);
 
                     // compare metadata
                     ComparisonResult comparisonResult = compareWorklistStudyData(requestProcedure, stepList, payload);
-                    assignRequestProceduredStudyToPatient(requestProcedure, payload, comparisonResult);
+                    assignRequestProceduredStudyToPatient(requestProcedure, previousStudyInstanceUID, payload, comparisonResult);
 
                     if (allCompletedOrRejected) {
                         requestProcedure.setStatus("completed");
@@ -253,7 +256,8 @@ public class RequestProcedureController {
 	 * @throws IOException
 	 */
 	private void assignRequestProceduredStudyToPatient (RequestProcedure requestProcedure,
-                                                        StudyUpdatePayload payload, ComparisonResult comparisonResult)
+	                                                    String previousStudyInstanceUID,
+	                                                    StudyUpdatePayload payload, ComparisonResult comparisonResult)
 	        throws IOException {
 		DicomStudyService dicomStudyService = Context.getService(DicomStudyService.class);
 		Patient patient = requestProcedure.getMrsPatient();
@@ -274,6 +278,8 @@ public class RequestProcedureController {
         if (study != null && comparisonResult != null) {
             int score = comparisonResult.getScore();
 
+            unlinkPreviousStudyIfUidChanged(dicomStudyService, config, patient, previousStudyInstanceUID, studyUID);
+
             if (score == 100) {
                 dicomStudyService.updateLinkStatus(study, 2);
             } else {
@@ -282,8 +288,25 @@ public class RequestProcedureController {
 
             String json = mapper.writeValueAsString(comparisonResult);
             study.setComparisonResult(json);
-            study.setMrsPatient(patient);
+            dicomStudyService.setPatient(study, patient);
         }
+	}
+	
+	private void unlinkPreviousStudyIfUidChanged(DicomStudyService dicomStudyService, OrthancConfiguration config,
+	        Patient patient, String previousStudyInstanceUID, String newStudyInstanceUID) {
+		if (!isNotBlank(previousStudyInstanceUID) || !isNotBlank(newStudyInstanceUID)
+		        || previousStudyInstanceUID.equals(newStudyInstanceUID)) {
+			return;
+		}
+		
+		DicomStudy previousStudy = dicomStudyService.getDicomStudy(config, previousStudyInstanceUID);
+		if (previousStudy == null || previousStudy.getMrsPatient() == null || patient == null
+		        || !patient.equals(previousStudy.getMrsPatient())) {
+			return;
+		}
+		
+		dicomStudyService.setPatient(previousStudy, null);
+		dicomStudyService.updateLinkStatus(previousStudy, -1);
 	}
 	
 	/**
